@@ -123,7 +123,7 @@
 </script>
 
 <div class="border rounded-lg p-4 shadow-md flex flex-col space-y-3 bg-white min-h-[300px]">
-  <div class="flex justify-between items-center">
+  <div class="flex items-center justify-between">
     <h3 class="text-lg font-semibold">{getDayName(dayState.date)}</h3>
     <span class="text-sm text-gray-500">{getFormattedDate(dayState.date)}</span>
   </div>
@@ -135,26 +135,26 @@
   />
 
   {#if isLoading}
-    <div class="flex justify-center items-center h-full">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    <div class="flex items-center justify-center h-full">
+      <div class="w-8 h-8 border-b-2 border-blue-500 rounded-full animate-spin"></div>
     </div>
   {:else}
-    <div class="flex flex-col flex-grow justify-between">
+    <div class="flex flex-col justify-between flex-grow">
       <div>
         {#if dayState.hasOrder && dayState.order}
           {#if orderItems.length > 0}
-            <ul class="list-disc list-inside ml-4 text-sm space-y-1 mb-2">
+            <ul class="mb-2 ml-4 space-y-1 text-sm list-disc list-inside">
               {#each orderItems as item}
                 <li>{item.name}: {item.quantity}</li>
               {/each}
             </ul>
           {:else}
-            <p class="text-sm text-gray-500 mb-2">No items in this order or items not recognized.</p>
+            <p class="mb-2 text-sm text-gray-500">No items in this order or items not recognized.</p>
           {/if}
         {:else}
-          <div class="space-y-2 mb-3">
+          <div class="mb-3 space-y-2">
             {#each orderItems as item (item.id)}
-              <div class="flex justify-between items-center">
+              <div class="flex items-center justify-between">
                 <span class="text-sm">{item.name}</span>
                 <div class="flex items-center space-x-2">
                   <button 
@@ -164,7 +164,7 @@
                   >
                     -
                   </button>
-                  <span class="text-sm w-5 text-center">{item.quantity}</span>
+                  <span class="w-5 text-sm text-center">{item.quantity}</span>
                   <button 
                     on:click={() => handleItemChange(item.id, 1)} 
                     class="px-2 py-0.5 border rounded bg-gray-100 hover:bg-gray-200 text-sm"
@@ -178,11 +178,11 @@
         {/if}
       </div>
 
-      <div class="mt-auto pt-2 space-y-2">
+      <div class="pt-2 mt-auto space-y-2">
         {#if dayState.hasOrder}
           <button 
             on:click={cancelOrder} 
-            class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded text-sm"
+            class="w-full px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded hover:bg-red-600"
             disabled={isLoading}
           >
             {isLoading ? 'Cancelling...' : 'Cancel Order'}
@@ -190,14 +190,14 @@
         {:else}
           <button 
             on:click={placeOrder} 
-            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-blue-400"
             disabled={isLoading || orderItems.every(i => i.quantity === 0) || !currentLocation}
           >
             {isLoading ? 'Placing...' : 'Place Order'}
           </button>
           <button 
             on:click={saveAsDefault} 
-            class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded text-sm"
+            class="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
             disabled={isLoading || !currentLocation}
           >
             Save as Default
