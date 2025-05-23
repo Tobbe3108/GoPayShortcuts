@@ -21,7 +21,6 @@ export interface Location {
 
 export interface Kitchen {
   id: number;
-  name: string;
 }
 
 export interface OrderItemData {

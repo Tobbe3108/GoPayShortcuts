@@ -15,7 +15,6 @@
   $effect(() => {
     componentSelectedLocationId = selectedLocation?.id || ""; // If undefined, use ""
   });
-
   // When the user interacts with the select, this function is called AFTER
   // componentSelectedLocationId is updated by bind:value.
   function handleUserSelectionChange() {
@@ -28,7 +27,7 @@
 
 <select
   id="location-selector"
-  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+  class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
   bind:value={componentSelectedLocationId}
   on:change={handleUserSelectionChange}
 >

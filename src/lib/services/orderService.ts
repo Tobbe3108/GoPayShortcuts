@@ -9,8 +9,35 @@ let mockOrders: Order[] = [];
 export const locationService = {
   async getLocations(): Promise<Location[]> {
     try {
-      const response = await api<Location[]>('/organization/company/user/locations');
-      return response;
+      const response = await api<any[]>('/organization/company/user/locations');
+      console.log("Locations fetched raw: ", response);
+      
+      // Transform the complex response into the expected Location format
+      const transformedLocations = response.map(location => {
+        // Take the first kitchen in each location's kitchens array
+        const primaryKitchen = location.kitchens && location.kitchens[0];
+        if (!primaryKitchen) {
+          return null; // Skip locations without kitchens
+        }
+        
+        // Take the first webshop from the kitchen
+        const primaryWebshop = primaryKitchen.webshops && primaryKitchen.webshops[0];
+        if (!primaryWebshop) {
+          return null; // Skip kitchens without webshops
+        }
+        
+        return {
+          id: primaryWebshop.uid, // Use webshop uid as the location id
+          name: location.name,
+          kitchen: {
+            id: primaryKitchen.id,
+            name: primaryKitchen.name
+          }
+        };
+      }).filter(Boolean) as Location[]; // Filter out null entries
+      
+      console.log("Locations transformed: ", transformedLocations);
+      return transformedLocations;
     } catch (error) {
       console.error('Failed to fetch locations:', error);
       throw new Error('Failed to fetch locations');
