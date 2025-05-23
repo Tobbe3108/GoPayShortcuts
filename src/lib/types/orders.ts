@@ -3,7 +3,6 @@ export interface Order {
   deliveryTime: string;
   deliveryLocation: Location;
   orderLines: OrderLine[];
-  kitchen: Kitchen;
 }
 
 export interface OrderLine {
@@ -13,18 +12,14 @@ export interface OrderLine {
 }
 
 export interface Location {
-  id: string; // Added ID to Location interface
+  displayName: string;
   name: string;
-  kitchen: Kitchen;
-  // Any other location properties
-}
-
-export interface Kitchen {
-  id: number;
+  kitchenId: number;
+  webshopId: string;
 }
 
 export interface OrderItemData {
-  id: number; // productId
+  id: number;
   name: string;
   quantity: number;
   type: 'breakfast' | 'lunch' | 'soda';
@@ -33,7 +28,6 @@ export interface OrderItemData {
 export interface DayOrderState {
   date: Date;
   selectedLocation: Location | undefined;
-  selectedKitchen: Kitchen | undefined;
   breakfastQuantity: number;
   lunchQuantity: number;
   sodaQuantity: number;

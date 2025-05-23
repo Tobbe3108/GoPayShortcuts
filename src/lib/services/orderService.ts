@@ -1,7 +1,5 @@
-import type { Location, Order, OrderItemData, DayOrderState, Kitchen } from "$lib/types/orders";
+import type { Location, Order, OrderItemData } from "$lib/types/orders";
 import { api } from "$lib/services/apiService";
-
-const API_BASE_URL = "/api"; // Replace with your actual API base URL if different
 
 // In-memory store for mock orders
 let mockOrders: Order[] = [];
@@ -27,13 +25,13 @@ export const locationService = {
         }
         
         return {
-          id: primaryWebshop.uid, // Use webshop uid as the location id
-          name: location.name,
-          kitchen: {
-            id: primaryKitchen.id,
-            name: primaryKitchen.name
-          }
+          displayName: location.name,
+          name: primaryKitchen.name,
+          kitchenId: primaryKitchen.id,
+          webshopId: primaryWebshop.uid,
         };
+
+
       }).filter(Boolean) as Location[]; // Filter out null entries
       
       console.log("Locations transformed: ", transformedLocations);

@@ -33,6 +33,6 @@
 >
   <option value="">Select Location</option> <!-- value="" matches componentSelectedLocationId = "" -->
   {#each locations as loc}
-    <option value={loc.id}>{loc.name}</option>
+    <option value={loc.kitchenId}>{loc.name}</option>
   {/each}
 </select>
