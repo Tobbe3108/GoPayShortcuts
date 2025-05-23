@@ -13,6 +13,7 @@ export interface OrderLine {
 }
 
 export interface Location {
+  id: string; // Added ID to Location interface
   name: string;
   kitchen: Kitchen;
   // Any other location properties
@@ -32,11 +33,14 @@ export interface OrderItemData {
 
 export interface DayOrderState {
   date: Date;
-  hasOrder: boolean;
-  order?: Order;
-  location: Location;
-  kitchen: Kitchen;
-  breakfast: number;
-  lunch: number;
-  soda: number;
+  selectedLocation: Location | undefined;
+  selectedKitchen: Kitchen | undefined;
+  breakfastQuantity: number;
+  lunchQuantity: number;
+  sodaQuantity: number;
+  isSaving: boolean;
+  saveError: string | null;
+  existingOrderId: string | undefined;
+  isWeekend?: boolean; // Added for display logic in DayCard
+  isToday?: boolean;   // Added for display logic in DayCard
 }

@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { auth } from './authService';
+import authStore from '$lib/stores/authStore'; // Changed: import default export
 import { get } from 'svelte/store';
 
 export const API_BASE_URL = 'https://prod.facilitynet.dk/api';
@@ -24,11 +24,23 @@ export async function api<T = any>(
 ): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
     
-    const authStore = get(auth);
+    const currentAuthStoreState = get(authStore); // Changed: use authStore
     const authHeaders: Record<string, string> = {};
     
-    if (authStore.user?.token) {
-        authHeaders['x-api-key'] = authStore.user.token;
+    // To get the token, we need to look into localStorage as StoredAuthData includes the token
+    // The authStore.user itself only has id and email.
+    if (browser) {
+        const storedAuthDataString = localStorage.getItem('food_shortcuts_auth');
+        if (storedAuthDataString) {
+            try {
+                const storedAuthData = JSON.parse(storedAuthDataString);
+                if (storedAuthData && storedAuthData.token) {
+                    authHeaders['x-api-key'] = storedAuthData.token;
+                }
+            } catch (e) {
+                console.error("Failed to parse auth data from localStorage", e);
+            }
+        }
     }
     
     const url = path.startsWith('http') ? path : `${API_BASE_URL}${path}`;

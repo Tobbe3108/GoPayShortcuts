@@ -1,6 +1,7 @@
 <script lang="ts">    
     import { goto } from '$app/navigation';
-    import { auth, requestOTP, verifyOTP } from '$lib/services/authService';
+    import authStore from '$lib/stores/authStore';
+    import { requestOTP, verifyOTP } from '$lib/services/authService';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     import type { PageData } from './$types';
     
@@ -9,48 +10,42 @@
     let email = $state('');
     let otp = $state('');
     let isEmailStep = $state(true);
-    let errorMessage = $state('');
 
     $effect(() => {
-        if ($auth.user) {
+        if ($authStore.user) {
             goto('/');
-        }
-        
-        if ($auth.error) {
-            errorMessage = $auth.error;
         }
     });    
     
     async function handleEmailSubmit() {
         if (!email) {
-            errorMessage = 'Email is required';
+            authStore.update(s => ({ ...s, error: 'Email is required' }));
             return;
         }
 
         try {
             await requestOTP(email, data.fetch);
             isEmailStep = false;
-            errorMessage = '';
+            authStore.update(s => ({ ...s, error: null }));
         } catch (err) {
         }
     }    
     
     async function handleOTPSubmit() {
         if (!otp) {
-            errorMessage = 'Verification code is required';
+            authStore.update(s => ({ ...s, error: 'Verification code is required' }));
             return;
         }
 
         try {
             await verifyOTP(otp, data.fetch);
-            goto('/');
         } catch (err) {
         }
     }
 
     function goBackToEmail() {
         isEmailStep = true;
-        errorMessage = '';
+        authStore.update(s => ({ ...s, error: null }));
     }
 </script>
 
@@ -61,9 +56,10 @@
             <p class="text-gray-600 mt-2">
                 {isEmailStep ? 'Sign in to your account' : 'Enter verification code'}
             </p>
-        </div>        {#if errorMessage}
+        </div>
+        {#if $authStore.error}
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-                <span>{errorMessage}</span>
+                <span>{$authStore.error}</span>
             </div>
         {/if}        {#if isEmailStep}
             <form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
@@ -79,10 +75,10 @@
                     />
                 </div>                <button
                     type="submit"
-                    disabled={$auth.loading}
+                    disabled={$authStore.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                 >
-                    {#if $auth.loading}
+                    {#if $authStore.loading}
                         <div class="flex justify-center items-center">
                             <LoadingSpinner size="w-5 h-5" />
                             <span class="ml-2">Sending...</span>
@@ -103,12 +99,16 @@
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
+                </div>                <div class="mb-4">
+                    <button type="button" on:click={goBackToEmail} class="text-sm text-blue-500 hover:underline">
+                        Back to email
+                    </button>
                 </div>                <button
                     type="submit"
-                    disabled={$auth.loading}
-                    class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 mb-3"
+                    disabled={$authStore.loading}
+                    class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                 >
-                    {#if $auth.loading}
+                    {#if $authStore.loading}
                         <div class="flex justify-center items-center">
                             <LoadingSpinner size="w-5 h-5" />
                             <span class="ml-2">Verifying...</span>
@@ -116,13 +116,6 @@
                     {:else}
                         Sign In
                     {/if}
-                </button>                <button
-                    type="button"
-                    disabled={$auth.loading}
-                    onclick={goBackToEmail}
-                    class="w-full bg-gray-200 text-gray-800 py-3 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-50"
-                >
-                    Back to Email
                 </button>
             </form>
         {/if}

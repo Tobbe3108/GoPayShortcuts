@@ -14,8 +14,8 @@ export const locationService = {
     // return response.json();
     // Mock data for now
     return Promise.resolve([
-      { name: "Office A", kitchen: { id: 1, name: "Kitchen A" } },
-      { name: "Office B", kitchen: { id: 2, name: "Kitchen B" } },
+      { id: "loc-a", name: "Office A", kitchen: { id: 1, name: "Kitchen A" } },
+      { id: "loc-b", name: "Office B", kitchen: { id: 2, name: "Kitchen B" } },
     ]);
   },
 };
@@ -88,10 +88,10 @@ export const orderService = {
 const DEFAULT_ORDER_KEY = "defaultOrderPreferences";
 
 export const localStorageService = {
-  saveDefaultOrder(orderItems: OrderItemData[], location: Location): void {
+  saveDefaultOrder(orderItems: OrderItemData[], location: Location | undefined): void { // Allow location to be undefined
     try {
       const defaultOrder = {
-        location,
+        location, // Can be undefined
         // Store all items, even if quantity is 0
         items: orderItems.map(item => ({ id: item.id, quantity: item.quantity, type: item.type, name: item.name })),
       };
@@ -101,13 +101,13 @@ export const localStorageService = {
     }
   },
 
-  getDefaultOrder(): { items: OrderItemData[]; location: Location } | null {
+  getDefaultOrder(): { items: OrderItemData[]; location: Location | undefined } | null { // Allow location to be undefined
     try {
       const saved = localStorage.getItem(DEFAULT_ORDER_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Basic validation
-        if (parsed && parsed.location && Array.isArray(parsed.items)) {
+        // Basic validation, location can be null/undefined
+        if (parsed && Array.isArray(parsed.items)) {
           return parsed;
         }
       }

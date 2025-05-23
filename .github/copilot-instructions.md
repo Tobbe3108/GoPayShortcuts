@@ -23,6 +23,7 @@ A static Svelte webapp that provides usefull shortcuts to features from a bad Fo
 - Use Svelte
 - Use TypeScript for type safety
 - Use Tailwind utility classes for all styling
+- Use stores for shared state management
 - Implement as a static site with no backend requirements that is hosted on Azure static web apps
 - Ensure responsive design for mobile and desktop
 
