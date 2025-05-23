@@ -1,4 +1,5 @@
-import type { Location, Order, OrderItemData, DayOrderState, Kitchen } from "./types/orders";
+import type { Location, Order, OrderItemData, DayOrderState, Kitchen } from "$lib/types/orders";
+import { api } from "$lib/services/apiService";
 
 const API_BASE_URL = "/api"; // Replace with your actual API base URL if different
 
@@ -7,16 +8,13 @@ let mockOrders: Order[] = [];
 
 export const locationService = {
   async getLocations(): Promise<Location[]> {
-    // const response = await fetch(`${API_BASE_URL}/organization/company/user/locations`);
-    // if (!response.ok) {
-    //   throw new Error("Failed to fetch locations");
-    // }
-    // return response.json();
-    // Mock data for now
-    return Promise.resolve([
-      { id: "loc-a", name: "Office A", kitchen: { id: 1, name: "Kitchen A" } },
-      { id: "loc-b", name: "Office B", kitchen: { id: 2, name: "Kitchen B" } },
-    ]);
+    try {
+      const response = await api<Location[]>('/organization/company/user/locations');
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch locations:', error);
+      throw new Error('Failed to fetch locations');
+    }
   },
 };
 
