@@ -20,7 +20,7 @@ export interface ApiOptions {
 export async function api<T = any>(
     path: string, 
     options: ApiOptions = {}, 
-    fetchFunction: typeof fetch = browser ? window.fetch : fetch
+    fetchFunction?: typeof fetch
 ): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
     
@@ -33,7 +33,10 @@ export async function api<T = any>(
     
     const url = path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
     
-    const response = await fetchFunction(url, {
+    // Use provided fetch function or fall back to global fetch
+    const fetchToUse = fetchFunction || (browser ? window.fetch : fetch);
+    
+    const response = await fetchToUse(url, {
         method,
         headers: {
             ...DEFAULT_HEADERS,

@@ -1,7 +1,9 @@
-<script lang="ts">
-    import { goto } from '$app/navigation';
+<script lang="ts">    import { goto } from '$app/navigation';
     import { auth, requestOTP, verifyOTP } from '$lib/services/authService';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+    import type { PageData } from './$types';
+    
+    const { data } = $props<{ data: PageData }>();
     
     let email = $state('');
     let otp = $state('');
@@ -16,8 +18,8 @@
         if ($auth.error) {
             errorMessage = $auth.error;
         }
-    });
-
+    });    
+    
     async function handleEmailSubmit() {
         if (!email) {
             errorMessage = 'Email is required';
@@ -25,13 +27,13 @@
         }
 
         try {
-            await requestOTP(email);
+            await requestOTP(email, data.fetch);
             isEmailStep = false;
             errorMessage = '';
         } catch (err) {
         }
-    }
-
+    }    
+    
     async function handleOTPSubmit() {
         if (!otp) {
             errorMessage = 'Verification code is required';
@@ -39,7 +41,7 @@
         }
 
         try {
-            await verifyOTP(otp);
+            await verifyOTP(otp, data.fetch);
             goto('/');
         } catch (err) {
         }

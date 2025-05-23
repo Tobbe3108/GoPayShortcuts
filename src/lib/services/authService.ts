@@ -38,7 +38,7 @@ export function loadAuth(): void {
     }
 }
 
-export async function requestOTP(email: string): Promise<void> {
+export async function requestOTP(email: string, fetchFunction?: typeof fetch): Promise<void> {
     auth.update(state => ({ ...state, loading: true, error: null }));
     
     try {
@@ -49,7 +49,7 @@ export async function requestOTP(email: string): Promise<void> {
         await api('/authenticate/username', {
             method: 'POST',
             body: { username: email }
-        });
+        }, fetchFunction);
         
         auth.update(state => ({ ...state, loading: false }));
     } catch (error) {
@@ -63,7 +63,7 @@ export async function requestOTP(email: string): Promise<void> {
     }
 }
 
-export async function verifyOTP(otp: string): Promise<void> {    
+export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Promise<void> {    
     auth.update(state => ({ ...state, loading: true, error: null }));
     
     try {
@@ -73,7 +73,7 @@ export async function verifyOTP(otp: string): Promise<void> {
                 type: 'ACTIVATION_CODE',
                 value: otp
             }
-        });
+        }, fetchFunction);
         
         const token = data.authentication?.token;
         
@@ -105,7 +105,7 @@ export async function verifyOTP(otp: string): Promise<void> {
     }
 }
 
-export async function checkAuth(): Promise<boolean> {       
+export async function checkAuth(fetchFunction?: typeof fetch): Promise<boolean> {       
     const authState = get(auth);
     if (!authState.user?.token) {
         auth.update(state => ({ ...state, loading: false }));
@@ -116,7 +116,7 @@ export async function checkAuth(): Promise<boolean> {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         try {
-            await api('', { method: 'GET' });
+            await api('', { method: 'GET' }, fetchFunction);
             // Note: This API always returns 404 when authenticated properly
             auth.update(state => ({ ...state, loading: false }));
             return true;

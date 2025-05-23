@@ -1,3 +1,3 @@
-export const load = async () => {
-    return {};
+export const load = async ({ fetch }) => {
+    return { fetch };
 };

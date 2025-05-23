@@ -12,11 +12,10 @@ export const load: LayoutLoad = async ({ url, fetch }) => {
         // Skip auth check during SSR
         return { isServerSide: true };
     }
-    
-    loadAuth();
+      loadAuth();
     
     try {
-        const isValid = await checkAuth();
+        const isValid = await checkAuth(fetch);
         
         if (!isValid) {
             throw redirect(302, '/login');
