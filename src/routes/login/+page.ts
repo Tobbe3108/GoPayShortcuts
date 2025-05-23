@@ -1,3 +1,5 @@
-export const load = async ({ fetch }) => {
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = async ({ fetch }) => {
     return { fetch };
 };

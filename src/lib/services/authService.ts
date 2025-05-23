@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import { api, API_BASE_URL } from './apiService';
+import { api } from './apiService';
 import { browser } from '$app/environment';
 
 export interface User {
