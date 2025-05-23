@@ -1,26 +1,26 @@
 <script lang="ts">
-  import type { DayOrderState, Location, OrderItemData } from "../types/orders";
-  import { createEventDispatcher } from "svelte";
+  import type { DayOrderState, Location, OrderItemData } from "../types/orders";  import { createEventDispatcher } from "svelte";
   import LocationSelector from "./LocationSelector.svelte"; 
-
-  export let dayState: DayOrderState;
-  export let locations: Location[];
+  const { dayState, locations } = $props<{
+    dayState: DayOrderState;
+    locations: Location[];
+  }>();
 
   const dispatch = createEventDispatcher();
 
-  let isLoading = false;
-  let orderItems: OrderItemData[] = [];
+  let isLoading = $state(false);
+  let orderItems = $state<OrderItemData[]>([]);
   
-  let _currentDayOrderExistingId = dayState.existingOrderId;
-  let optimisticHasOrder = !!_currentDayOrderExistingId;
+  let _currentDayOrderExistingId = $state(dayState.existingOrderId);
+  let optimisticHasOrder = $state(!!_currentDayOrderExistingId);
 
   // Reactive effect to update optimisticHasOrder when existingOrderId changes from prop
-  $: {
+  $effect(() => {
     if (dayState.existingOrderId !== _currentDayOrderExistingId) {
       _currentDayOrderExistingId = dayState.existingOrderId;
       optimisticHasOrder = !!_currentDayOrderExistingId;
     }
-  }
+  });
 
   // dayState.selectedLocation is the source of truth for display and actions.
   // The LocationSelector will emit an event when the user changes the selection.
@@ -77,9 +77,8 @@
     const defaultItemsToSave = orderItems.map(item => ({ id: item.id, quantity: item.quantity, type: item.type, name: item.name })); // Added name
     dispatch("saveDefault", { items: defaultItemsToSave, location: dayState.selectedLocation }); // Use dayState.selectedLocation
   }
-
-  // Reactive block to populate/update orderItems based on dayState quantities or if an order exists
-  $: {
+  // Reactive effect to populate/update orderItems based on dayState quantities or if an order exists
+  $effect(() => {
     if (optimisticHasOrder) { 
       orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => {
         const productId = parseInt(idStr);
@@ -105,18 +104,18 @@
         type: productDetails.type,
       }));
     }
-  }
-
+  });
   function handleItemChange(itemId: number, change: number) {
     const itemIndex = orderItems.findIndex(i => i.id === itemId);
     if (itemIndex !== -1) {
       const itemToChange = orderItems[itemIndex];
       const newQuantity = Math.max(0, itemToChange.quantity + change);
+      // With $state, we can directly mutate arrays
       orderItems[itemIndex] = { ...itemToChange, quantity: newQuantity };
-      orderItems = [...orderItems]; // Trigger reactivity for the array
+      // No need for the spread operator to trigger reactivity with $state
     }
   }
-
+  // These are pure functions, not deriving from reactive state, so they stay as regular functions
   const getDayName = (date: Date) => date.toLocaleDateString("en-US", { weekday: "long" });
   const getFormattedDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 

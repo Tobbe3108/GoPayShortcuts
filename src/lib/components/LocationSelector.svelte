@@ -1,20 +1,20 @@
-<script lang="ts">
-  import type { Location } from "$lib/types/orders";
+<script lang="ts">  import type { Location } from "$lib/types/orders";
   import { createEventDispatcher } from "svelte";
-
-  export let locations: Location[] = [];
-  export let selectedLocation: Location | undefined = undefined; // Incoming prop
+  const { locations = [], selectedLocation = undefined } = $props<{
+    locations?: Location[];
+    selectedLocation?: Location;
+  }>();
 
   const dispatch = createEventDispatcher<{ locationChanged: Location | undefined }>();
 
   // This will be two-way bound to the select element's value.
   // It's also updated when the selectedLocation prop changes.
-  let componentSelectedLocationId: string = ""; // Default to empty string for "Select Location"
+  let componentSelectedLocationId = $state(""); // Default to empty string for "Select Location"
 
   // When the selectedLocation PROP changes, update our internal ID for the select control.
-  $: {
+  $effect(() => {
     componentSelectedLocationId = selectedLocation?.id || ""; // If undefined, use ""
-  }
+  });
 
   // When the user interacts with the select, this function is called AFTER
   // componentSelectedLocationId is updated by bind:value.

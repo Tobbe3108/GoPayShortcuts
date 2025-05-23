@@ -2,10 +2,10 @@
 	import '../app.css';
 	import authStore from '$lib/stores/authStore';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import { onMount } from 'svelte';
 	import { checkAuth, loadAuth } from '$lib/services/authService';
 
-	onMount(async () => {
+	// Replace onMount with $effect.root for initialization
+	$effect.root(async () => {
 		loadAuth();
 		await checkAuth();
 	});

@@ -1,9 +1,7 @@
-<script lang="ts">
-    import DayCard from "$lib/components/DayCard.svelte";
+<script lang="ts">    import DayCard from "$lib/components/DayCard.svelte";
     import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
     import { locationService, orderService, localStorageService } from "$lib/services/orderService";
     import type { DayOrderState, Location, OrderItemData, Kitchen, OrderLine } from "../lib/types/orders";
-    import { onMount } from "svelte";
     import orderStore from "$lib/stores/orderStore";
     import authStore from "$lib/stores/authStore";
     import { goto } from "$app/navigation";
@@ -127,10 +125,9 @@
         } catch (err: any) {
             console.error("Error loading initial data:", err);
             orderStore.update(s => ({ ...s, isLoading: false, errorMessage: err.message || "Failed to load order data." }));
-        }
-    }
-
-    onMount(() => {
+        }    }    
+    
+    $effect.root(() => {
         if (!$authStore.user) {
             goto('/login');
         } else {
@@ -344,15 +341,13 @@
                 return day;
             })
         }));
-    }
-
-    function canOrderAllWeek(): boolean {
+    }    const canOrderAllWeek = $derived(() => {
         if ($orderStore.isLoading) return false;
         const firstDay = $orderStore.weekDays.find(day => !day.isWeekend);
         // Allow ordering all week even if location is not set, as long as items are present
         return !!(firstDay && 
                (firstDay.breakfastQuantity > 0 || firstDay.lunchQuantity > 0 || firstDay.sodaQuantity > 0));
-    }
+    });
 
     function canDeleteTodaysOrders(): boolean {
         if ($orderStore.isLoading) return false;
@@ -388,12 +383,11 @@
         <div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
             <LoadingSpinner size="w-12 h-12" />
             <p class="mt-4 text-gray-600">Loading orders...</p>
-        </div>
-    {:else if $orderStore.weekDays.length > 0}
+        </div>    {:else if $orderStore.weekDays.length > 0}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {#each $orderStore.weekDays as dayState (dayState.date.toISOString())}
+            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
                 <DayCard 
-                    bind:dayState={dayState} 
+                    dayState={dayState} 
                     locations={$orderStore.locations} 
                     on:orderPlaced={handleOrderUpdate} 
                     on:orderCancelled={handleOrderCancelled} 

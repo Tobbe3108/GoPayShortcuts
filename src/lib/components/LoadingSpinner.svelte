@@ -1,5 +1,8 @@
-<script>
-    export let size = "w-8 h-8";
+<script lang="ts">
+    const { size = "w-8 h-8" } = $props<{
+        size?: string;
+    }>();
+    // No local state to convert to $state() in this component
 </script>
 
 <div class="flex justify-center items-center">
