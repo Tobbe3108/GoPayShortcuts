@@ -79,10 +79,22 @@
   function handleItemChange(itemId: number, change: number) {
     const itemIndex = orderItems.findIndex(i => i.id === itemId);
     if (itemIndex !== -1) {
-      const currentQuantity = orderItems[itemIndex].quantity;
-      const newQuantity = Math.max(0, currentQuantity + change);
-      orderItems[itemIndex] = { ...orderItems[itemIndex], quantity: newQuantity };
-      orderItems = [...orderItems];
+      const itemToChange = orderItems[itemIndex];
+      const newQuantity = Math.max(0, itemToChange.quantity + change);
+
+      orderItems[itemIndex] = { ...itemToChange, quantity: newQuantity };
+      orderItems = [...orderItems]; // Trigger reactivity
+
+      // Update dayState based on the type of item changed
+      if (itemToChange.type === 'breakfast') {
+        dayState.breakfast = newQuantity;
+      } else if (itemToChange.type === 'lunch') {
+        dayState.lunch = newQuantity;
+      } else if (itemToChange.type === 'soda') {
+        dayState.soda = newQuantity;
+      }
+      // No need to spread dayState for this, direct mutation is fine for svelte store updates if dayState is part of a store
+      // or if it's a prop, the parent will be notified through binding if DayCard uses bind:dayState
     }
   }
 
