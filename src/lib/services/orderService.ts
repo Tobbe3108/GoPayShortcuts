@@ -74,6 +74,7 @@ export const localStorageService = {
     try {
       const defaultOrder = {
         location,
+        // Store all items, even if quantity is 0
         items: orderItems.map(item => ({ id: item.id, quantity: item.quantity, type: item.type, name: item.name })),
       };
       localStorage.setItem(DEFAULT_ORDER_KEY, JSON.stringify(defaultOrder));

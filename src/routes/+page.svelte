@@ -237,8 +237,7 @@
             return;
         }
         localStorageService.saveDefaultOrder(items, location);
-        alert("Default order preferences saved!");
-        loadInitialData();
+        loadInitialData(); // Reload data to reflect new defaults immediately
     }
 </script>
 

@@ -42,7 +42,7 @@
   }
 
   function saveAsDefault() {
-    dispatch("saveDefault", { items: orderItems.filter(i => i.quantity > 0), location: selectedLocation });
+    dispatch("saveDefault", { items: orderItems, location: selectedLocation });
   }
 
   // Reactive statement to update orderItems when dayState changes
@@ -166,7 +166,6 @@
           <button
             on:click={saveAsDefault}
             class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded text-sm"
-            disabled={orderItems.every(item => item.quantity === 0) && !dayState.hasOrder} 
           >
             Save as Default
           </button>
