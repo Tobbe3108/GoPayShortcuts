@@ -20,7 +20,6 @@
 
 {#if locations && locations.length > 0}
   <div class="mb-4">
-    <label for="location-select" class="block text-sm font-medium text-gray-700 mb-1">Select Location:</label>
     <select
       id="location-select"
       class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"

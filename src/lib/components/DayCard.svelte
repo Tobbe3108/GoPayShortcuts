@@ -1,18 +1,18 @@
 <script lang="ts">
   import type { DayOrderState, Location, OrderItemData, OrderLine } from "../types/orders";
   import { createEventDispatcher } from "svelte";
+  import LocationSelector from "./LocationSelector.svelte"; 
 
   export let dayState: DayOrderState;
   export let locations: Location[];
-  export let selectedLocation: Location; // This is the location context for this card, from dayState.location
 
   const dispatch = createEventDispatcher();
 
   let isLoading = false;
   let orderItems: OrderItemData[] = [];
+  
+  let currentLocation: Location = dayState.location; 
 
-  // Placeholder for product ID to type/name mapping
-  // This should ideally come from a service or config, or be passed as a prop
   const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda', defaultQuantity?: number }> = {
     1: { name: "Breakfast", type: "breakfast", defaultQuantity: dayState?.breakfast || 0 },
     2: { name: "Lunch", type: "lunch", defaultQuantity: dayState?.lunch || 0 },
@@ -20,21 +20,27 @@
   };
 
   function placeOrder() {
+    if (!currentLocation) {
+      alert("Please select a location for this day.");
+      return;
+    }
     if (orderItems.every(item => item.quantity === 0)) {
       alert("Cannot place an empty order.");
       return;
     }
     isLoading = true;
-    // Simulate API call
     setTimeout(() => {
-      dispatch("orderPlaced", { date: dayState.date, items: orderItems.filter(i => i.quantity > 0) });
+      dispatch("orderPlaced", { 
+        date: dayState.date, 
+        items: orderItems.filter(i => i.quantity > 0),
+        location: currentLocation
+      });
       isLoading = false;
     }, 1000);
   }
 
   function cancelOrder() {
     isLoading = true;
-    // Simulate API call
     setTimeout(() => {
       dispatch("orderCancelled", { date: dayState.date });
       isLoading = false;
@@ -42,14 +48,17 @@
   }
 
   function saveAsDefault() {
-    dispatch("saveDefault", { items: orderItems, location: selectedLocation });
+    if (!currentLocation) {
+      alert("Please select a location before saving as default.");
+      return;
+    }
+    dispatch("saveDefault", { items: orderItems, location: currentLocation });
   }
 
-  // Reactive statement to update orderItems when dayState changes
   $: {
     if (dayState.order && dayState.order.orderLines && dayState.order.orderLines.length > 0) {
       orderItems = dayState.order.orderLines.map((line: OrderLine) => {
-        const productInfo = itemProductMap[line.productId] || { name: `Product ${line.productId}`, type: 'lunch' as const }; // Fallback
+        const productInfo = itemProductMap[line.productId] || { name: `Product ${line.productId}`, type: 'lunch' as const };
         return {
           id: line.productId,
           name: productInfo.name,
@@ -57,15 +66,11 @@
           type: productInfo.type
         };
       }).filter(item => item.quantity > 0); 
-      // If, after mapping, orderItems is empty (e.g. all products unknown or 0 quantity), 
-      // it will show as "No items in this order" or similar in the template.
     } else {
-      // Initialize for "No Order" state
-      // Use quantities from dayState (which are from defaults or 0 if no defaults)
       orderItems = Object.entries(itemProductMap).map(([idStr, info]) => ({
           id: parseInt(idStr),
           name: info.name,
-          quantity: dayState[info.type] || 0, // Use dayState.breakfast, dayState.lunch, dayState.soda
+          quantity: dayState[info.type] || 0,
           type: info.type,
       }));
     }
@@ -77,7 +82,7 @@
       const currentQuantity = orderItems[itemIndex].quantity;
       const newQuantity = Math.max(0, currentQuantity + change);
       orderItems[itemIndex] = { ...orderItems[itemIndex], quantity: newQuantity };
-      orderItems = [...orderItems]; // Trigger reactivity for Svelte's #each block
+      orderItems = [...orderItems];
     }
   }
 
@@ -88,6 +93,21 @@
   const getFormattedDate = (date: Date) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
+
+  function handleLocationChange(event: CustomEvent<Location>) {
+    currentLocation = event.detail;
+    // Update dayState.location as well, so if the card is re-rendered with the same dayState object,
+    // it reflects the latest selected location for this card instance.
+    // This is important if the parent component relies on dayState.location for other logic or re-renders.
+    if (dayState.location.name !== currentLocation.name || dayState.location.kitchen.id !== currentLocation.kitchen.id) {
+        dayState = { ...dayState, location: currentLocation, kitchen: currentLocation.kitchen };
+    }
+  }
+
+  $: if (dayState.location && (!currentLocation || dayState.location.name !== currentLocation.name)) {
+    currentLocation = dayState.location;
+  }
+
 </script>
 
 <div class="border rounded-lg p-4 shadow-md flex flex-col space-y-3 bg-white min-h-[300px]">
@@ -96,6 +116,12 @@
     <span class="text-sm text-gray-500">{getFormattedDate(dayState.date)}</span>
   </div>
 
+  <LocationSelector 
+    locations={locations} 
+    selectedLocation={currentLocation} 
+    on:locationChange={handleLocationChange} 
+  />
+
   {#if isLoading}
     <div class="flex justify-center items-center h-full">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -103,13 +129,6 @@
   {:else}
     <div class="flex flex-col flex-grow justify-between">
       <div>
-        <p class="text-sm mb-1">
-          Status: <span class="font-medium">{dayState.hasOrder ? "Order Placed" : "No Order"}</span>
-        </p>
-        <p class="text-sm mb-2">
-          Location: <span class="font-medium">{selectedLocation.name}</span> (Kitchen: {selectedLocation.kitchen.name})
-        </p>
-
         {#if dayState.hasOrder && dayState.order}
           {#if orderItems.length > 0}
             <ul class="list-disc list-inside ml-4 text-sm space-y-1 mb-2">
@@ -149,23 +168,25 @@
 
       <div class="mt-auto pt-2 space-y-2">
         {#if dayState.hasOrder}
-          <button
-            on:click={cancelOrder}
+          <button 
+            on:click={cancelOrder} 
             class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded text-sm"
+            disabled={isLoading}
           >
-            Cancel Order
+            {isLoading ? 'Cancelling...' : 'Cancel Order'}
           </button>
         {:else}
-          <button
-            on:click={placeOrder}
+          <button 
+            on:click={placeOrder} 
             class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm"
-            disabled={orderItems.every(item => item.quantity === 0)}
+            disabled={isLoading || orderItems.every(i => i.quantity === 0) || !currentLocation}
           >
-            Order Now
+            {isLoading ? 'Placing...' : 'Place Order'}
           </button>
-          <button
-            on:click={saveAsDefault}
+          <button 
+            on:click={saveAsDefault} 
             class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded text-sm"
+            disabled={isLoading || !currentLocation}
           >
             Save as Default
           </button>

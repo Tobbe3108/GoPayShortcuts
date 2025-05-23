@@ -1,6 +1,5 @@
 <script lang="ts">
     import DayCard from "$lib/components/DayCard.svelte";
-    import LocationSelector from "$lib/components/LocationSelector.svelte";
     import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
     import { locationService, orderService, localStorageService } from "$lib/services/orderService";
     import type { DayOrderState, Location, Order, OrderItemData, Kitchen, OrderLine } from "../lib/types/orders";
@@ -8,7 +7,6 @@
 
     let weekDays: DayOrderState[] = [];
     let locations: Location[] = [];
-    let selectedLocationState: Location | undefined = undefined;
     let isLoading = true;
     let errorMessage: string | null = null;
 
@@ -61,7 +59,6 @@
             if (!initialSelectedLocation && locations.length > 0) {
                 initialSelectedLocation = locations[0];
             }
-            selectedLocationState = initialSelectedLocation;
 
             const startOfWeek = getStartOfWeek(new Date());
             const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
@@ -72,15 +69,15 @@
                     o => new Date(o.deliveryTime).toDateString() === date.toDateString()
                 );
 
-                let dayLocation: Location | undefined = initialSelectedLocation;
-                let dayKitchen: Kitchen | undefined = initialSelectedLocation?.kitchen;
+                let dayLocationToSet: Location | undefined;
+                let dayKitchenToSet: Kitchen | undefined;
                 let breakfastQty = 0;
                 let lunchQty = 0;
                 let sodaQty = 0;
 
                 if (existingOrder) {
-                    dayLocation = existingOrder.deliveryLocation;
-                    dayKitchen = existingOrder.kitchen;
+                    dayLocationToSet = existingOrder.deliveryLocation;
+                    dayKitchenToSet = existingOrder.kitchen;
                     existingOrder.orderLines.forEach((line: OrderLine) => {
                         const productInfo = itemProductMap[line.productId];
                         if (productInfo) {
@@ -89,37 +86,55 @@
                             else if (productInfo.type === 'soda') sodaQty = line.items;
                         }
                     });
-                } else if (defaultOrderPref) {
-                    if (initialSelectedLocation && defaultOrderPref.location.name === initialSelectedLocation.name) {
-                        dayLocation = initialSelectedLocation;
-                        dayKitchen = initialSelectedLocation.kitchen;
+                } else { // No existing order, apply defaults
+                    if (defaultOrderPref) {
+                        defaultOrderPref.items.forEach(item => {
+                            if (item.type === 'breakfast') breakfastQty = item.quantity;
+                            if (item.type === 'lunch') lunchQty = item.quantity;
+                            if (item.type === 'soda') sodaQty = item.quantity;
+                        });
+                        // Try to set location from default preferences
+                        if (defaultOrderPref.location) {
+                            const validDefaultLoc = locations.find(l =>
+                                l.name === defaultOrderPref.location.name &&
+                                l.kitchen.id === defaultOrderPref.location.kitchen.id
+                            );
+                            if (validDefaultLoc) {
+                                dayLocationToSet = validDefaultLoc;
+                                dayKitchenToSet = validDefaultLoc.kitchen;
+                            }
+                        }
                     }
-                    defaultOrderPref.items.forEach(item => {
-                        if (item.type === 'breakfast') breakfastQty = item.quantity;
-                        if (item.type === 'lunch') lunchQty = item.quantity;
-                        if (item.type === 'soda') sodaQty = item.quantity;
-                    });
+                    // If location not set from defaultOrderPref.location, use initialSelectedLocation (which might also be from default or first available)
+                    if (!dayLocationToSet && initialSelectedLocation) {
+                        dayLocationToSet = initialSelectedLocation;
+                        dayKitchenToSet = initialSelectedLocation.kitchen;
+                    }
+                    // Absolute fallback if still no location and locations are available
+                    if (!dayLocationToSet && locations.length > 0) {
+                        dayLocationToSet = locations[0];
+                        dayKitchenToSet = locations[0].kitchen;
+                    }
                 }
 
-                if (!dayLocation && locations.length > 0) {
-                    dayLocation = locations[0];
-                    dayKitchen = locations[0].kitchen;
-                }
-
-                if (!dayLocation || !dayKitchen) {
-                    console.warn("DayCard is being created without a fully defined location/kitchen for date:", date.toDateString());
-                    if (locations.length > 0 && !dayLocation) {
-                        dayLocation = locations[0];
-                        dayKitchen = locations[0].kitchen;
-                    }
+                // Final safety net: if dayLocationToSet is still undefined but locations are available, use the first one.
+                if (!dayLocationToSet && locations.length > 0) {
+                    dayLocationToSet = locations[0];
+                    dayKitchenToSet = locations[0].kitchen;
+                } else if (!dayLocationToSet) {
+                    // This state indicates an issue, as locations should be available.
+                    // Log a warning. The DayCard component will need to handle a potentially undefined location.
+                    console.warn(`DayCard for date ${date.toDateString()} is being initialized without a location.`);
+                    // To prevent a crash, you might assign a placeholder or handle it in DayCard
+                    // For now, we assert non-null below, which means DayCard must be robust.
                 }
 
                 return {
                     date,
                     hasOrder: !!existingOrder,
                     order: existingOrder,
-                    location: dayLocation!,
-                    kitchen: dayKitchen!,
+                    location: dayLocationToSet!, 
+                    kitchen: dayKitchenToSet!,
                     breakfast: breakfastQty,
                     lunch: lunchQty,
                     soda: sodaQty,
@@ -138,48 +153,12 @@
         loadInitialData();
     });
 
-    function handleLocationChange(event: CustomEvent<Location>) {
-        const newSelectedLocation = event.detail;
-        selectedLocationState = newSelectedLocation;
-        const defaultOrderPref = localStorageService.getDefaultOrder();
-
-        weekDays = weekDays.map(day => {
-            if (!day.hasOrder && newSelectedLocation) {
-                let breakfastQty = 0;
-                let lunchQty = 0;
-                let sodaQty = 0;
-
-                if (defaultOrderPref && defaultOrderPref.location.name === newSelectedLocation.name && defaultOrderPref.location.kitchen.id === newSelectedLocation.kitchen.id) {
-                    defaultOrderPref.items.forEach(item => {
-                        if (item.type === 'breakfast') breakfastQty = item.quantity;
-                        if (item.type === 'lunch') lunchQty = item.quantity;
-                        if (item.type === 'soda') sodaQty = item.quantity;
-                    });
-                } else {
-                    breakfastQty = 0;
-                    lunchQty = 0;
-                    sodaQty = 0;
-                }
-
-                return {
-                    ...day,
-                    location: newSelectedLocation,
-                    kitchen: newSelectedLocation.kitchen,
-                    breakfast: breakfastQty,
-                    lunch: lunchQty,
-                    soda: sodaQty
-                };
-            }
-            return day;
-        });
-    }
-
-    async function handleOrderPlaced(event: CustomEvent<{ date: Date; items: OrderItemData[] }>) {
-        if (!selectedLocationState) {
-            errorMessage = "Please select a delivery location first.";
+    async function handleOrderPlaced(event: CustomEvent<{ date: Date; items: OrderItemData[]; location: Location }>) {
+        const { date, items, location } = event.detail;
+        if (!location) {
+            errorMessage = "Cannot place order: Location is missing for the day.";
             return;
         }
-        const { date, items } = event.detail;
         const orderLines = items
             .filter(item => item.quantity > 0)
             .map(item => ({ productId: item.id, items: item.quantity, buyerParty: "PRIVATE" as const }));
@@ -200,7 +179,7 @@
         try {
             await orderService.placeOrder({
                 deliveryTime: date.toISOString(),
-                deliveryLocation: targetDayState.location,
+                deliveryLocation: location,
                 orderLines,
                 kitchen: targetDayState.kitchen,
             });
@@ -214,30 +193,90 @@
     }
 
     async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
-        const dayToCancel = weekDays.find(d => d.date.toDateString() === event.detail.date.toDateString());
-        if (!dayToCancel || !dayToCancel.order) return;
+        const { date } = event.detail;
+        const dayToUpdate = weekDays.find(d => d.date.toDateString() === date.toDateString());
+        if (dayToUpdate && dayToUpdate.order) {
+            isLoading = true;
+            errorMessage = null;
+            try {
+                await orderService.cancelOrder(dayToUpdate.order.id);
+                weekDays = weekDays.map(day => {
+                    if (day.date.toDateString() === date.toDateString()) {
+                        const defaultOrderPref = localStorageService.getDefaultOrder();
+                        let newBreakfast = 0, newLunch = 0, newSoda = 0;
+                        // Default to the card's current location as a starting point.
+                        let newLocation = day.location; 
 
-        isLoading = true;
-        errorMessage = null;
-        try {
-            await orderService.cancelOrder(dayToCancel.order.id);
-            await loadInitialData();
-        } catch (error) {
-            console.error("Error cancelling order:", error);
-            errorMessage = error instanceof Error ? error.message : "Failed to cancel order.";
-        } finally {
-            isLoading = false;
+                        if (defaultOrderPref) {
+                            defaultOrderPref.items.forEach(item => {
+                                if (item.type === 'breakfast') newBreakfast = item.quantity;
+                                if (item.type === 'lunch') newLunch = item.quantity;
+                                if (item.type === 'soda') newSoda = item.quantity;
+                            });
+
+                            // If a default location is set in preferences, try to apply it.
+                            if (defaultOrderPref.location) {
+                                const validDefaultLoc = locations.find(l =>
+                                    l.name === defaultOrderPref.location.name &&
+                                    l.kitchen.id === defaultOrderPref.location.kitchen.id
+                                );
+                                if (validDefaultLoc) {
+                                    newLocation = validDefaultLoc; // Apply valid default location.
+                                } 
+                                // If defaultOrderPref.location is not valid (not in current `locations`), 
+                                // newLocation remains `day.location` (the card's current location before cancellation).
+                            }
+                        } 
+                        // If no defaultOrderPref, item quantities are 0, and location remains `day.location`.
+                        
+                        return {
+                            ...day,
+                            hasOrder: false,
+                            order: undefined,
+                            location: newLocation, 
+                            kitchen: newLocation.kitchen, 
+                            breakfast: newBreakfast,
+                            lunch: newLunch,
+                            soda: newSoda,
+                        };
+                    }
+                    return day;
+                });
+            } catch (err: any) {
+                console.error("Error cancelling order:", err);
+                errorMessage = err instanceof Error ? err.message : "Failed to cancel order.";
+            } finally {
+                isLoading = false;
+            }
         }
     }
 
     function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[]; location: Location }>) {
         const { items, location } = event.detail;
         if (!location) {
-            errorMessage = "Cannot save default without a location.";
+            errorMessage = "Cannot save default: Location is missing.";
             return;
         }
         localStorageService.saveDefaultOrder(items, location);
-        loadInitialData(); // Reload data to reflect new defaults immediately
+        weekDays = weekDays.map(day => {
+            if (!day.hasOrder) {
+                let newBreakfast = 0, newLunch = 0, newSoda = 0;
+                items.forEach(item => {
+                    if (item.type === 'breakfast') newBreakfast = item.quantity;
+                    if (item.type === 'lunch') newLunch = item.quantity;
+                    if (item.type === 'soda') newSoda = item.quantity;
+                });
+                return {
+                    ...day,
+                    location: location,
+                    kitchen: location.kitchen,
+                    breakfast: newBreakfast,
+                    lunch: newLunch,
+                    soda: newSoda,
+                };
+            }
+            return day;
+        });
     }
 </script>
 
@@ -266,32 +305,19 @@
             </div>
         {/if}
 
-        <LocationSelector {locations} bind:selectedLocation={selectedLocationState} on:locationChange={handleLocationChange} />
-
-        {#if selectedLocationState}
-            <p class="mb-4 text-sm text-gray-600 px-1">
-                Currently selected delivery location: <span class="font-semibold">{selectedLocationState.name}</span> (Kitchen: <span class="font-semibold">{selectedLocationState.kitchen.name}</span>)
-            </p>
-        {:else if !isLoading && locations.length > 0 && !selectedLocationState}
-            <p class="mb-4 text-sm text-orange-600 font-medium p-3 bg-orange-100 border border-orange-300 rounded-md">Please select a delivery location to see order cards.</p>
-        {:else if !isLoading && locations.length === 0}
-            <p class="mb-4 text-sm text-gray-500 p-3 bg-gray-100 border border-gray-300 rounded-md">No delivery locations available. Please contact support.</p>
-        {/if}
-
-        {#if selectedLocationState && weekDays.length > 0}
+        {#if weekDays.length > 0}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {#each weekDays as dayState (dayState.date.toISOString())}
                     <DayCard 
-                        bind:dayState 
-                        {locations} 
-                        selectedLocation={dayState.location}
+                        bind:dayState={dayState} 
+                        locations={locations}
                         on:orderPlaced={handleOrderPlaced}
                         on:orderCancelled={handleOrderCancelled}
                         on:saveDefault={handleSaveDefault}
                     />
                 {/each}
             </div>
-        {:else if selectedLocationState && weekDays.length === 0 && !isLoading}
+        {:else if !isLoading && weekDays.length === 0}
             <p class="text-center text-gray-500 py-5">No orders or workday data to display for the selected criteria.</p>
         {/if}
     </main>
