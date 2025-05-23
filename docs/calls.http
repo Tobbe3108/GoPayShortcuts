@@ -1,0 +1,128 @@
+### Get OTP
+
+@email = "tolau@energinet.dk"
+POST https://prod.facilitynet.dk/api/authenticate/username
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+{
+  "username": {{email}}
+}
+
+### Login
+
+# @name login
+@ACTIVATION_CODE = "470033"
+POST https://prod.facilitynet.dk/api/authenticate/byType
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+{
+  "type": "ACTIVATION_CODE",
+  "value": {{ACTIVATION_CODE}}
+}
+
+### Validate Token
+GET https://prod.facilitynet.dk/api
+
+
+
+### Food order
+
+@deliveryTime = "2025-05-26T00:00:00.000+02:00"
+@foodLine = { "productId": 33138, "items": 1, "buyerParty": "PRIVATE" }
+@colaLine = { "productId": 33139, "items": 1, "buyerParty": "PRIVATE" }
+POST https://prod.facilitynet.dk/api/suppliers/kitchens/3237/payment/paymentDetails/catering
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+{
+  "deliveries": [
+    {
+      "deliveryLocation": {
+        "name": "Energinet - Errits\u00f8"
+      },
+      "deliveryTime": {{deliveryTime}},
+      "orderLines": [
+        {{foodLine}},
+        {{colaLine}}
+      ]
+    }
+  ]
+}
+
+### Food pay
+
+POST https://prod.facilitynet.dk/api/orders/catering
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+{
+  "kitchen": {
+    "id": 3237
+  },
+  "webshop": {
+    "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879"
+  },
+  "payment": {
+    "method": "PAYROLL_DEDUCTION"
+  },
+  "orderNote": "",
+  "deliveries": [
+    {
+      "deliveryLocation": {
+        "name": "Energinet - Errits\u00f8"
+      },
+      "deliveryTime": {{deliveryTime}},
+      "orderLines": [
+        {{foodLine}},
+        {{colaLine}}
+      ]
+    }
+  ]
+}
+
+
+
+### Get orders for today
+GET https://prod.facilitynet.dk/api/orders/today?orderType=TAKE_AWAY,LUNCH,CATERING
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+
+
+### Get orders for current week
+
+@startDate = 2025-05-19
+@endDate = 2025-05-25
+GET https://prod.facilitynet.dk/api/orders?offset=0&limit=50&orderType=LUNCH&deliveredStartDate={{startDate}}&deliveredEndDate={{endDate}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+
+
+### Delete order
+
+@orderId = 3969539
+DELETE https://prod.facilitynet.dk/api/orders/{{orderId}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
