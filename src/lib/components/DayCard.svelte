@@ -1,10 +1,16 @@
 <script lang="ts">
-  import type { DayOrderState, Location, OrderItemData } from "../types/orders";  import { createEventDispatcher } from "svelte";
+  import type { DayOrderState, Location, OrderItemData } from "../types/orders";
+  import { createEventDispatcher } from "svelte";
   import LocationSelector from "./LocationSelector.svelte"; 
-  const { dayState, locations } = $props<{
+
+  // Ensure onLocationChange is correctly typed in $props
+  const { dayState, locations, onLocationChange: onLocationChangeProp } = $props<{
     dayState: DayOrderState;
     locations: Location[];
-  }>();  const dispatch = createEventDispatcher();
+    onLocationChange: (date: Date, newLocation: Location | null) => void;
+  }>();
+  
+  const dispatch = createEventDispatcher();
 
   // Define itemProductMap first so we can use it for initialization
   const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
@@ -166,15 +172,17 @@
   // These are pure functions, not deriving from reactive state, so they stay as regular functions
   const getDayName = (date: Date) => date.toLocaleDateString("en-US", { weekday: "long" });
   const getFormattedDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric" });  // Handles the 'locationChanged' event from LocationSelector
-  function handleLocationSelectedFromDropdown(event: CustomEvent<Location | undefined>) {
-    const newLocation = event.detail;
-    
-    // Simply dispatch the event to the parent component
-    // The parent will update the location in the store, but we keep our local orderItems unchanged
-    dispatch('locationChanged', { date: dayState.date, newLocation: newLocation });
-    
-    // Note: We no longer need to manipulate orderItems here since we've modified
-    // the reactive effect to prevent resetting quantities on location change
+  function handleLocationSelectedFromDropdown(newLocation: Location | null) {
+    // The event.detail from LocationSelector is now directly the Location object or null
+    // Dispatch an event that the parent component (+page.svelte) will handle
+    if (dayState && typeof dayState.date !== 'undefined') {
+      // Call the onLocationChange prop function directly using the aliased name
+      if (onLocationChangeProp) {
+        onLocationChangeProp(dayState.date, newLocation);
+      }
+    } else {
+      console.error("DayCard: dayState or dayState.date is undefined when handling location change.");
+    }
   }
 
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -188,8 +196,8 @@
 
   {#if !optimisticHasOrder && !dayState.isWeekend}    <LocationSelector 
       selectedLocation={dayState.selectedLocation}
-      {locations} 
-      on:locationChanged={handleLocationSelectedFromDropdown}
+      locations={locations} 
+      onLocationChange={handleLocationSelectedFromDropdown}
     />
   {/if}
 

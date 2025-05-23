@@ -33,7 +33,7 @@ export interface OrderItemData {
 
 export interface DayOrderState {
   date: Date;
-  selectedLocation: Location | undefined;
+  selectedLocation: Location | undefined | null; // Allow null
   selectedKitchen?: Kitchen;
   breakfastQuantity: number;
   lunchQuantity: number;

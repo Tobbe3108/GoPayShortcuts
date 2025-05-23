@@ -120,8 +120,8 @@
         } else {
             loadInitialData();
         }
-    });    function handleLocationChangeInPage(event: CustomEvent<{ date: Date, newLocation: Location | undefined }>) { // Allow newLocation to be undefined
-        const { date, newLocation } = event.detail;
+    });    function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
+        // const { date, newLocation } = event.detail; // Removed event destructuring
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
             if (day.date.toDateString() === date.toDateString()) {
                 // Preserve existing quantities when changing location
@@ -227,7 +227,7 @@
         try {
             for (const dayState of $orderStore.weekDays) {
                 if (dayState.isWeekend) continue;                $orderStore.weekDays = $orderStore.weekDays.map(d => 
-                    d.date.toDateString() === dayState.date.toDateString() ? { ...d, isSaving: true, saveError: null } : d
+                    d.date.toString() === dayState.date.toString() ? { ...d, isSaving: true, saveError: null } : d
                 );
 
                 if (dayState.existingOrderId) {
@@ -351,9 +351,9 @@
             {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}                <DayCard 
                     dayState={dayState} 
                     locations={$orderStore.locations} 
+                    onLocationChange={handleLocationChangeInPage}
                     on:orderPlaced={handleOrderUpdate} 
                     on:orderCancelled={handleOrderCancelled} 
-                    on:locationChanged={handleLocationChangeInPage}
                     on:saveDefault={handleSaveDefault} 
                 />
             {/each}

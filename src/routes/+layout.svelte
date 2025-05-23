@@ -13,7 +13,7 @@
 
 <div class="min-h-screen bg-gray-50">
 	{#if $authStore.loading}
-		<div class="min-h-screen flex items-center justify-center">
+		<div class="flex items-center justify-center min-h-screen">
 			<div class="text-center">
 				<LoadingSpinner size="w-12 h-12" />
 				<p class="mt-4 text-gray-600">Validating session...</p>
