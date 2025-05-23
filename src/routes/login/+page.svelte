@@ -1,4 +1,5 @@
-<script lang="ts">    import { goto } from '$app/navigation';
+<script lang="ts">    
+    import { goto } from '$app/navigation';
     import { auth, requestOTP, verifyOTP } from '$lib/services/authService';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     import type { PageData } from './$types';
