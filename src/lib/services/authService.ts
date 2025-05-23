@@ -1,4 +1,4 @@
-import authStore from '$lib/stores/authStore';
+import authStore, { updateAuthStore } from '$lib/stores/authStore';
 import { get } from 'svelte/store';
 import { api } from './apiService';
 import { browser } from '$app/environment';
@@ -14,7 +14,7 @@ interface StoredAuthData extends UserType {
 
 export function loadAuth(): void {
     if (!browser) {
-        authStore.update(state => ({ ...state, loading: false }));
+        updateAuthStore.setLoading(false);
         return;
     }
 
@@ -24,19 +24,24 @@ export function loadAuth(): void {
             const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);
             // apiService will use the token from localStorage
             // Store only UserType (id, email) in the authStore
-            authStore.update(state => ({ ...state, user: { id: storedAuthData.id, email: storedAuthData.email }, loading: false }));
+            updateAuthStore.setUser({ id: storedAuthData.id, email: storedAuthData.email });
+            updateAuthStore.setLoading(false);
         } else {
-            authStore.update(state => ({ ...state, user: null, loading: false }));
+            updateAuthStore.setUser(null);
+            updateAuthStore.setLoading(false);
         }
     } catch (error) {
         console.error('Failed to load auth from storage', error);
-        authStore.update(state => ({ ...state, user: null, loading: false, error: 'Error loading session.' }));
+        updateAuthStore.setUser(null);
+        updateAuthStore.setLoading(false);
+        updateAuthStore.setError('Error loading session.');
         if (browser) localStorage.removeItem(AUTH_KEY);
     }
 }
 
 export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
-    authStore.update(state => ({ ...state, loading: true, error: null }));
+    updateAuthStore.setLoading(true);
+    updateAuthStore.setError(null);
     const currentStoreState = get(authStore);
 
     if (!currentStoreState.user) {
@@ -44,22 +49,22 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
             const storedAuthDataString = localStorage.getItem(AUTH_KEY);
             if (storedAuthDataString) {
                 try {
-                    const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);
-                    authStore.update(state => ({ ...state, user: { id: storedAuthData.id, email: storedAuthData.email }}));
+                    const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);                    updateAuthStore.setUser({ id: storedAuthData.id, email: storedAuthData.email });
                 } catch (e) {
                     localStorage.removeItem(AUTH_KEY);
-                    authStore.update(state => ({ ...state, user: null, loading: false }));
+                    updateAuthStore.setUser(null);
+                    updateAuthStore.setLoading(false);
                     return;
-                }
-            } else {
-                 authStore.update(state => ({ ...state, user: null, loading: false }));
+                }            } else {
+                 updateAuthStore.setUser(null);
+                 updateAuthStore.setLoading(false);
                  return;
             }
         }
     }
 
     if (!get(authStore).user) {
-        authStore.update(state => ({ ...state, loading: false }));
+        updateAuthStore.setLoading(false);
         return;
     }
 
@@ -72,8 +77,8 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         await Promise.race([
             api('/users/me', { method: 'GET' }, fetchFunction),
             timeoutPromise
-        ]);
-        authStore.update(state => ({ ...state, loading: false, error: null })); // Clear error on success
+        ]);        updateAuthStore.setLoading(false);
+        updateAuthStore.setError(null); // Clear error on success
     } catch (error: any) {
         console.warn('Session validation error or timeout:', error);
         let storeError: string | null = 'Session check failed. Please try logging in again.';
@@ -83,12 +88,9 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
             storeError = null; // No specific error message for 401, user will be logged out.
         }
 
-        authStore.update(state => ({
-            ...state,
-            user: null,
-            loading: false,
-            error: storeError
-        }));
+        updateAuthStore.setUser(null);
+        updateAuthStore.setLoading(false);
+        updateAuthStore.setError(storeError);
 
         if (browser) {
             localStorage.removeItem(AUTH_KEY);
@@ -97,7 +99,8 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
 }
 
 export async function requestOTP(email: string, fetchFunction?: typeof fetch): Promise<void> {
-    authStore.update(state => ({ ...state, loading: true, error: null }));
+    updateAuthStore.setLoading(true);
+    updateAuthStore.setError(null);
     try {
         if (browser) {
             localStorage.setItem(EMAIL_KEY, email);
@@ -105,21 +108,18 @@ export async function requestOTP(email: string, fetchFunction?: typeof fetch): P
         await api('/authenticate/username', {
             method: 'POST',
             body: { username: email }
-        }, fetchFunction);
-        authStore.update(state => ({ ...state, loading: false }));
+        }, fetchFunction);        updateAuthStore.setLoading(false);
     } catch (error) {
         console.error('OTP request error:', error);
-        authStore.update(state => ({
-            ...state,
-            loading: false,
-            error: 'Failed to send verification code. Please try again.'
-        }));
+        updateAuthStore.setLoading(false);
+        updateAuthStore.setError('Failed to send verification code. Please try again.');
         throw error;
     }
 }
 
 export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Promise<void> {
-    authStore.update(state => ({ ...state, loading: true, error: null }));
+    updateAuthStore.setLoading(true);
+    updateAuthStore.setError(null);
     let email = '';
     if (browser) {
         email = localStorage.getItem(EMAIL_KEY) || '';
@@ -150,16 +150,14 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
         if (browser) {
             localStorage.setItem(AUTH_KEY, JSON.stringify(authDataToStore));
             localStorage.removeItem(EMAIL_KEY);
-        }
-        authStore.update(state => ({ ...state, user: userForStore, loading: false, error: null }));
+        }        updateAuthStore.setUser(userForStore);
+        updateAuthStore.setLoading(false);
+        updateAuthStore.setError(null);
     } catch (error) {
         console.error('OTP verification error:', error);
-        authStore.update(state => ({
-            ...state,
-            user: null,
-            loading: false,
-            error: 'Failed to verify code. Please try again.'
-        }));
+        updateAuthStore.setUser(null);
+        updateAuthStore.setLoading(false);
+        updateAuthStore.setError('Failed to verify code. Please try again.');
         if (browser) {
             localStorage.removeItem(AUTH_KEY);
         }
@@ -172,5 +170,5 @@ export function logout(): void {
         localStorage.removeItem(AUTH_KEY);
         localStorage.removeItem(EMAIL_KEY);
     }
-    authStore.set({ user: null, loading: false, error: null });
+    updateAuthStore.reset(); // Uses our new helper function
 }

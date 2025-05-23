@@ -30,13 +30,12 @@
             workdays.push(day);
         }
         return workdays;
-    }
-
-    async function loadInitialData() {
-        orderStore.update(s => ({ ...s, isLoading: true, errorMessage: null }));
+    }    async function loadInitialData() {
+        $orderStore.isLoading = true;
+        $orderStore.errorMessage = null;
         try {
             const fetchedLocations = await locationService.getLocations();
-            orderStore.update(s => ({ ...s, locations: fetchedLocations }));
+            $orderStore.locations = fetchedLocations;
 
             const defaultOrderPref = localStorageService.getDefaultOrder();
             let initialSelectedLocation: Location | undefined = undefined;
@@ -112,13 +111,14 @@
                     isWeekend, 
                     isToday    
                 };
-            });
-            orderStore.update(s => ({ ...s, weekDays: newWeekDays, isLoading: false }));
+            });            $orderStore.weekDays = newWeekDays;
+            $orderStore.isLoading = false;
 
         } catch (err: any) {
             console.error("Error loading initial data:", err);
-            orderStore.update(s => ({ ...s, isLoading: false, errorMessage: err.message || "Failed to load order data." }));
-        }    }    
+            $orderStore.isLoading = false;
+            $orderStore.errorMessage = err.message || "Failed to load order data.";
+        }}    
     
     $effect.root(() => {
         if (!$authStore.user) {
@@ -128,35 +128,28 @@
         }
     });    function handleLocationChangeInPage(event: CustomEvent<{ date: Date, newLocation: Location | undefined }>) { // Allow newLocation to be undefined
         const { date, newLocation } = event.detail;
-        orderStore.update(s => ({
-            ...s,
-            weekDays: s.weekDays.map(day => {
-                if (day.date.toDateString() === date.toDateString()) {
-                    // Preserve existing quantities when changing location
-                    return {
-                        ...day,
-                        selectedLocation: newLocation, // This can be undefined
-                        selectedKitchen: newLocation?.kitchen // Use optional chaining
-                        // breakfastQuantity, lunchQuantity, and sodaQuantity are preserved
-                    };
-                }
-                return day;
-            })
-        }));
+        $orderStore.weekDays = $orderStore.weekDays.map(day => {
+            if (day.date.toDateString() === date.toDateString()) {
+                // Preserve existing quantities when changing location
+                return {
+                    ...day,
+                    selectedLocation: newLocation, // This can be undefined
+                    selectedKitchen: newLocation?.kitchen // Use optional chaining
+                    // breakfastQuantity, lunchQuantity, and sodaQuantity are preserved
+                };
+            }
+            return day;
+        });
     }async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
         const { date, items, location } = event.detail;
-        
-        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
+          const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
         if (!dayStateToUpdate) return;
 
-        orderStore.update(s => ({
-            ...s,
-            weekDays: s.weekDays.map(day => 
-                day.date.toDateString() === date.toDateString() 
-                ? { ...day, isSaving: true, saveError: null } 
-                : day
-            )
-        }));
+        $orderStore.weekDays = $orderStore.weekDays.map(day => 
+            day.date.toDateString() === date.toDateString() 
+            ? { ...day, isSaving: true, saveError: null } 
+            : day
+        );
 
         try {
             const orderLinesPayload: OrderLine[] = items
@@ -182,46 +175,33 @@
             }
             await loadInitialData(); 
         } catch (err: any) {
-            console.error("Error updating order:", err);
-            orderStore.update(s => ({
-                ...s,
-                weekDays: s.weekDays.map(day => 
-                    day.date.toString() === date.toString() 
-                    ? { ...day, isSaving: false, saveError: err.message || "Failed to save order." } 
-                    : day
-                ),
-                errorMessage: err.message || "Failed to save order."
-            }));
+            console.error("Error updating order:", err);            $orderStore.weekDays = $orderStore.weekDays.map(day => 
+                day.date.toString() === date.toString() 
+                ? { ...day, isSaving: false, saveError: err.message || "Failed to save order." } 
+                : day
+            );
+            $orderStore.errorMessage = err.message || "Failed to save order.";
         }
     }
 
     async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
         const { date } = event.detail;
-        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
-
-        if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
-            orderStore.update(s => ({
-                ...s,
-                weekDays: s.weekDays.map(day => 
-                    day.date.toDateString() === date.toDateString() 
-                    ? { ...day, isSaving: true, saveError: null } 
-                    : day
-                )
-            }));
+        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());        if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
+            $orderStore.weekDays = $orderStore.weekDays.map(day => 
+                day.date.toDateString() === date.toDateString() 
+                ? { ...day, isSaving: true, saveError: null } 
+                : day
+            );
             try {
                 await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
                 await loadInitialData();
             } catch (err: any) {
-                console.error("Error cancelling order:", err);
-                orderStore.update(s => ({
-                    ...s,
-                    weekDays: s.weekDays.map(day => 
-                        day.date.toDateString() === date.toDateString() 
-                        ? { ...day, isSaving: false, saveError: err.message || "Failed to cancel order." } 
-                        : day
-                    ),
-                    errorMessage: err.message || "Failed to cancel order."
-                }));
+                console.error("Error cancelling order:", err);                $orderStore.weekDays = $orderStore.weekDays.map(day => 
+                    day.date.toDateString() === date.toDateString() 
+                    ? { ...day, isSaving: false, saveError: err.message || "Failed to cancel order." } 
+                    : day
+                );
+                $orderStore.errorMessage = err.message || "Failed to cancel order.";
             }
         }
     }    async function handleOrderAllWeek() {
@@ -233,7 +213,7 @@
         );
 
         if (!firstDayWithSettings || !firstDayWithSettings.selectedLocation) {
-            orderStore.update(s => ({ ...s, errorMessage: "Set a location and at least one item for a weekday to order for the week." }));
+            $orderStore.errorMessage = "Set a location and at least one item for a weekday to order for the week.";
             return;
         }
 
@@ -245,20 +225,18 @@
         if (firstDayWithSettings.sodaQuantity > 0) orderLinesPayload.push({ productId: 3, items: firstDayWithSettings.sodaQuantity, buyerParty: "PRIVATE" });
 
         if (orderLinesPayload.length === 0) {
-            orderStore.update(s => ({ ...s, errorMessage: "Please set quantities for at least one item on the template day."}) );
+            $orderStore.errorMessage = "Please set quantities for at least one item on the template day.";
             return;
         }
         
-        orderStore.update(s => ({ ...s, isLoading: true, errorMessage: null }));
+        $orderStore.isLoading = true;
+        $orderStore.errorMessage = null;
 
         try {
             for (const dayState of $orderStore.weekDays) {
-                if (dayState.isWeekend) continue;
-
-                orderStore.update(s => ({
-                    ...s,
-                    weekDays: s.weekDays.map(d => d.date.toDateString() === dayState.date.toDateString() ? { ...d, isSaving: true, saveError: null } : d)
-                }));
+                if (dayState.isWeekend) continue;                $orderStore.weekDays = $orderStore.weekDays.map(d => 
+                    d.date.toDateString() === dayState.date.toDateString() ? { ...d, isSaving: true, saveError: null } : d
+                );
 
                 if (dayState.existingOrderId) {
                     await orderService.cancelOrder(dayState.existingOrderId);
@@ -273,68 +251,56 @@
             await loadInitialData(); 
         } catch (err: any) {
             console.error("Error ordering for all week:", err);
-            orderStore.update(s => ({ ...s, isLoading: false, errorMessage: err.message || "Failed to order for the week." }));
+            $orderStore.isLoading = false;
+            $orderStore.errorMessage = err.message || "Failed to order for the week.";
         } finally {
-            orderStore.update(s => ({ ...s, isLoading: false }));
+            $orderStore.isLoading = false;
         }
     }
 
     async function handleDeleteTodaysOrders() {
         const today = new Date();
-        const todayState = $orderStore.weekDays.find(day => day.date.toDateString() === today.toDateString());
-
-        if (todayState && todayState.existingOrderId) {
-            orderStore.update(s => ({
-                ...s,
-                weekDays: s.weekDays.map(d => d.date.toDateString() === today.toDateString() ? { ...d, isSaving: true, saveError: null } : d)
-            }));
+        const todayState = $orderStore.weekDays.find(day => day.date.toDateString() === today.toDateString());        if (todayState && todayState.existingOrderId) {
+            $orderStore.weekDays = $orderStore.weekDays.map(d => 
+                d.date.toDateString() === today.toDateString() ? { ...d, isSaving: true, saveError: null } : d
+            );
             try {
                 await orderService.cancelOrder(todayState.existingOrderId);
                 await loadInitialData(); 
             } catch (err: any) {
-                console.error("Error deleting today's order:", err);
-                orderStore.update(s => ({
-                    ...s,
-                    weekDays: s.weekDays.map(d => 
-                        d.date.toDateString() === today.toDateString() 
-                        ? { ...d, isSaving: false, saveError: err.message || "Failed to delete order." } 
-                        : d
-                    ),
-                    errorMessage: err.message || "Failed to delete order."
-                }));
+                console.error("Error deleting today's order:", err);                $orderStore.weekDays = $orderStore.weekDays.map(d => 
+                    d.date.toDateString() === today.toDateString() 
+                    ? { ...d, isSaving: false, saveError: err.message || "Failed to delete order." } 
+                    : d
+                );
+                $orderStore.errorMessage = err.message || "Failed to delete order.";
             }
         } else {
-            orderStore.update(s => ({ ...s, errorMessage: "No order to delete for today." }));
+            $orderStore.errorMessage = "No order to delete for today.";
         }
     }
       function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
         const { items, location } = event.detail;
-        localStorageService.saveDefaultOrder(items, location);
-
-        // Update all applicable day cards with the new default, including location
-        orderStore.update(s => ({
-            ...s,
-            weekDays: s.weekDays.map(day => {
-                // Only update if no order exists for the day and it's not a weekend
-                if (!day.existingOrderId && !day.isWeekend) {
-                    return {
-                        ...day,
-                        selectedLocation: location, // Apply new default location (can be undefined)
-                        selectedKitchen: location?.kitchen, // Apply new default kitchen (can be undefined)
-                        breakfastQuantity: items.find(i => i.type === 'breakfast')?.quantity ?? 0, // Use ?? 0 to handle undefined quantity
-                        lunchQuantity: items.find(i => i.type === 'lunch')?.quantity ?? 0,
-                        sodaQuantity: items.find(i => i.type === 'soda')?.quantity ?? 0,
-                    };
-                }
-                return day;
-            }),
-            // Set success message in the store
-            successMessage: "Default order preferences saved successfully!"
-        }));
-
-        // Clear the success message after 3 seconds
+        localStorageService.saveDefaultOrder(items, location);        // Update all applicable day cards with the new default, including location
+        $orderStore.weekDays = $orderStore.weekDays.map(day => {
+            // Only update if no order exists for the day and it's not a weekend
+            if (!day.existingOrderId && !day.isWeekend) {
+                return {
+                    ...day,
+                    selectedLocation: location, // Apply new default location (can be undefined)
+                    selectedKitchen: location?.kitchen, // Apply new default kitchen (can be undefined)
+                    breakfastQuantity: items.find(i => i.type === 'breakfast')?.quantity ?? 0, // Use ?? 0 to handle undefined quantity
+                    lunchQuantity: items.find(i => i.type === 'lunch')?.quantity ?? 0,
+                    sodaQuantity: items.find(i => i.type === 'soda')?.quantity ?? 0,
+                };
+            }
+            return day;
+        });
+        
+        // Set success message in the store
+        $orderStore.successMessage = "Default order preferences saved successfully!";        // Clear the success message after 3 seconds
         setTimeout(() => {
-            orderStore.update(s => ({ ...s, successMessage: null }));
+            $orderStore.successMessage = null;
         }, 3000);
     }const canOrderAllWeek = $derived(() => {
         if ($orderStore.isLoading) return false;
@@ -358,9 +324,14 @@
 
 <div class="container p-4 mx-auto">
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>
-        <button 
-            on:click={() => { authStore.set({ user: null, loading: false, error: null }); localStorage.removeItem('food_shortcuts_auth'); goto('/login'); }}
+        <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>        <button 
+            on:click={() => { 
+                $authStore.user = null; 
+                $authStore.loading = false; 
+                $authStore.error = null; 
+                localStorage.removeItem('food_shortcuts_auth'); 
+                goto('/login'); 
+            }}
             class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-red-500 rounded-lg shadow hover:bg-red-600"
         >
             Logout
@@ -369,7 +340,7 @@
         <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
             <div class="flex justify-between">
                 <p class="font-bold">Error</p>
-                <button on:click={() => orderStore.update(s => ({...s, errorMessage: null}))} class="font-bold text-red-700 hover:text-red-900">&times;</button>
+                <button on:click={() => $orderStore.errorMessage = null} class="font-bold text-red-700 hover:text-red-900">&times;</button>
             </div>
             <p>{$orderStore.errorMessage}</p>
         </div>
@@ -379,7 +350,7 @@
         <div class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4" role="alert">
             <div class="flex justify-between">
                 <p class="font-bold">Success</p>
-                <button on:click={() => orderStore.update(s => ({...s, successMessage: null}))} class="font-bold text-green-700 hover:text-green-900">&times;</button>
+                <button on:click={() => $orderStore.successMessage = null} class="font-bold text-green-700 hover:text-green-900">&times;</button>
             </div>
             <p>{$orderStore.successMessage}</p>
         </div>

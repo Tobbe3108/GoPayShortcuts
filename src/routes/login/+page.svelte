@@ -16,24 +16,22 @@
             goto('/');
         }
     });    
-    
-    async function handleEmailSubmit() {
+      async function handleEmailSubmit() {
         if (!email) {
-            authStore.update(s => ({ ...s, error: 'Email is required' }));
+            $authStore.error = 'Email is required';
             return;
         }
 
         try {
             await requestOTP(email, data.fetch);
             isEmailStep = false;
-            authStore.update(s => ({ ...s, error: null }));
+            $authStore.error = null;
         } catch (err) {
         }
-    }    
-    
-    async function handleOTPSubmit() {
+    }
+      async function handleOTPSubmit() {
         if (!otp) {
-            authStore.update(s => ({ ...s, error: 'Verification code is required' }));
+            $authStore.error = 'Verification code is required';
             return;
         }
 
@@ -41,11 +39,9 @@
             await verifyOTP(otp, data.fetch);
         } catch (err) {
         }
-    }
-
-    function goBackToEmail() {
+    }    function goBackToEmail() {
         isEmailStep = true;
-        authStore.update(s => ({ ...s, error: null }));
+        $authStore.error = null;
     }
 </script>
 
