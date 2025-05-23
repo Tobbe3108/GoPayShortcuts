@@ -4,12 +4,27 @@
   const { dayState, locations } = $props<{
     dayState: DayOrderState;
     locations: Location[];
-  }>();
+  }>();  const dispatch = createEventDispatcher();
 
-  const dispatch = createEventDispatcher();
+  // Define itemProductMap first so we can use it for initialization
+  const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
+    1: { name: "Breakfast", type: "breakfast" },
+    2: { name: "Lunch", type: "lunch" },
+    3: { name: "Soda", type: "soda" },
+  };
 
   let isLoading = $state(false);
-  let orderItems = $state<OrderItemData[]>([]);
+  // Initialize orderItems with the appropriate quantities from dayState
+  let orderItems = $state<OrderItemData[]>(
+    Object.entries(itemProductMap).map(([idStr, productDetails]) => ({
+      id: parseInt(idStr),
+      name: productDetails.name,
+      quantity: productDetails.type === 'breakfast' ? dayState.breakfastQuantity :
+                productDetails.type === 'lunch' ? dayState.lunchQuantity :
+                productDetails.type === 'soda' ? dayState.sodaQuantity : 0,
+      type: productDetails.type,
+    }))
+  );
   
   let _currentDayOrderExistingId = $state(dayState.existingOrderId);
   let optimisticHasOrder = $state(!!_currentDayOrderExistingId);
@@ -24,13 +39,6 @@
 
   // dayState.selectedLocation is the source of truth for display and actions.
   // The LocationSelector will emit an event when the user changes the selection.
-
-  const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
-    1: { name: "Breakfast", type: "breakfast" },
-    2: { name: "Lunch", type: "lunch" },
-    3: { name: "Soda", type: "soda" },
-  };
-
   function placeOrder() {
     if (!dayState.selectedLocation) { // Use dayState.selectedLocation
       alert("Please select a location for this day.");
@@ -43,6 +51,8 @@
     isLoading = true;
     optimisticHasOrder = true; 
 
+    // Use the current orderItems quantities which are now managed independently
+    // from location changes
     setTimeout(() => {
       dispatch("orderPlaced", { 
         date: dayState.date, 
@@ -71,15 +81,57 @@
       isLoading = false; 
     }, 1000);
   }
-
   function saveAsDefault() {
-    // Removed check for dayState.selectedLocation
-    const defaultItemsToSave = orderItems.map(item => ({ id: item.id, quantity: item.quantity, type: item.type, name: item.name })); // Added name
-    dispatch("saveDefault", { items: defaultItemsToSave, location: dayState.selectedLocation }); // Use dayState.selectedLocation
-  }
-  // Reactive effect to populate/update orderItems based on dayState quantities or if an order exists
+    // Pass location only if it was explicitly selected
+    const defaultItemsToSave = orderItems.map(item => ({ 
+      id: item.id, 
+      quantity: item.quantity, 
+      type: item.type, 
+      name: item.name 
+    }));
+    
+    // Explicitly use dayState.selectedLocation which can be undefined
+    dispatch("saveDefault", { 
+      items: defaultItemsToSave, 
+      location: dayState.selectedLocation 
+    });
+  }  // Track the current location ID and quantities to detect changes
+  let previousLocationId = dayState.selectedLocation?.id;
+  let previousBreakfastQty = dayState.breakfastQuantity;
+  let previousLunchQty = dayState.lunchQuantity;
+  let previousSodaQty = dayState.sodaQuantity;
+  
+  // Reactive effect to respond to both order status and quantity changes
   $effect(() => {
-    if (optimisticHasOrder) { 
+    const currentLocationId = dayState.selectedLocation?.id;
+    const quantitiesChanged = 
+      dayState.breakfastQuantity !== previousBreakfastQty ||
+      dayState.lunchQuantity !== previousLunchQty ||
+      dayState.sodaQuantity !== previousSodaQty;
+    
+    // Case 1: Order status changed (created/cancelled)
+    if (dayState.existingOrderId !== _currentDayOrderExistingId) {
+      if (optimisticHasOrder) { 
+        // Order was just created, update quantities from dayState
+        orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => {
+          const productId = parseInt(idStr);
+          let qty = 0;
+          if (productDetails.type === 'breakfast') qty = dayState.breakfastQuantity;
+          else if (productDetails.type === 'lunch') qty = dayState.lunchQuantity;
+          else if (productDetails.type === 'soda') qty = dayState.sodaQuantity;
+          
+          return {
+            id: productId,
+            name: productDetails.name,
+            quantity: qty,
+            type: productDetails.type,
+          };
+        });
+      }
+    }
+    // Case 2: Default quantities were updated (when not in order-placed mode)
+    else if (!optimisticHasOrder && quantitiesChanged) {
+      // Update orderItems with the new default quantities
       orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => {
         const productId = parseInt(idStr);
         let qty = 0;
@@ -94,16 +146,13 @@
           type: productDetails.type,
         };
       });
-    } else { // No order exists (or cancelled), use defaults from dayState for the input view
-      orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => ({
-        id: parseInt(idStr),
-        name: productDetails.name,
-        quantity: productDetails.type === 'breakfast' ? dayState.breakfastQuantity :
-                  productDetails.type === 'lunch' ? dayState.lunchQuantity :
-                  productDetails.type === 'soda' ? dayState.sodaQuantity : 0,
-        type: productDetails.type,
-      }));
     }
+    
+    // Update previous values for next comparison
+    previousLocationId = currentLocationId;
+    previousBreakfastQty = dayState.breakfastQuantity;
+    previousLunchQty = dayState.lunchQuantity;
+    previousSodaQty = dayState.sodaQuantity;
   });
   function handleItemChange(itemId: number, change: number) {
     const itemIndex = orderItems.findIndex(i => i.id === itemId);
@@ -117,13 +166,16 @@
   }
   // These are pure functions, not deriving from reactive state, so they stay as regular functions
   const getDayName = (date: Date) => date.toLocaleDateString("en-US", { weekday: "long" });
-  const getFormattedDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-
-  // Handles the 'locationChanged' event from LocationSelector
+  const getFormattedDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric" });  // Handles the 'locationChanged' event from LocationSelector
   function handleLocationSelectedFromDropdown(event: CustomEvent<Location | undefined>) {
     const newLocation = event.detail;
-    // Dispatch an event so the parent (+page.svelte) can update the dayState in the store
+    
+    // Simply dispatch the event to the parent component
+    // The parent will update the location in the store, but we keep our local orderItems unchanged
     dispatch('locationChanged', { date: dayState.date, newLocation: newLocation });
+    
+    // Note: We no longer need to manipulate orderItems here since we've modified
+    // the reactive effect to prevent resetting quantities on location change
   }
 
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);

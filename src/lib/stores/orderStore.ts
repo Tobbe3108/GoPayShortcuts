@@ -6,6 +6,7 @@ interface OrderStoreState {
   locations: Location[];
   isLoading: boolean;
   errorMessage: string | null;
+  successMessage: string | null;
   // Potentially add selectedLocation and other relevant state here
 }
 
@@ -14,6 +15,7 @@ const initialOrderState: OrderStoreState = {
   locations: [],
   isLoading: true,
   errorMessage: null,
+  successMessage: null,
 };
 
 const orderStore = writable<OrderStoreState>(initialOrderState);

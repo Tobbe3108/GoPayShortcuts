@@ -47,11 +47,8 @@
                 if (validDefaultLocation) {
                     initialSelectedLocation = validDefaultLocation;
                 }
-            }
-
-            if (!initialSelectedLocation && fetchedLocations.length > 0) {
-                initialSelectedLocation = fetchedLocations[0];
-            }
+            }            // Removed automatic fallback to first location when no default is set
+            // This ensures a location is only used if explicitly selected by the user or saved as default
 
             const startOfWeek = getStartOfWeek(new Date());
             const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
@@ -96,12 +93,8 @@
                         }
                     }
                 }
-                
-                // Fallback to initialSelectedLocation if no specific location was set by order or default preference
-                if (!dayLocationToSet && initialSelectedLocation) {
-                    dayLocationToSet = initialSelectedLocation;
-                    dayKitchenToSet = initialSelectedLocation.kitchen;
-                }
+                  // No longer applying fallback location automatically
+                // Each day will have undefined location unless explicitly set by existing order or user default
 
                 const isWeekend = date.getDay() === 0 || date.getDay() === 6;
                 const isToday = date.toDateString() === new Date().toDateString();
@@ -133,26 +126,24 @@
         } else {
             loadInitialData();
         }
-    });
-
-    function handleLocationChangeInPage(event: CustomEvent<{ date: Date, newLocation: Location | undefined }>) { // Allow newLocation to be undefined
+    });    function handleLocationChangeInPage(event: CustomEvent<{ date: Date, newLocation: Location | undefined }>) { // Allow newLocation to be undefined
         const { date, newLocation } = event.detail;
         orderStore.update(s => ({
             ...s,
             weekDays: s.weekDays.map(day => {
                 if (day.date.toDateString() === date.toDateString()) {
+                    // Preserve existing quantities when changing location
                     return {
                         ...day,
                         selectedLocation: newLocation, // This can be undefined
                         selectedKitchen: newLocation?.kitchen // Use optional chaining
+                        // breakfastQuantity, lunchQuantity, and sodaQuantity are preserved
                     };
                 }
                 return day;
             })
         }));
-    }
-
-    async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
+    }async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
         const { date, items, location } = event.detail;
         
         const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
@@ -233,18 +224,16 @@
                 }));
             }
         }
-    }
-
-    async function handleOrderAllWeek() {
+    }    async function handleOrderAllWeek() {
+        // Find a day with both items and location to use as template
         const firstDayWithSettings = $orderStore.weekDays.find(day => 
             !day.isWeekend && 
             day.selectedLocation && 
-            day.selectedKitchen && 
             (day.breakfastQuantity > 0 || day.lunchQuantity > 0 || day.sodaQuantity > 0)
         );
 
-        if (!firstDayWithSettings || !firstDayWithSettings.selectedLocation || !firstDayWithSettings.selectedKitchen) {
-            orderStore.update(s => ({ ...s, errorMessage: "Set location and items for a weekday (e.g., Monday) to order for the week." }));
+        if (!firstDayWithSettings || !firstDayWithSettings.selectedLocation) {
+            orderStore.update(s => ({ ...s, errorMessage: "Set a location and at least one item for a weekday to order for the week." }));
             return;
         }
 
@@ -318,8 +307,7 @@
             orderStore.update(s => ({ ...s, errorMessage: "No order to delete for today." }));
         }
     }
-    
-    function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
+      function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
         const { items, location } = event.detail;
         localStorageService.saveDefaultOrder(items, location);
 
@@ -339,14 +327,24 @@
                     };
                 }
                 return day;
-            })
+            }),
+            // Set success message in the store
+            successMessage: "Default order preferences saved successfully!"
         }));
-    }    const canOrderAllWeek = $derived(() => {
+
+        // Clear the success message after 3 seconds
+        setTimeout(() => {
+            orderStore.update(s => ({ ...s, successMessage: null }));
+        }, 3000);
+    }const canOrderAllWeek = $derived(() => {
         if ($orderStore.isLoading) return false;
-        const firstDay = $orderStore.weekDays.find(day => !day.isWeekend);
-        // Allow ordering all week even if location is not set, as long as items are present
-        return !!(firstDay && 
-               (firstDay.breakfastQuantity > 0 || firstDay.lunchQuantity > 0 || firstDay.sodaQuantity > 0));
+        // Make sure we have a weekday that has both a location and at least one item selected
+        const dayWithAllSettings = $orderStore.weekDays.find(day => 
+            !day.isWeekend && 
+            day.selectedLocation && 
+            (day.breakfastQuantity > 0 || day.lunchQuantity > 0 || day.sodaQuantity > 0)
+        );
+        return !!dayWithAllSettings;
     });
 
     function canDeleteTodaysOrders(): boolean {
@@ -367,15 +365,23 @@
         >
             Logout
         </button>
-    </div>
-
-    {#if $orderStore.errorMessage}
+    </div>    {#if $orderStore.errorMessage}
         <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
             <div class="flex justify-between">
                 <p class="font-bold">Error</p>
                 <button on:click={() => orderStore.update(s => ({...s, errorMessage: null}))} class="font-bold text-red-700 hover:text-red-900">&times;</button>
             </div>
             <p>{$orderStore.errorMessage}</p>
+        </div>
+    {/if}
+    
+    {#if $orderStore.successMessage}
+        <div class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4" role="alert">
+            <div class="flex justify-between">
+                <p class="font-bold">Success</p>
+                <button on:click={() => orderStore.update(s => ({...s, successMessage: null}))} class="font-bold text-green-700 hover:text-green-900">&times;</button>
+            </div>
+            <p>{$orderStore.successMessage}</p>
         </div>
     {/if}
 
