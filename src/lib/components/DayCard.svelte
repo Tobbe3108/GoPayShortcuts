@@ -25,9 +25,8 @@
       type: productDetails.type,
     }))
   );
-  
-  let _currentDayOrderExistingId = $state(dayState.existingOrderId);
-  let optimisticHasOrder = $state(!!_currentDayOrderExistingId);
+    let _currentDayOrderExistingId = $state(dayState.existingOrderId);
+  let optimisticHasOrder = $derived(!!_currentDayOrderExistingId);
 
   // Reactive effect to update optimisticHasOrder when existingOrderId changes from prop
   $effect(() => {
@@ -187,8 +186,7 @@
     <span class="text-sm text-gray-500">{getFormattedDate(dayState.date)}</span>
   </div>
 
-  {#if !optimisticHasOrder && !dayState.isWeekend}
-    <LocationSelector 
+  {#if !optimisticHasOrder && !dayState.isWeekend}    <LocationSelector 
       selectedLocation={dayState.selectedLocation}
       {locations} 
       on:locationChanged={handleLocationSelectedFromDropdown}
@@ -204,9 +202,8 @@
         <h4 class="font-semibold text-gray-700 text-md">Order Summary:</h4>
         {#if dayState.selectedLocation}
           <p class="text-sm text-gray-600">
-            <strong>Location:</strong> {dayState.selectedLocation.name} 
-            {#if dayState.selectedLocation.kitchen?.name}
-              - {dayState.selectedLocation.kitchen.name}
+            <strong>Location:</strong> {dayState.selectedLocation.name}            {#if dayState.selectedLocation.name}
+              - {dayState.selectedLocation.name}
             {/if}
           </p>
         {/if}
@@ -226,8 +223,7 @@
         <p class="font-medium text-right text-gray-700">Total items: {getTotalItems()}</p>
       </div>
       <div class="flex flex-col pt-2 space-y-2">
-        <button 
-          on:click={cancelOrder} 
+        <button          onclick={cancelOrder} 
           class:opacity-50={isLoading}
           disabled={isLoading}
           class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-500 rounded hover:bg-red-700"
@@ -243,7 +239,7 @@
             <span class="text-gray-700">{item.name}</span>
             <div class="flex items-center space-x-2">
               <button
-                on:click={() => handleItemChange(item.id, -1)}
+                onclick={() => handleItemChange(item.id, -1)}
                 disabled={isLoading || item.quantity === 0}
                 class="px-2 py-1 font-bold text-gray-700 transition-colors bg-gray-200 rounded-l hover:bg-gray-300 disabled:opacity-50"
               >
@@ -251,7 +247,7 @@
               </button>
               <span class="w-8 text-center text-gray-700">{item.quantity}</span>
               <button
-                on:click={() => handleItemChange(item.id, 1)}
+                onclick={() => handleItemChange(item.id, 1)}
                 disabled={isLoading}
                 class="px-2 py-1 font-bold text-gray-700 transition-colors bg-gray-200 rounded-r hover:bg-gray-300 disabled:opacity-50"
               >
@@ -267,16 +263,14 @@
       </div>
 
       <div class="flex flex-col pt-2 space-y-2">
-        <button 
-          on:click={placeOrder} 
+        <button          onclick={placeOrder} 
           class:opacity-50={isLoading}
           disabled={isLoading || getTotalItems() === 0 || !dayState.selectedLocation}
           class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-green-500 rounded hover:bg-green-700 disabled:bg-gray-400"
         >
           {#if isLoading}Placing Order...{:else}Place Order{/if}
         </button>
-        <button 
-          on:click={saveAsDefault}
+        <button          onclick={saveAsDefault}
           disabled={isLoading}
           class="w-full px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded hover:bg-blue-700 disabled:opacity-50 disabled:bg-gray-400"
         >

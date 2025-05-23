@@ -38,15 +38,13 @@
             $orderStore.locations = fetchedLocations;
 
             const defaultOrderPref = localStorageService.getDefaultOrder();
-            let initialSelectedLocation: Location | undefined = undefined;
-
-            if (defaultOrderPref && defaultOrderPref.location) {
-                // Match by ID for robustness
-                const validDefaultLocation = fetchedLocations.find(l => l.id === defaultOrderPref.location.id);
+            let initialSelectedLocation: Location | undefined = undefined;            if (defaultOrderPref && defaultOrderPref.location?.kitchenId) {
+                // Match by kitchenId for robustness
+                const validDefaultLocation = fetchedLocations.find(l => l.kitchenId === defaultOrderPref.location?.kitchenId);
                 if (validDefaultLocation) {
                     initialSelectedLocation = validDefaultLocation;
                 }
-            }            // Removed automatic fallback to first location when no default is set
+            }// Removed automatic fallback to first location when no default is set
             // This ensures a location is only used if explicitly selected by the user or saved as default
 
             const startOfWeek = getStartOfWeek(new Date());
@@ -59,14 +57,12 @@
                 );
 
                 let dayLocationToSet: Location | undefined;
-                let dayKitchenToSet: Kitchen | undefined;
                 let breakfastQty = 0;
                 let lunchQty = 0;
                 let sodaQty = 0;
 
                 if (existingOrder) {
                     dayLocationToSet = existingOrder.deliveryLocation;
-                    dayKitchenToSet = existingOrder.kitchen;
                     existingOrder.orderLines.forEach((line: OrderLine) => {
                         const productInfo = itemProductMap[line.productId];
                         if (productInfo) {
@@ -84,10 +80,9 @@
                         });
                         if (defaultOrderPref.location) {
                             // Match by ID for robustness
-                            const validDefaultLoc = fetchedLocations.find(l => l.id === defaultOrderPref.location.id);
+                            const validDefaultLoc = fetchedLocations.find(l => l.kitchenId === defaultOrderPref.location?.kitchenId);
                             if (validDefaultLoc) {
                                 dayLocationToSet = validDefaultLoc;
-                                dayKitchenToSet = validDefaultLoc.kitchen;
                             }
                         }
                     }
@@ -101,7 +96,6 @@
                 return {
                     date,
                     selectedLocation: dayLocationToSet,
-                    selectedKitchen: dayKitchenToSet,
                     breakfastQuantity: breakfastQty,
                     lunchQuantity: lunchQty,
                     sodaQuantity: sodaQty,
@@ -133,8 +127,7 @@
                 // Preserve existing quantities when changing location
                 return {
                     ...day,
-                    selectedLocation: newLocation, // This can be undefined
-                    selectedKitchen: newLocation?.kitchen // Use optional chaining
+                    selectedLocation: newLocation // This can be undefined
                     // breakfastQuantity, lunchQuantity, and sodaQuantity are preserved
                 };
             }
@@ -156,8 +149,8 @@
                 .filter(item => item.quantity > 0)
                 .map(item => ({ productId: item.id, items: item.quantity, buyerParty: "PRIVATE" }));
 
-            if (!location || !location.kitchen) {
-                throw new Error("Location and Kitchen must be selected.");
+            if (!location || !location.kitchenId || !location.webshopId) {
+                throw new Error("Location must be selected.");
             }
 
             if (orderLinesPayload.length > 0) {
@@ -167,7 +160,6 @@
                 await orderService.placeOrder({
                     deliveryTime: date.toISOString(),
                     deliveryLocation: location,
-                    kitchen: location.kitchen,
                     orderLines: orderLinesPayload
                 });
             } else if (dayStateToUpdate.existingOrderId) {
@@ -241,10 +233,8 @@
                 if (dayState.existingOrderId) {
                     await orderService.cancelOrder(dayState.existingOrderId);
                 }
-                await orderService.placeOrder({
-                    deliveryTime: dayState.date.toISOString(),
+                await orderService.placeOrder({                    deliveryTime: dayState.date.toISOString(),
                     deliveryLocation: locationToUse,
-                    kitchen: kitchenToUse,
                     orderLines: orderLinesPayload
                 });
             }
@@ -284,11 +274,9 @@
         localStorageService.saveDefaultOrder(items, location);        // Update all applicable day cards with the new default, including location
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
             // Only update if no order exists for the day and it's not a weekend
-            if (!day.existingOrderId && !day.isWeekend) {
-                return {
+            if (!day.existingOrderId && !day.isWeekend) {                return {
                     ...day,
                     selectedLocation: location, // Apply new default location (can be undefined)
-                    selectedKitchen: location?.kitchen, // Apply new default kitchen (can be undefined)
                     breakfastQuantity: items.find(i => i.type === 'breakfast')?.quantity ?? 0, // Use ?? 0 to handle undefined quantity
                     lunchQuantity: items.find(i => i.type === 'lunch')?.quantity ?? 0,
                     sodaQuantity: items.find(i => i.type === 'soda')?.quantity ?? 0,
@@ -325,7 +313,7 @@
 <div class="container p-4 mx-auto">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>        <button 
-            on:click={() => { 
+            onclick={() => { 
                 $authStore.user = null; 
                 $authStore.loading = false; 
                 $authStore.error = null; 
@@ -338,9 +326,8 @@
         </button>
     </div>    {#if $orderStore.errorMessage}
         <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
-            <div class="flex justify-between">
-                <p class="font-bold">Error</p>
-                <button on:click={() => $orderStore.errorMessage = null} class="font-bold text-red-700 hover:text-red-900">&times;</button>
+            <div class="flex justify-between">                <p class="font-bold">Error</p>
+                <button onclick={() => $orderStore.errorMessage = null} class="font-bold text-red-700 hover:text-red-900">&times;</button>
             </div>
             <p>{$orderStore.errorMessage}</p>
         </div>
@@ -348,9 +335,8 @@
     
     {#if $orderStore.successMessage}
         <div class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4" role="alert">
-            <div class="flex justify-between">
-                <p class="font-bold">Success</p>
-                <button on:click={() => $orderStore.successMessage = null} class="font-bold text-green-700 hover:text-green-900">&times;</button>
+            <div class="flex justify-between">                <p class="font-bold">Success</p>
+                <button onclick={() => $orderStore.successMessage = null} class="font-bold text-green-700 hover:text-green-900">&times;</button>
             </div>
             <p>{$orderStore.successMessage}</p>
         </div>
@@ -362,8 +348,7 @@
             <p class="mt-4 text-gray-600">Loading orders...</p>
         </div>    {:else if $orderStore.weekDays.length > 0}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
-                <DayCard 
+            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}                <DayCard 
                     dayState={dayState} 
                     locations={$orderStore.locations} 
                     on:orderPlaced={handleOrderUpdate} 

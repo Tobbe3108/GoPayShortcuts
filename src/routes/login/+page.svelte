@@ -95,8 +95,7 @@
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
-                </div>                <div class="mb-4">
-                    <button type="button" on:click={goBackToEmail} class="text-sm text-blue-500 hover:underline">
+                </div>                <div class="mb-4">                    <button type="button" onclick={goBackToEmail} class="text-sm text-blue-500 hover:underline">
                         Back to email
                     </button>
                 </div>                <button

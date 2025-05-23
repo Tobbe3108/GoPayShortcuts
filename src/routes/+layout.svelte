@@ -5,9 +5,9 @@
 	import { checkAuth, loadAuth } from '$lib/services/authService';
 
 	// Replace onMount with $effect.root for initialization
-	$effect.root(async () => {
+	$effect.root(() => {
 		loadAuth();
-		await checkAuth();
+		checkAuth();
 	});
 </script>
 

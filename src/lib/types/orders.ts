@@ -18,6 +18,12 @@ export interface Location {
   webshopId: string;
 }
 
+export interface Kitchen {
+  id: number;
+  name: string;
+  webshops?: any[];
+}
+
 export interface OrderItemData {
   id: number;
   name: string;
@@ -28,6 +34,7 @@ export interface OrderItemData {
 export interface DayOrderState {
   date: Date;
   selectedLocation: Location | undefined;
+  selectedKitchen?: Kitchen;
   breakfastQuantity: number;
   lunchQuantity: number;
   sodaQuantity: number;

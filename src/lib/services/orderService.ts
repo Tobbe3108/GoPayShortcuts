@@ -70,8 +70,7 @@ export const orderService = {
   async placeOrder(orderData: { 
     deliveryTime: string; 
     deliveryLocation: Location; 
-    orderLines: { productId: number; items: number; buyerParty: "PRIVATE" }[]; 
-    kitchen: Kitchen;
+    orderLines: { productId: number; items: number; buyerParty: "PRIVATE" }[];
   }): Promise<Order> {
     // const response = await fetch(`${API_BASE_URL}/orders`, {
     //   method: "POST",
