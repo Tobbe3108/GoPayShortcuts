@@ -1,68 +1,56 @@
-<script lang="ts">    import { goto } from '$app/navigation';
-    import { onMount } from 'svelte';
-    import { authStore } from '$lib/stores/authStore';
-    import { requestOTP, verifyOTP } from '$lib/services/auth';
+<script lang="ts">
+    import { goto } from '$app/navigation';
+    import { auth, requestOTP, verifyOTP } from '$lib/services/authService';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     
-    export let data;
-    const { fetch: pageFetch } = data;
+    let email = $state('');
+    let otp = $state('');
+    let isEmailStep = $state(true);
+    let errorMessage = $state('');
 
-    let email = '';
-    let otp = '';
-    let isEmailStep = true;
-    let isSubmitting = false;
-    let error = '';
+    // Subscribe to auth store
+    $effect(() => {
+        if ($auth.user) {
+            goto('/');
+        }
+        
+        if ($auth.error) {
+            errorMessage = $auth.error;
+        }
+    });
 
-    onMount(() => {
-        // Check if already logged in
-        const unsubscribe = authStore.subscribe(state => {
-            if (state.user) {
-                goto('/');
-            }
-        });
-
-        return unsubscribe;
-    });    async function handleEmailSubmit() {
+    async function handleEmailSubmit() {
         if (!email) {
-            error = 'Email is required';
+            errorMessage = 'Email is required';
             return;
         }
 
         try {
-            isSubmitting = true;
-            await requestOTP(email, pageFetch);
-            // Store email temporarily to associate with the token later
-            localStorage.setItem('temp_email', email);
+            await requestOTP(email);
             isEmailStep = false;
-            error = '';
+            errorMessage = '';
         } catch (err) {
-            error = 'Failed to send verification code. Please try again.';
-            console.error(err);
-        } finally {
-            isSubmitting = false;
+            // Error is handled by the auth store
         }
-    }    async function handleOTPSubmit() {
+    }
+
+    async function handleOTPSubmit() {
         if (!otp) {
-            error = 'Verification code is required';
+            errorMessage = 'Verification code is required';
             return;
         }
 
         try {
-            isSubmitting = true;
-            const user = await verifyOTP(otp, pageFetch);
-            authStore.setUser(user);
+            await verifyOTP(otp);
             goto('/');
         } catch (err) {
-            error = 'Invalid verification code. Please try again.';
-            console.error(err);
-        } finally {
-            isSubmitting = false;
+            // Error is handled by the auth store
         }
     }
 
     function goBackToEmail() {
         isEmailStep = true;
-        error = '';
+        errorMessage = '';
     }
 </script>
 
@@ -73,16 +61,12 @@
             <p class="text-gray-600 mt-2">
                 {isEmailStep ? 'Sign in to your account' : 'Enter verification code'}
             </p>
-        </div>
-
-        {#if error}
+        </div>        {#if errorMessage}
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-                <span>{error}</span>
+                <span>{errorMessage}</span>
             </div>
-        {/if}
-
-        {#if isEmailStep}
-            <form on:submit|preventDefault={handleEmailSubmit}>
+        {/if}        {#if isEmailStep}
+            <form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
                 <div class="mb-4">
                     <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
                     <input
@@ -95,10 +79,10 @@
                     />
                 </div>                <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={$auth.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                 >
-                    {#if isSubmitting}
+                    {#if $auth.loading}
                         <div class="flex justify-center items-center">
                             <LoadingSpinner size="w-5 h-5" />
                             <span class="ml-2">Sending...</span>
@@ -107,9 +91,8 @@
                         Continue
                     {/if}
                 </button>
-            </form>
-        {:else}
-            <form on:submit|preventDefault={handleOTPSubmit}>
+            </form>        {:else}
+            <form onsubmit={(e) => { e.preventDefault(); handleOTPSubmit(); }}>
                 <div class="mb-4">
                     <label for="otp" class="block text-gray-700 text-sm font-medium mb-2">Verification Code</label>
                     <input
@@ -122,10 +105,10 @@
                     />
                 </div>                <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={$auth.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 mb-3"
                 >
-                    {#if isSubmitting}
+                    {#if $auth.loading}
                         <div class="flex justify-center items-center">
                             <LoadingSpinner size="w-5 h-5" />
                             <span class="ml-2">Verifying...</span>
@@ -133,11 +116,10 @@
                     {:else}
                         Sign In
                     {/if}
-                </button>
-                <button
+                </button>                <button
                     type="button"
-                    disabled={isSubmitting}
-                    on:click={goBackToEmail}
+                    disabled={$auth.loading}
+                    onclick={goBackToEmail}
                     class="w-full bg-gray-200 text-gray-800 py-3 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-50"
                 >
                     Back to Email

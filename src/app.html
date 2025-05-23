@@ -5,6 +5,12 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
+		<script>
+			// Global error handler to help debug client-side errors
+			window.addEventListener('error', function(event) {
+				console.error('Global error:', event.error);
+			});
+		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>

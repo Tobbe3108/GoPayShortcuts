@@ -1,31 +1,35 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
-import { loadUserFromStorage, validateToken } from '$lib/services/auth';
+import { loadAuth, checkAuth } from '$lib/services/authService';
+import { browser } from '$app/environment';
 
-export const load: LayoutLoad = async ({ url, fetch }) => {
+export const load: LayoutLoad = async ({ url }) => {
     // Skip auth check for login page
     if (url.pathname === '/login') {
-        return {};
+        return { isLoginPage: true };
     }
-
-    // Check for auth token in browser environment
-    if (typeof window !== 'undefined') {
-        const user = loadUserFromStorage();
+    
+    // Skip auth validation during server-side rendering
+    if (!browser) {
+        // Allow the initial page render, client-side code will handle auth
+        return { isBrowser: false };
+    }
+    
+    // Client-side authentication flow
+    loadAuth();
+    
+    try {
+        // Check if the token is still valid
+        // This will also update the loading state when complete
+        const isValid = await checkAuth();
         
-        if (!user || !user.token) {
+        if (!isValid) {
             throw redirect(302, '/login');
         }
-
-        // Validate token
-        try {
-            const isValid = await validateToken(user.token, fetch);
-            if (!isValid) {
-                throw redirect(302, '/login');
-            }
-        } catch (error) {
-            throw redirect(302, '/login');
-        }
+        
+        return { isAuthenticated: true };
+    } catch (error) {
+        console.error('Auth check error:', error);
+        throw redirect(302, '/login');
     }
-
-    return {};
 };
