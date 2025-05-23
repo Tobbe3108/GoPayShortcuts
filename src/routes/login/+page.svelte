@@ -8,7 +8,6 @@
     let isEmailStep = $state(true);
     let errorMessage = $state('');
 
-    // Subscribe to auth store
     $effect(() => {
         if ($auth.user) {
             goto('/');
@@ -30,7 +29,6 @@
             isEmailStep = false;
             errorMessage = '';
         } catch (err) {
-            // Error is handled by the auth store
         }
     }
 
@@ -44,7 +42,6 @@
             await verifyOTP(otp);
             goto('/');
         } catch (err) {
-            // Error is handled by the auth store
         }
     }
 

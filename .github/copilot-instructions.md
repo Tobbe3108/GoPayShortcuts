@@ -6,7 +6,9 @@ A static Svelte webapp that provides usefull shortcuts to features from a bad Fo
 
 ## General Guidelines
 
-- Keep code comments to a minimum - prefer self-documenting code with descriptive names, only comment to explain "why" when abselutly necessary rather than "what"
+- Basicaly dont write any code comments
+- Only write comments to explain strange or very complicated code
+- Write self-documenting code with descriptive names
 - Use idiomatic patterns for each technology
 - Ensure clear and maintainable code
 - Handle errors gracefully at appropriate levels
@@ -14,6 +16,7 @@ A static Svelte webapp that provides usefull shortcuts to features from a bad Fo
 - Write as little code as possible, find and use npm packages over writing your own implementation
 - Minimize indenting, prefer extracting things into more classes, methods, components and so on
 - Rarely use hardcoded values - only when abselutly necessary
+- Write
 
 ## Technical Requirements
 
