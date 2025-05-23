@@ -126,3 +126,14 @@ content-type: application/json
 Accept: */*
 Origin: https://prod.facilitynet.dk
 X-Client-Type: mobile-web
+
+
+
+### Get locations
+
+curl "https://prod.facilitynet.dk/api/organization/company/user/locations" 
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
