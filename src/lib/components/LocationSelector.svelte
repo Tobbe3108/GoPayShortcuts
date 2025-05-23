@@ -4,6 +4,7 @@
 
   export let locations: Location[];
   export let selectedLocation: Location | undefined = undefined;
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 
@@ -22,9 +23,10 @@
   <div class="mb-4">
     <select
       id="location-select"
-      class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+      class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 {disabled ? 'bg-gray-100 cursor-not-allowed' : ''}"
       value={selectedLocation?.name}
       on:change={handleChange}
+      {disabled}
     >
       <option value="" disabled selected={selectedLocation === undefined}>Select a location</option>
       {#each locations as location (location.name)}

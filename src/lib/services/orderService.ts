@@ -2,6 +2,9 @@ import type { Location, Order, OrderItemData, DayOrderState, Kitchen } from "./t
 
 const API_BASE_URL = "/api"; // Replace with your actual API base URL if different
 
+// In-memory store for mock orders
+let mockOrders: Order[] = [];
+
 export const locationService = {
   async getLocations(): Promise<Location[]> {
     // const response = await fetch(`${API_BASE_URL}/organization/company/user/locations`);
@@ -26,7 +29,19 @@ export const orderService = {
     // return response.json();
     // Mock data for now
     console.log("Fetching orders for week starting: ", startDate);
-    return Promise.resolve([]); // No orders by default
+    // Filter mockOrders based on the week of startDate if necessary, or return all for simplicity in mock
+    // For this mock, we'll return all orders that fall within the week of the startDate.
+    const startOfWeek = new Date(startDate);
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const weekOrders = mockOrders.filter(order => {
+        const orderDate = new Date(order.deliveryTime);
+        return orderDate >= startOfWeek && orderDate <= endOfWeek;
+    });
+    return Promise.resolve(weekOrders);
   },
 
   async placeOrder(orderData: { 
@@ -47,10 +62,12 @@ export const orderService = {
     // return response.json();
     // Mock data for now
     console.log("Placing order: ", orderData);
-    return Promise.resolve({
+    const newOrder: Order = {
       id: new Date().getTime().toString(), // Generate a mock ID
       ...orderData,
-    });
+    };
+    mockOrders.push(newOrder);
+    return Promise.resolve(newOrder);
   },
 
   async cancelOrder(orderId: string): Promise<void> {
@@ -63,6 +80,7 @@ export const orderService = {
     // return response.json();
     // Mock data for now
     console.log("Cancelling order: ", orderId);
+    mockOrders = mockOrders.filter(order => order.id !== orderId);
     return Promise.resolve();
   },
 };
