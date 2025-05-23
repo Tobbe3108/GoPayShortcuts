@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store';
-
-const API_BASE_URL = 'https://prod.facilitynet.dk/api';
+import { api, API_BASE_URL } from './apiService';
+import { browser } from '$app/environment';
 
 export interface User {
     token: string;
@@ -19,14 +19,13 @@ export const auth = writable<{
 
 const AUTH_KEY = 'food_shortcuts_auth';
 const EMAIL_KEY = 'food_shortcuts_email';
-const API_HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': '*/*',
-    'Origin': 'https://prod.facilitynet.dk',
-    'X-Client-Type': 'mobile-web'
-};
 
 export function loadAuth(): void {    
+    if (!browser) {
+        auth.update(state => ({ ...state, loading: false }));
+        return;
+    }
+    
     try {
         const storedUser = localStorage.getItem(AUTH_KEY);
         if (storedUser) {
@@ -43,17 +42,14 @@ export async function requestOTP(email: string): Promise<void> {
     auth.update(state => ({ ...state, loading: true, error: null }));
     
     try {
-        localStorage.setItem(EMAIL_KEY, email);
-        
-        const response = await fetch(`${API_BASE_URL}/authenticate/username`, {
-            method: 'POST',
-            headers: API_HEADERS,
-            body: JSON.stringify({ username: email })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to send verification code');
+        if (browser) {
+            localStorage.setItem(EMAIL_KEY, email);
         }
+        
+        await api('/authenticate/username', {
+            method: 'POST',
+            body: { username: email }
+        });
         
         auth.update(state => ({ ...state, loading: false }));
     } catch (error) {
@@ -71,32 +67,31 @@ export async function verifyOTP(otp: string): Promise<void> {
     auth.update(state => ({ ...state, loading: true, error: null }));
     
     try {
-        const response = await fetch(`${API_BASE_URL}/authenticate/byType`, {
+        const data = await api('/authenticate/byType', {
             method: 'POST',
-            headers: API_HEADERS,
-            body: JSON.stringify({
+            body: {
                 type: 'ACTIVATION_CODE',
                 value: otp
-            })
+            }
         });
         
-        if (!response.ok) {
-            throw new Error('Failed to verify code');
-        }
-        
-        const data = await response.json();
         const token = data.authentication?.token;
         
         if (!token) {
             throw new Error('Authentication token not found');
         }
         
-        const email = localStorage.getItem(EMAIL_KEY) || '';
-        localStorage.removeItem(EMAIL_KEY);
+        let email = '';
+        if (browser) {
+            email = localStorage.getItem(EMAIL_KEY) || '';
+            localStorage.removeItem(EMAIL_KEY);
+        }
         
         const user: User = { token, email };
 
-        localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+        if (browser) {
+            localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+        }
         
         auth.update(state => ({ ...state, user, loading: false }));
     } catch (error) {
@@ -120,32 +115,30 @@ export async function checkAuth(): Promise<boolean> {
     try {
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        const response = await fetch(`${API_BASE_URL}`, {
-            method: 'GET',
-            headers: {
-                'x-api-key': authState.user.token,
-                'Accept': '*/*',
-                'Origin': 'https://prod.facilitynet.dk',
-                'X-Client-Type': 'mobile-web'
+        try {
+            await api('', { method: 'GET' });
+            // Note: This API always returns 404 when authenticated properly
+            auth.update(state => ({ ...state, loading: false }));
+            return true;
+        } catch (error: any) {
+            // Check if it's a 404 error, which is actually successful authentication
+            if (error?.message?.includes('API error 404')) {
+                auth.update(state => ({ ...state, loading: false }));
+                return true;
             }
-        });
-
-        const isValid = response.status === 404;
-        
-        if (!isValid) {
-            logout();
+            throw error;
         }
-
-        auth.update(state => ({ ...state, loading: false }));
-        return isValid;
     } catch (error) {
         console.error('Auth check error:', error);
         auth.update(state => ({ ...state, loading: false }));
+        logout();
         return false;
     }
 }
 
 export function logout(): void {    
-    localStorage.removeItem(AUTH_KEY);
+    if (browser) {
+        localStorage.removeItem(AUTH_KEY);
+    }
     auth.update(state => ({ ...state, user: null }));
 }

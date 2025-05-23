@@ -1,8 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { auth, logout } from '$lib/services/authService';
-    import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-
+    
     function handleLogout() {
         logout();
         goto('/login');
@@ -16,7 +15,7 @@
             <div class="flex items-center">
                 <span class="mr-4 text-gray-600">{$auth.user.email}</span>
                 <button 
-                    onclick={handleLogout}
+                    on:click={handleLogout}
                     class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md text-sm"
                 >
                     Logout

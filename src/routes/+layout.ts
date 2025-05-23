@@ -3,13 +3,14 @@ import type { LayoutLoad } from './$types';
 import { loadAuth, checkAuth } from '$lib/services/authService';
 import { browser } from '$app/environment';
 
-export const load: LayoutLoad = async ({ url }) => {
+export const load: LayoutLoad = async ({ url, fetch }) => {
     if (url.pathname === '/login') {
         return { isLoginPage: true };
     }
     
     if (!browser) {
-        return { isBrowser: false };
+        // Skip auth check during SSR
+        return { isServerSide: true };
     }
     
     loadAuth();
