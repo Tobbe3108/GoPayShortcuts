@@ -14,7 +14,7 @@ X-Client-Type: mobile-web
 ### Login
 
 # @name login
-@ACTIVATION_CODE = "470033"
+@ACTIVATION_CODE = "333921"
 POST https://prod.facilitynet.dk/api/authenticate/byType
 content-type: application/json
 Accept: */*
@@ -102,12 +102,10 @@ Accept: */*
 Origin: https://prod.facilitynet.dk
 X-Client-Type: mobile-web
 
-
-
 ### Get orders for current week
 
-@startDate = 2025-05-19
-@endDate = 2025-05-25
+@startDate = 2025-05-26
+@endDate = 2025-05-31
 GET https://prod.facilitynet.dk/api/orders?offset=0&limit=50&orderType=LUNCH&deliveredStartDate={{startDate}}&deliveredEndDate={{endDate}}
 x-api-key: {{login.response.body.$.authentication.token}}
 content-type: application/json
@@ -115,11 +113,18 @@ Accept: */*
 Origin: https://prod.facilitynet.dk
 X-Client-Type: mobile-web
 
+### Get order details
+@orderId = 3978838
+GET https://prod.facilitynet.dk/api/orders/{{orderId}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
 
 
 ### Delete order
 
-@orderId = 3969539
 DELETE https://prod.facilitynet.dk/api/orders/{{orderId}}
 x-api-key: {{login.response.body.$.authentication.token}}
 content-type: application/json
