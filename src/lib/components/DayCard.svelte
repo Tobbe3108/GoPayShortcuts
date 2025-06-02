@@ -2,6 +2,7 @@
   import type { DayOrderState, Location, OrderItemData } from "../types/orders";
   import { createEventDispatcher } from "svelte";
   import LocationSelector from "./LocationSelector.svelte"; 
+  import { PRODUCT_IDS } from "$lib/constants/products";
 
   // Ensure onLocationChange is correctly typed in $props
   const { dayState, locations, onLocationChange: onLocationChangeProp } = $props<{
@@ -14,9 +15,9 @@
 
   // Define itemProductMap first so we can use it for initialization
   const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
-    1: { name: "Breakfast", type: "breakfast" },
-    2: { name: "Lunch", type: "lunch" },
-    3: { name: "Soda", type: "soda" },
+    [PRODUCT_IDS.BREAKFAST]: { name: "Breakfast", type: "breakfast" },
+    [PRODUCT_IDS.LUNCH]: { name: "Lunch", type: "lunch" },
+    [PRODUCT_IDS.SODA]: { name: "Soda", type: "soda" },
   };
 
   let isLoading = $state(false);

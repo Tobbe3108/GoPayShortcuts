@@ -5,13 +5,14 @@
     import orderStore from "$lib/stores/orderStore";
     import authStore from "$lib/stores/authStore";
     import { goto } from "$app/navigation";
+    import { PRODUCT_IDS } from "$lib/constants/products";
 
     const MONDAY_INDEX = 1;
 
     const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
-        1: { name: "Breakfast", type: "breakfast" },
-        2: { name: "Lunch", type: "lunch" },
-        3: { name: "Soda", type: "soda" },
+        [PRODUCT_IDS.BREAKFAST]: { name: "Breakfast", type: "breakfast" },
+        [PRODUCT_IDS.LUNCH]: { name: "Lunch", type: "lunch" },
+        [PRODUCT_IDS.SODA]: { name: "Soda", type: "soda" },
     };
 
     function getStartOfWeek(date: Date): Date {
@@ -30,7 +31,9 @@
             workdays.push(day);
         }
         return workdays;
-    }    async function loadInitialData() {
+    }    
+    
+    async function loadInitialData() {
         $orderStore.isLoading = true;
         $orderStore.errorMessage = null;
         try {
@@ -144,7 +147,9 @@
         } else {
             loadInitialData();
         }
-    });    function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
+    });    
+    
+    function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
         // const { date, newLocation } = event.detail; // Removed event destructuring
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
             if (day.date.toDateString() === date.toDateString()) {
@@ -157,9 +162,11 @@
             }
             return day;
         });
-    }async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
+    }
+    
+    async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
         const { date, items, location } = event.detail;
-          const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
+        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
         if (!dayStateToUpdate) return;
 
         $orderStore.weekDays = $orderStore.weekDays.map(day => 
@@ -220,7 +227,9 @@
                 $orderStore.errorMessage = err.message || "Failed to cancel order.";
             }
         }
-    }    async function handleOrderAllWeek() {
+    }    
+    
+    async function handleOrderAllWeek() {
         // Find a day with both items and location to use as template
         const firstDayWithSettings = $orderStore.weekDays.find(day => 
             !day.isWeekend && 
@@ -231,14 +240,13 @@
         if (!firstDayWithSettings || !firstDayWithSettings.selectedLocation) {
             $orderStore.errorMessage = "Set a location and at least one item for a weekday to order for the week.";
             return;
-        }
-
+        }        
         const locationToUse = firstDayWithSettings.selectedLocation;
         const kitchenToUse = firstDayWithSettings.selectedKitchen;
         const orderLinesPayload: OrderLine[] = [];
-        if (firstDayWithSettings.breakfastQuantity > 0) orderLinesPayload.push({ productId: 1, items: firstDayWithSettings.breakfastQuantity, buyerParty: "PRIVATE" });
-        if (firstDayWithSettings.lunchQuantity > 0) orderLinesPayload.push({ productId: 2, items: firstDayWithSettings.lunchQuantity, buyerParty: "PRIVATE" });
-        if (firstDayWithSettings.sodaQuantity > 0) orderLinesPayload.push({ productId: 3, items: firstDayWithSettings.sodaQuantity, buyerParty: "PRIVATE" });
+        if (firstDayWithSettings.breakfastQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.BREAKFAST, items: firstDayWithSettings.breakfastQuantity, buyerParty: "PRIVATE" });
+        if (firstDayWithSettings.lunchQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.LUNCH, items: firstDayWithSettings.lunchQuantity, buyerParty: "PRIVATE" });
+        if (firstDayWithSettings.sodaQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.SODA, items: firstDayWithSettings.sodaQuantity, buyerParty: "PRIVATE" });
 
         if (orderLinesPayload.length === 0) {
             $orderStore.errorMessage = "Please set quantities for at least one item on the template day.";
@@ -250,7 +258,8 @@
 
         try {
             for (const dayState of $orderStore.weekDays) {
-                if (dayState.isWeekend) continue;                $orderStore.weekDays = $orderStore.weekDays.map(d => 
+                if (dayState.isWeekend) continue;                
+                $orderStore.weekDays = $orderStore.weekDays.map(d => 
                     d.date.toString() === dayState.date.toString() ? { ...d, isSaving: true, saveError: null } : d
                 );
 
@@ -293,7 +302,8 @@
             $orderStore.errorMessage = "No order to delete for today.";
         }
     }
-      function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
+      
+    function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
         const { items, location } = event.detail;
         localStorageService.saveDefaultOrder(items, location);        // Update all applicable day cards with the new default, including location
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
@@ -314,7 +324,9 @@
         setTimeout(() => {
             $orderStore.successMessage = null;
         }, 3000);
-    }const canOrderAllWeek = $derived(() => {
+    }
+    
+    const canOrderAllWeek = $derived(() => {
         if ($orderStore.isLoading) return false;
         // Make sure we have a weekday that has both a location and at least one item selected
         const dayWithAllSettings = $orderStore.weekDays.find(day => 
