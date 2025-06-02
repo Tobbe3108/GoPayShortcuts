@@ -1,8 +1,5 @@
-import type { Location, Order, OrderItemData } from "$lib/types/orders";
+import type { ApiOrder, Location, Order, OrderItemData, OrderLine } from "$lib/types/orders";
 import { api } from "$lib/services/apiService";
-
-// In-memory store for mock orders
-let mockOrders: Order[] = [];
 
 export const locationService = {
   async getLocations(): Promise<Location[]> {
@@ -45,26 +42,115 @@ export const locationService = {
 
 export const orderService = {
   async getOrdersForWeek(startDate: Date): Promise<Order[]> {
-    // const response = await fetch(`${API_BASE_URL}/orders?weekStartDate=${startDate.toISOString()}`);
-    // if (!response.ok) {
-    //   throw new Error("Failed to fetch orders");
-    // }
-    // return response.json();
-    // Mock data for now
-    console.log("Fetching orders for week starting: ", startDate);
-    // Filter mockOrders based on the week of startDate if necessary, or return all for simplicity in mock
-    // For this mock, we'll return all orders that fall within the week of the startDate.
-    const startOfWeek = new Date(startDate);
-    startOfWeek.setHours(0, 0, 0, 0);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
+    try {
+      // Format dates for API call
+      const startDateStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6);
+      const endDateStr = endDate.toISOString().split('T')[0];
 
-    const weekOrders = mockOrders.filter(order => {
-        const orderDate = new Date(order.deliveryTime);
-        return orderDate >= startOfWeek && orderDate <= endOfWeek;
-    });
-    return Promise.resolve(weekOrders);
+      console.log(`Fetching orders between ${startDateStr} and ${endDateStr}`);
+
+      // Get all orders for the week
+      const ordersResponse = await api<{orders: ApiOrder[]}>(`/orders?offset=0&limit=50&orderType=LUNCH&deliveredStartDate=${startDateStr}&deliveredEndDate=${endDateStr}`);
+      
+      if (!ordersResponse.orders || !Array.isArray(ordersResponse.orders)) {
+        console.error('Invalid orders response:', ordersResponse);
+        return [];
+      }
+
+      // Filter out refunded orders by grouping by delivery time and finding pairs
+      // where one has orderType LUNCH and one has orderType REFUND
+      const ordersByDeliveryTime = new Map<string, ApiOrder[]>();
+      
+      ordersResponse.orders.forEach(order => {
+        if (order.deliveries && order.deliveries.length > 0) {
+          const deliveryTime = order.deliveries[0].deliveryTime;
+          if (!ordersByDeliveryTime.has(deliveryTime)) {
+            ordersByDeliveryTime.set(deliveryTime, []);
+          }
+          ordersByDeliveryTime.get(deliveryTime)?.push(order);
+        }
+      });
+
+      // Orders that have NOT been refunded
+      const validOrders: ApiOrder[] = [];
+        // For each delivery time, check if there are REFUND orders
+      for (const [, orders] of ordersByDeliveryTime.entries()) {
+        // Group orders by ID to find pairs
+        const ordersByPriceAmount = new Map<number, ApiOrder[]>();
+        
+        orders.forEach(order => {
+          const priceAmount = order.price.amount;
+          if (!ordersByPriceAmount.has(priceAmount)) {
+            ordersByPriceAmount.set(priceAmount, []);
+          }
+          ordersByPriceAmount.get(priceAmount)?.push(order);
+        });
+        
+        // Find non-refunded orders
+        for (const [amount, ordersByAmount] of ordersByPriceAmount.entries()) {
+          // Skip negative amounts (those are refunds)
+          if (amount <= 0) continue;
+          
+          // Check if there's a corresponding refund order with negative amount
+          const hasRefund = ordersByPriceAmount.has(-amount);
+          
+          // If there's no refund, add these orders as valid
+          if (!hasRefund) {
+            validOrders.push(...ordersByAmount);
+          }
+        }
+      }
+      
+      console.log(`Found ${validOrders.length} valid orders out of ${ordersResponse.orders.length} total`);
+      
+      // For each valid order, fetch the details
+      const detailedOrders = await Promise.all(
+        validOrders.map(async order => {
+          try {
+            const orderDetails = await api<{orders: ApiOrder[]}>(`/orders/${order.id}`);
+            return orderDetails.orders[0];
+          } catch (error) {
+            console.error(`Error fetching details for order ${order.id}:`, error);
+            return order; // Return the basic order if detail fetch fails
+          }
+        })
+      );
+      
+      // Convert to the Order type expected by the app
+      return detailedOrders.map(apiOrder => {
+        // Get the first delivery and its order lines
+        const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
+        const orderLines: OrderLine[] = [];
+        
+        if (delivery && delivery.orderLines) {
+          delivery.orderLines.forEach(line => {
+            orderLines.push({
+              productId: line.productId,
+              items: line.items,
+              buyerParty: "PRIVATE"
+            });
+          });
+        }
+        
+        return {
+          id: apiOrder.id.toString(),
+          deliveryTime: delivery ? delivery.deliveryTime : new Date().toISOString(),
+          deliveryLocation: {
+            displayName: apiOrder.kitchen.name,
+            name: apiOrder.kitchen.name,
+            kitchenId: apiOrder.kitchen.id,
+            webshopId: ''  // This might need to come from elsewhere
+          },
+          orderLines,
+          orderDetails: apiOrder // Keep the full order details for reference
+        };
+      });
+    } catch (error) {
+      console.error('Failed to fetch weekly orders:', error);
+      return [];
+    }
   },
 
   async placeOrder(orderData: { 
@@ -72,38 +158,65 @@ export const orderService = {
     deliveryLocation: Location; 
     orderLines: { productId: number; items: number; buyerParty: "PRIVATE" }[];
   }): Promise<Order> {
-    // const response = await fetch(`${API_BASE_URL}/orders`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(orderData),
-    // });
-    // if (!response.ok) {
-    //   const errorData = await response.json().catch(() => ({ message: "Failed to place order" }));
-    //   throw new Error(errorData.message || "Failed to place order");
-    // }
-    // return response.json();
-    // Mock data for now
-    console.log("Placing order: ", orderData);
-    const newOrder: Order = {
-      id: new Date().getTime().toString(), // Generate a mock ID
-      ...orderData,
-    };
-    mockOrders.push(newOrder);
-    return Promise.resolve(newOrder);
+    try {
+      // Create the payload for the API
+      const payload = {
+        kitchen: {
+          id: orderData.deliveryLocation.kitchenId
+        },
+        webshop: {
+          uid: orderData.deliveryLocation.webshopId
+        },
+        payment: {
+          method: "PAYROLL_DEDUCTION"
+        },
+        orderNote: "",
+        deliveries: [
+          {
+            deliveryLocation: {
+              name: orderData.deliveryLocation.name
+            },
+            deliveryTime: orderData.deliveryTime,
+            orderLines: orderData.orderLines
+          }
+        ]
+      };
+
+      // Send the order to the API
+      const response = await api<{orders: ApiOrder[]}>('/orders/catering', {
+        method: 'POST',
+        body: payload
+      });
+
+      if (!response.orders || !response.orders.length) {
+        throw new Error('No order returned from API');
+      }
+
+      const apiOrder = response.orders[0];
+      const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
+
+      // Return the created order in the expected format
+      return {
+        id: apiOrder.id.toString(),
+        deliveryTime: delivery ? delivery.deliveryTime : orderData.deliveryTime,
+        deliveryLocation: orderData.deliveryLocation,
+        orderLines: orderData.orderLines,
+        orderDetails: apiOrder
+      };
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      throw error;
+    }
   },
 
   async cancelOrder(orderId: string): Promise<void> {
-    // const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
-    //   method: "DELETE",
-    // });
-    // if (!response.ok) {
-    //   throw new Error("Failed to cancel order");
-    // }
-    // return response.json();
-    // Mock data for now
-    console.log("Cancelling order: ", orderId);
-    mockOrders = mockOrders.filter(order => order.id !== orderId);
-    return Promise.resolve();
+    try {
+      await api(`/orders/${orderId}`, { method: 'DELETE' });
+      console.log(`Order ${orderId} cancelled successfully`);
+    } catch (error) {
+      console.error(`Failed to cancel order ${orderId}:`, error);
+      throw error;
+    }
   },
 };
 

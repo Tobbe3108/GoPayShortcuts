@@ -210,21 +210,39 @@
         <h4 class="font-semibold text-gray-700 text-md">Order Summary:</h4>
         {#if dayState.selectedLocation}
           <p class="text-sm text-gray-600">
-            <strong>Location:</strong> {dayState.selectedLocation.name}            {#if dayState.selectedLocation.name}
-              - {dayState.selectedLocation.name}
-            {/if}
+            <strong>Location:</strong> {dayState.selectedLocation.name}
           </p>
         {/if}
-        <ul class="pl-0 space-y-1 list-none">
-          {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}
-            <li class="flex justify-between text-gray-700">
-              <span>{item.name}</span>
-              <span>Qty: {item.quantity}</span>
-            </li>
-          {/each}
-        </ul>
-        {#if orderItems.filter(item => item.quantity > 0).length === 0 && !isLoading}
-          <p class="text-sm italic text-gray-500">No items in this order.</p>
+        
+        <!-- Show actual order details if available -->
+        {#if dayState.existingOrderId && dayState.orderDetails?.orderLines?.length > 0}
+          <ul class="pl-0 space-y-1 list-none">
+            {#each dayState.orderDetails.orderLines as line (line.id)}
+              <li class="flex justify-between text-gray-700">
+                <span>{line.name}</span>
+                <span>Qty: {line.items}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <ul class="pl-0 space-y-1 list-none">
+            {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}
+              <li class="flex justify-between text-gray-700">
+                <span>{item.name}</span>
+                <span>Qty: {item.quantity}</span>
+              </li>
+            {/each}
+          </ul>
+          {#if orderItems.filter(item => item.quantity > 0).length === 0 && !isLoading}
+            <p class="text-sm italic text-gray-500">No items in this order.</p>
+          {/if}
+        {/if}
+        
+        <!-- Show price if available -->
+        {#if dayState.orderDetails?.price}
+          <p class="font-medium text-right text-gray-700">
+            Total price: {dayState.orderDetails.price.formatted}
+          </p>
         {/if}
       </div>
       <div class="pt-2 border-t border-gray-200">

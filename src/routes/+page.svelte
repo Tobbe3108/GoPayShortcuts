@@ -51,8 +51,7 @@
             const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
             const workdaysDates = getWorkdays(startOfWeek);
 
-            const newWeekDays = workdaysDates.map(date => {
-                const existingOrder = fetchedOrders.find(
+            const newWeekDays = workdaysDates.map(date => {                const existingOrder = fetchedOrders.find(
                     o => new Date(o.deliveryTime).toDateString() === date.toDateString()
                 );
 
@@ -60,9 +59,34 @@
                 let breakfastQty = 0;
                 let lunchQty = 0;
                 let sodaQty = 0;
+                let orderDetails = undefined;
 
                 if (existingOrder) {
                     dayLocationToSet = existingOrder.deliveryLocation;
+                    
+                    // Extract order details for display
+                    if (existingOrder.orderDetails) {
+                        const orderLines = [];
+                        if (existingOrder.orderDetails.deliveries && 
+                            existingOrder.orderDetails.deliveries[0] && 
+                            existingOrder.orderDetails.deliveries[0].orderLines) {
+                            
+                            orderLines.push(...existingOrder.orderDetails.deliveries[0].orderLines.map(line => ({
+                                id: line.id,
+                                name: line.name,
+                                items: line.items
+                            })));
+                        }
+                        
+                        orderDetails = {
+                            orderLines,
+                            price: existingOrder.orderDetails.price ? {
+                                amount: existingOrder.orderDetails.price.amount,
+                                formatted: existingOrder.orderDetails.price.formatted
+                            } : undefined
+                        };
+                    }
+                    
                     existingOrder.orderLines.forEach((line: OrderLine) => {
                         const productInfo = itemProductMap[line.productId];
                         if (productInfo) {
@@ -99,11 +123,11 @@
                     breakfastQuantity: breakfastQty,
                     lunchQuantity: lunchQty,
                     sodaQuantity: sodaQty,
-                    isSaving: false,
-                    saveError: null,
+                    isSaving: false,                    saveError: null,
                     existingOrderId: existingOrder?.id,
                     isWeekend, 
-                    isToday    
+                    isToday,
+                    orderDetails
                 };
             });            $orderStore.weekDays = newWeekDays;
             $orderStore.isLoading = false;

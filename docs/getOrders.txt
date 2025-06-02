@@ -1,6 +1,7 @@
 Remove the mock that gets this weeks orders and use it to show any orders that are not refunded. The needed api calls are in calls.http
 This example shows 3 orders, even thoug there is 6 elements, that is because all 3 have been refunded.
 So the getOrdersForWeek func should return 0 orders given a simular api response as this
+
 {
   "orders": [
     {
@@ -291,10 +292,11 @@ So the getOrdersForWeek func should return 0 orders given a simular api response
 }
 
 You need to fetch the order details for any valid orders, the call is also described in calls.http and the response looks like this
+
 {
   "orders": [
     {
-      "shopChannel": "-",
+      "shopChannel": "GoPay app",
       "displayName": "GoPay #3978838",
       "id": 3978838,
       "uid": "6b9515dc-2b89-486e-b98c-58036218c02e",
@@ -315,10 +317,61 @@ You need to fetch the order details for any valid orders, the call is also descr
           "orderNote": "",
           "orderLines": [
             {
+              "id": 2309217,
+              "items": 1,
+              "itemPrice": {
+                "amount": 1700,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 17.00"
+              },
+              "price": {
+                "amount": 1700,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 17.00"
+              },
+              "productId": 33137,
+              "name": "Morgenmad",
+              "buyerParty": "PRIVATE"
             },
             {
+              "id": 2309218,
+              "items": 1,
+              "itemPrice": {
+                "amount": 1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 15.00"
+              },
+              "price": {
+                "amount": 1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 15.00"
+              },
+              "productId": 33138,
+              "name": "Frokost",
+              "buyerParty": "PRIVATE"
             },
             {
+              "id": 2309219,
+              "items": 1,
+              "itemPrice": {
+                "amount": 500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 5.00"
+              },
+              "price": {
+                "amount": 500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 5.00"
+              },
+              "productId": 33139,
+              "name": "L\u00e6skedrik",
+              "buyerParty": "PRIVATE"
             }
           ],
           "price": {
@@ -341,7 +394,7 @@ You need to fetch the order details for any valid orders, the call is also descr
       },
       "buyerCustomerParty": {
         "name": "Energinet",
-        "streetName": "Tonne Kjærsvej",
+        "streetName": "Tonne Kj\u00e6rsvej",
         "streetNumber": "65",
         "postalCode": "7000",
         "city": "Fredericia",
@@ -385,15 +438,16 @@ You need to fetch the order details for any valid orders, the call is also descr
         },
         "status": "INVOICED",
         "channel": {
-          "type": "mobile_app"
+          "type": "mobile_app",
+          "displayText": "GoPay app"
         }
       },
       "kitchen": {
         "id": 3237,
-        "name": "Energinet - Erritsø",
+        "name": "Energinet - Errits\u00f8",
         "phoneNumber": "",
         "email": "",
-        "streetName": "Tonne Kjærsvej 65 ",
+        "streetName": "Tonne Kj\u00e6rsvej 65 ",
         "streetNumber": "0",
         "postalCode": "7000",
         "city": "Fredericia",
@@ -416,3 +470,5 @@ You need to fetch the order details for any valid orders, the call is also descr
     }
   ]
 }
+
+You need to show the orderLines in the UI
