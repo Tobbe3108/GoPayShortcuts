@@ -152,15 +152,35 @@ export const orderService = {
       return [];
     }
   },
-
   async placeOrder(orderData: { 
     deliveryTime: string; 
     deliveryLocation: Location; 
     orderLines: { productId: number; items: number; buyerParty: "PRIVATE" }[];
   }): Promise<Order> {
     try {
-      // Create the payload for the API
-      const payload = {
+      // Step 1: "Food order" call to get payment details
+      const paymentDetailsPayload = {
+        deliveries: [
+          {
+            deliveryLocation: {
+              name: orderData.deliveryLocation.name
+            },
+            deliveryTime: orderData.deliveryTime,
+            orderLines: orderData.orderLines
+          }
+        ]
+      };
+
+      console.info("Placing payment details with payload:", paymentDetailsPayload);
+
+      // First API call for payment details
+      // await api(`/suppliers/kitchens/${orderData.deliveryLocation.kitchenId}/payment/paymentDetails/catering`, {
+      //   method: 'POST',
+      //   body: paymentDetailsPayload
+      // });
+
+      // Step 2: "Food pay" call to place the actual order
+      const orderPayload = {
         kitchen: {
           id: orderData.deliveryLocation.kitchenId
         },
@@ -182,26 +202,28 @@ export const orderService = {
         ]
       };
 
+      console.info("Placing order with payload:", orderPayload);
+
       // Send the order to the API
-      const response = await api<{orders: ApiOrder[]}>('/orders/catering', {
-        method: 'POST',
-        body: payload
-      });
+      // const response = await api<{orders: ApiOrder[]}>('/orders/catering', {
+      //   method: 'POST',
+      //   body: orderPayload
+      // });
 
-      if (!response.orders || !response.orders.length) {
-        throw new Error('No order returned from API');
-      }
+      // if (!response.orders || !response.orders.length) {
+      //   throw new Error('No order returned from API');
+      // }
 
-      const apiOrder = response.orders[0];
-      const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
+      // const apiOrder = response.orders[0];
+      // const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
 
       // Return the created order in the expected format
       return {
-        id: apiOrder.id.toString(),
-        deliveryTime: delivery ? delivery.deliveryTime : orderData.deliveryTime,
+        // id: apiOrder.id.toString(),
+        // deliveryTime: delivery ? delivery.deliveryTime : orderData.deliveryTime,
         deliveryLocation: orderData.deliveryLocation,
         orderLines: orderData.orderLines,
-        orderDetails: apiOrder
+        // orderDetails: apiOrder
       };
     } catch (error) {
       console.error('Failed to place order:', error);

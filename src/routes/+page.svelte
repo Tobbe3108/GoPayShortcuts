@@ -1,7 +1,7 @@
 <script lang="ts">    import DayCard from "$lib/components/DayCard.svelte";
     import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
     import { locationService, orderService, localStorageService } from "$lib/services/orderService";
-    import type { DayOrderState, Location, OrderItemData, Kitchen, OrderLine } from "../lib/types/orders";
+    import type { Location, OrderItemData, OrderLine } from "../lib/types/orders";
     import orderStore from "$lib/stores/orderStore";
     import authStore from "$lib/stores/authStore";
     import { goto } from "$app/navigation";
@@ -187,9 +187,13 @@
             if (orderLinesPayload.length > 0) {
                 if (dayStateToUpdate.existingOrderId) {
                     await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
-                }
+                }                // Ensure we're using the expected weekday date for delivery, not today's date
+                const formattedDate = new Date(date);
+                // Reset time to noon (12:00) to avoid timezone issues
+                formattedDate.setHours(12, 0, 0, 0);
+                
                 await orderService.placeOrder({
-                    deliveryTime: date.toISOString(),
+                    deliveryTime: formattedDate.toISOString(),
                     deliveryLocation: location,
                     orderLines: orderLinesPayload
                 });
@@ -228,81 +232,7 @@
             }
         }
     }    
-    
-    async function handleOrderAllWeek() {
-        // Find a day with both items and location to use as template
-        const firstDayWithSettings = $orderStore.weekDays.find(day => 
-            !day.isWeekend && 
-            day.selectedLocation && 
-            (day.breakfastQuantity > 0 || day.lunchQuantity > 0 || day.sodaQuantity > 0)
-        );
-
-        if (!firstDayWithSettings || !firstDayWithSettings.selectedLocation) {
-            $orderStore.errorMessage = "Set a location and at least one item for a weekday to order for the week.";
-            return;
-        }        
-        const locationToUse = firstDayWithSettings.selectedLocation;
-        const kitchenToUse = firstDayWithSettings.selectedKitchen;
-        const orderLinesPayload: OrderLine[] = [];
-        if (firstDayWithSettings.breakfastQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.BREAKFAST, items: firstDayWithSettings.breakfastQuantity, buyerParty: "PRIVATE" });
-        if (firstDayWithSettings.lunchQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.LUNCH, items: firstDayWithSettings.lunchQuantity, buyerParty: "PRIVATE" });
-        if (firstDayWithSettings.sodaQuantity > 0) orderLinesPayload.push({ productId: PRODUCT_IDS.SODA, items: firstDayWithSettings.sodaQuantity, buyerParty: "PRIVATE" });
-
-        if (orderLinesPayload.length === 0) {
-            $orderStore.errorMessage = "Please set quantities for at least one item on the template day.";
-            return;
-        }
-        
-        $orderStore.isLoading = true;
-        $orderStore.errorMessage = null;
-
-        try {
-            for (const dayState of $orderStore.weekDays) {
-                if (dayState.isWeekend) continue;                
-                $orderStore.weekDays = $orderStore.weekDays.map(d => 
-                    d.date.toString() === dayState.date.toString() ? { ...d, isSaving: true, saveError: null } : d
-                );
-
-                if (dayState.existingOrderId) {
-                    await orderService.cancelOrder(dayState.existingOrderId);
-                }
-                await orderService.placeOrder({                    deliveryTime: dayState.date.toISOString(),
-                    deliveryLocation: locationToUse,
-                    orderLines: orderLinesPayload
-                });
-            }
-            await loadInitialData(); 
-        } catch (err: any) {
-            console.error("Error ordering for all week:", err);
-            $orderStore.isLoading = false;
-            $orderStore.errorMessage = err.message || "Failed to order for the week.";
-        } finally {
-            $orderStore.isLoading = false;
-        }
-    }
-
-    async function handleDeleteTodaysOrders() {
-        const today = new Date();
-        const todayState = $orderStore.weekDays.find(day => day.date.toDateString() === today.toDateString());        if (todayState && todayState.existingOrderId) {
-            $orderStore.weekDays = $orderStore.weekDays.map(d => 
-                d.date.toDateString() === today.toDateString() ? { ...d, isSaving: true, saveError: null } : d
-            );
-            try {
-                await orderService.cancelOrder(todayState.existingOrderId);
-                await loadInitialData(); 
-            } catch (err: any) {
-                console.error("Error deleting today's order:", err);                $orderStore.weekDays = $orderStore.weekDays.map(d => 
-                    d.date.toDateString() === today.toDateString() 
-                    ? { ...d, isSaving: false, saveError: err.message || "Failed to delete order." } 
-                    : d
-                );
-                $orderStore.errorMessage = err.message || "Failed to delete order.";
-            }
-        } else {
-            $orderStore.errorMessage = "No order to delete for today.";
-        }
-    }
-      
+          
     function handleSaveDefault(event: CustomEvent<{ items: OrderItemData[], location: Location | undefined }>) { // Allow location to be undefined
         const { items, location } = event.detail;
         localStorageService.saveDefaultOrder(items, location);        // Update all applicable day cards with the new default, including location
@@ -324,24 +254,6 @@
         setTimeout(() => {
             $orderStore.successMessage = null;
         }, 3000);
-    }
-    
-    const canOrderAllWeek = $derived(() => {
-        if ($orderStore.isLoading) return false;
-        // Make sure we have a weekday that has both a location and at least one item selected
-        const dayWithAllSettings = $orderStore.weekDays.find(day => 
-            !day.isWeekend && 
-            day.selectedLocation && 
-            (day.breakfastQuantity > 0 || day.lunchQuantity > 0 || day.sodaQuantity > 0)
-        );
-        return !!dayWithAllSettings;
-    });
-
-    function canDeleteTodaysOrders(): boolean {
-        if ($orderStore.isLoading) return false;
-        const today = new Date().toDateString();
-        const todayState = $orderStore.weekDays.find(day => day.date.toDateString() === today);
-        return !!(todayState && todayState.existingOrderId);
     }
 
 </script>
