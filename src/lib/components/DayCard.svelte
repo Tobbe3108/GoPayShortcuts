@@ -55,16 +55,13 @@
       return;
     }
     isLoading = true;
-    optimisticHasOrder = true;     // Use the current orderItems quantities which are now managed independently
+    optimisticHasOrder = true; 
+
+    // Use the current orderItems quantities which are now managed independently
     // from location changes
     setTimeout(() => {
-      // Ensure we use the correct date from dayState
-      const orderDate = new Date(dayState.date);
-      // Set time to noon (12:00) to avoid timezone issues
-      orderDate.setHours(12, 0, 0, 0);
-      
       dispatch("orderPlaced", { 
-        date: orderDate, 
+        date: dayState.date, 
         items: orderItems.filter(i => i.quantity > 0),
         location: dayState.selectedLocation // Use dayState.selectedLocation
       });

@@ -187,13 +187,9 @@
             if (orderLinesPayload.length > 0) {
                 if (dayStateToUpdate.existingOrderId) {
                     await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
-                }                // Ensure we're using the expected weekday date for delivery, not today's date
-                const formattedDate = new Date(date);
-                // Reset time to noon (12:00) to avoid timezone issues
-                formattedDate.setHours(12, 0, 0, 0);
-                
+                }
                 await orderService.placeOrder({
-                    deliveryTime: formattedDate.toISOString(),
+                    deliveryTime: date.toISOString(),
                     deliveryLocation: location,
                     orderLines: orderLinesPayload
                 });
