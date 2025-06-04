@@ -4,6 +4,7 @@
 	import { requestOTP, verifyOTP } from '$lib/services/authService';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import type { PageData } from './$types';
+	import { base } from '$app/paths';
 
 	const { data } = $props<{ data: PageData }>();
 
@@ -14,7 +15,7 @@
 	$effect(() => {
 		if ($authStore.user) {
 			console.debug('User is authenticated, redirecting to home');
-			goto('/');
+			goto(base + '/');
 		}
 	});
 

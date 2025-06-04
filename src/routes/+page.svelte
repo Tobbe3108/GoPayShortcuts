@@ -7,6 +7,7 @@
 	import authStore from '$lib/stores/authStore';
 	import { goto } from '$app/navigation';
 	import { PRODUCT_IDS } from '$lib/constants/products';
+	import { base } from '$app/paths';
 	import {
 		isSameDate,
 		isWeekend,
@@ -25,7 +26,7 @@
 	$effect(() => {
 		if (!$authStore.user) {
 			console.debug('User is not authenticated, redirecting to login');
-			goto('/login');
+			goto(base + '/login');
 		} else {
 			loadInitialData();
 		}
@@ -294,7 +295,7 @@
 					$authStore.loading = false;
 					$authStore.error = null;
 					localStorage.removeItem('food_shortcuts_auth');
-					goto('/login');
+					goto(base + '/login');
 				}}
 				class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-slate-800 rounded-lg shadow hover:bg-slate-700"
 			>
