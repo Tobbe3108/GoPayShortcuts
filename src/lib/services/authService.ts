@@ -19,6 +19,7 @@ export function loadAuth(): void {
     }
 
     try {
+        console.debug('Loading auth from localStorage');
         const storedAuthDataString = localStorage.getItem(AUTH_KEY);
         if (storedAuthDataString) {
             const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);
@@ -26,9 +27,11 @@ export function loadAuth(): void {
             // Store only UserType (id, email) in the authStore
             updateAuthStore.setUser({ id: storedAuthData.id, email: storedAuthData.email });
             updateAuthStore.setLoading(false);
+            console.debug('Auth loaded from localStorage:', storedAuthData);
         } else {
             updateAuthStore.setUser(null);
             updateAuthStore.setLoading(false);
+            console.debug('No auth data found in localStorage');
         }
     } catch (error) {
         console.error('Failed to load auth from storage', error);
@@ -40,30 +43,12 @@ export function loadAuth(): void {
 }
 
 export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
+    console.debug('Checking authentication status');
+
     updateAuthStore.setLoading(true);
     updateAuthStore.setError(null);
-    const currentStoreState = get(authStore);
-
-    if (!currentStoreState.user) {
-        if (browser) {
-            const storedAuthDataString = localStorage.getItem(AUTH_KEY);
-            if (storedAuthDataString) {
-                try {
-                    const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);                    updateAuthStore.setUser({ id: storedAuthData.id, email: storedAuthData.email });
-                } catch (e) {
-                    localStorage.removeItem(AUTH_KEY);
-                    updateAuthStore.setUser(null);
-                    updateAuthStore.setLoading(false);
-                    return;
-                }            } else {
-                 updateAuthStore.setUser(null);
-                 updateAuthStore.setLoading(false);
-                 return;
-            }
-        }
-    }
-
     if (!get(authStore).user) {
+        console.debug('No user in auth store');
         updateAuthStore.setLoading(false);
         return;
     }
@@ -77,8 +62,10 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         await Promise.race([
             api('/users/me', { method: 'GET' }, fetchFunction),
             timeoutPromise
-        ]);        updateAuthStore.setLoading(false);
+        ]);        
+        updateAuthStore.setLoading(false);
         updateAuthStore.setError(null); // Clear error on success
+        console.debug('Session validation successful');
     } catch (error: any) {
         console.warn('Session validation error or timeout:', error);
         let storeError: string | null = 'Session check failed. Please try logging in again.';
@@ -92,6 +79,8 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         updateAuthStore.setLoading(false);
         updateAuthStore.setError(storeError);
 
+        console.debug('Clearing auth data due to session validation failure', storeError);
+
         if (browser) {
             localStorage.removeItem(AUTH_KEY);
         }
@@ -99,6 +88,8 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
 }
 
 export async function requestOTP(email: string, fetchFunction?: typeof fetch): Promise<void> {
+    console.debug('Requesting OTP for email:', email);
+
     updateAuthStore.setLoading(true);
     updateAuthStore.setError(null);
     try {
@@ -108,7 +99,10 @@ export async function requestOTP(email: string, fetchFunction?: typeof fetch): P
         await api('/authenticate/username', {
             method: 'POST',
             body: { username: email }
-        }, fetchFunction);        updateAuthStore.setLoading(false);
+        }, fetchFunction);  
+        console.debug('OTP request successful for email:', email);
+
+        updateAuthStore.setLoading(false);
     } catch (error) {
         console.error('OTP request error:', error);
         updateAuthStore.setLoading(false);
@@ -118,6 +112,7 @@ export async function requestOTP(email: string, fetchFunction?: typeof fetch): P
 }
 
 export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Promise<void> {
+    console.debug('Verifying OTP:', otp);
     updateAuthStore.setLoading(true);
     updateAuthStore.setError(null);
     let email = '';
@@ -134,6 +129,7 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
                 username: email // Assuming API might need username for OTP verification context
             }
         }, fetchFunction);
+        console.debug('OTP verification response:', data);
 
         const token = data.authentication?.token;
         // Assuming the API response for verifyOTP might also include user details like id.
@@ -150,7 +146,8 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
         if (browser) {
             localStorage.setItem(AUTH_KEY, JSON.stringify(authDataToStore));
             localStorage.removeItem(EMAIL_KEY);
-        }        updateAuthStore.setUser(userForStore);
+        }        
+        updateAuthStore.setUser(userForStore);
         updateAuthStore.setLoading(false);
         updateAuthStore.setError(null);
     } catch (error) {
@@ -166,6 +163,7 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
 }
 
 export function logout(): void {
+    console.debug('Logging out user');
     if (browser) {
         localStorage.removeItem(AUTH_KEY);
         localStorage.removeItem(EMAIL_KEY);

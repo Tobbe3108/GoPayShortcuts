@@ -2,17 +2,12 @@
 	import '../app.css';
 	import authStore from '$lib/stores/authStore';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import { checkAuth, loadAuth } from '$lib/services/authService';
+	import { page } from '$app/stores';
 
-	// Replace onMount with $effect.root for initialization
-	$effect.root(() => {
-		loadAuth();
-		checkAuth();
-	});
 </script>
 
 <div class="min-h-screen bg-gray-50">
-	{#if $authStore.loading}
+	{#if $authStore.loading && $page.url.pathname !== '/login'}
 		<div class="flex items-center justify-center min-h-screen">
 			<div class="text-center">
 				<LoadingSpinner size="w-12 h-12" />

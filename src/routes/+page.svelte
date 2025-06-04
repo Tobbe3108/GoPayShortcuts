@@ -16,6 +16,16 @@
         [PRODUCT_IDS.SODA]: { name: "Soda", type: "soda" },
     };
 
+    $effect(() => {
+        if (!$authStore.user) {
+            console.debug('User is not authenticated, redirecting to login');
+            goto('/login');
+        }
+        else {
+            loadInitialData();
+        }
+    }); 
+
     function getStartOfWeek(date: Date): Date {
         const d = new Date(date);
         const day = d.getDay();
@@ -42,18 +52,22 @@
             $orderStore.locations = fetchedLocations;
 
             const defaultOrderPref = localStorageService.getDefaultOrder();
-            let initialSelectedLocation: Location | undefined = undefined;            if (defaultOrderPref && defaultOrderPref.location?.kitchenId) {
+            let initialSelectedLocation: Location | undefined = undefined;            
+            if (defaultOrderPref && defaultOrderPref.location?.kitchenId) {
                 // Match by kitchenId for robustness
                 const validDefaultLocation = fetchedLocations.find(l => l.kitchenId === defaultOrderPref.location?.kitchenId);
                 if (validDefaultLocation) {
                     initialSelectedLocation = validDefaultLocation;
                 }
-            }// Removed automatic fallback to first location when no default is set
+            }
+            // Removed automatic fallback to first location when no default is set
             // This ensures a location is only used if explicitly selected by the user or saved as default
 
             const startOfWeek = getStartOfWeek(new Date());
             const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
-            const workdaysDates = getWorkdays(startOfWeek);            const newWeekDays = workdaysDates.map(date => {                const existingOrder = fetchedOrders.find(
+            const workdaysDates = getWorkdays(startOfWeek);            
+            const newWeekDays = workdaysDates.map(date => {                
+                const existingOrder = fetchedOrders.find(
                     o => isSameDate(new Date(o.deliveryTime), date)
                 );
 
@@ -137,14 +151,7 @@
             $orderStore.errorMessage = err.message || "Failed to load order data.";
         }}    
     
-    $effect.root(() => {
-        if (!$authStore.user) {
-            goto('/login');
-        } else {
-            loadInitialData();
-        }
-    });    
-      function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
+    function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
         // const { date, newLocation } = event.detail; // Removed event destructuring
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
             if (isSameDate(day.date, date)) {
@@ -158,7 +165,8 @@
             return day;
         });
     }
-      async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
+    
+    async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
         const { date, items, location } = event.detail;
         const dayStateToUpdate = $orderStore.weekDays.find(d => isSameDate(d.date, date));
         if (!dayStateToUpdate) return;
@@ -200,7 +208,9 @@
             );
             $orderStore.errorMessage = err.message || "Failed to save order.";
         }
-    }    async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
+    }    
+    
+    async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
         const { date } = event.detail;
         const dayStateToUpdate = $orderStore.weekDays.find(d => isSameDate(d.date, date));
         if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
@@ -250,7 +260,8 @@
 
 <div class="container p-4 mx-auto">
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>        <button 
+        <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>        
+        <button 
             onclick={() => { 
                 $authStore.user = null; 
                 $authStore.loading = false; 

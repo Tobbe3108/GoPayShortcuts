@@ -13,12 +13,15 @@
 
     $effect(() => {
         if ($authStore.user) {
+            console.debug('User is authenticated, redirecting to home');
             goto('/');
         }
-    });    
-      async function handleEmailSubmit() {
+    });  
+
+    async function handleEmailSubmit() {
         if (!email) {
             $authStore.error = 'Email is required';
+            console.debug($authStore.error);
             return;
         }
 
@@ -26,20 +29,29 @@
             await requestOTP(email, data.fetch);
             isEmailStep = false;
             $authStore.error = null;
+            console.debug('OTP requested successfully for email:', email);
         } catch (err) {
+            console.debug('Error during OTP request:', err);
         }
     }
-      async function handleOTPSubmit() {
+
+    async function handleOTPSubmit() {
         if (!otp) {
             $authStore.error = 'Verification code is required';
+            console.debug($authStore.error);
             return;
         }
 
         try {
+            console.debug('Sending OTP for verification:', otp);
             await verifyOTP(otp, data.fetch);
         } catch (err) {
+            console.debug('Error during OTP verification:', err);
         }
-    }    function goBackToEmail() {
+    }    
+    
+    function goBackToEmail() {
+        console.debug('Going back to email step');
         isEmailStep = true;
         $authStore.error = null;
     }
@@ -57,7 +69,8 @@
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
                 <span>{$authStore.error}</span>
             </div>
-        {/if}        {#if isEmailStep}
+        {/if}        
+        {#if isEmailStep}
             <form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
                 <div class="mb-4">
                     <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
@@ -69,7 +82,8 @@
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
-                </div>                <button
+                </div>                
+                <button
                     type="submit"
                     disabled={$authStore.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
@@ -83,7 +97,8 @@
                         Continue
                     {/if}
                 </button>
-            </form>        {:else}
+            </form>        
+        {:else}
             <form onsubmit={(e) => { e.preventDefault(); handleOTPSubmit(); }}>
                 <div class="mb-4">
                     <label for="otp" class="block text-gray-700 text-sm font-medium mb-2">Verification Code</label>
@@ -95,10 +110,13 @@
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
-                </div>                <div class="mb-4">                    <button type="button" onclick={goBackToEmail} class="text-sm text-blue-500 hover:underline">
+                </div>                
+                <div class="mb-4">                    
+                    <button type="button" onclick={goBackToEmail} class="text-sm text-blue-500 hover:underline">
                         Back to email
                     </button>
-                </div>                <button
+                </div>                
+                <button
                     type="submit"
                     disabled={$authStore.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
