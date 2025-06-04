@@ -288,7 +288,7 @@
 
 <div class="container p-4 mx-auto">
 	<div class="container mx-auto flex items-center justify-between mb-8">
-		<img src="/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
+		<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
 		{#if $authStore.user && $page.url.pathname !== '/login'}
 			<button				onclick={() => {
 					$authStore.user = null;
