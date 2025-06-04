@@ -26,16 +26,15 @@
 </script>
 
 {#if locations && locations.length > 0}
-  <select
-    class="w-full max-w-xs select select-bordered"
+  <select    class="w-full max-w-xs select select-bordered"
     value={selectedLocation ? selectedLocation.kitchenId.toString() : ""}
     onchange={handleChange}
   >
-    <option value="">Select Location</option>
+    <option value="">Vælg lokation</option>
     {#each locations as loc (loc.kitchenId)}
       <option value={loc.kitchenId.toString()}>{loc.displayName}</option>
     {/each}
   </select>
 {:else}
-  <p>No locations available.</p>
+  <p>Ingen lokationer tilgængelige.</p>
 {/if}

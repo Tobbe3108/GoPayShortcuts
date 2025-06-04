@@ -12,12 +12,11 @@
   }>();
   
   const dispatch = createEventDispatcher();
-
   // Define itemProductMap first so we can use it for initialization
   const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
-    [PRODUCT_IDS.BREAKFAST]: { name: "Breakfast", type: "breakfast" },
-    [PRODUCT_IDS.LUNCH]: { name: "Lunch", type: "lunch" },
-    [PRODUCT_IDS.SODA]: { name: "Soda", type: "soda" },
+    [PRODUCT_IDS.BREAKFAST]: { name: "Morgenmad", type: "breakfast" },
+    [PRODUCT_IDS.LUNCH]: { name: "Frokost", type: "lunch" },
+    [PRODUCT_IDS.SODA]: { name: "Læskedrik", type: "soda" },
   };
 
   let isLoading = $state(false);
@@ -32,7 +31,8 @@
       type: productDetails.type,
     }))
   );
-    let _currentDayOrderExistingId = $state(dayState.existingOrderId);
+  
+  let _currentDayOrderExistingId = $state(dayState.existingOrderId);
   let optimisticHasOrder = $derived(!!_currentDayOrderExistingId);
 
   // Reactive effect to update optimisticHasOrder when existingOrderId changes from prop
@@ -44,14 +44,15 @@
   });
 
   // dayState.selectedLocation is the source of truth for display and actions.
-  // The LocationSelector will emit an event when the user changes the selection.
+  // The LocationSelector will emit an event when the user changes the selection.  
   function placeOrder() {
-    if (!dayState.selectedLocation) { // Use dayState.selectedLocation
-      alert("Please select a location for this day.");
+    if (!dayState.selectedLocation) { 
+      // Use dayState.selectedLocation
+      alert("Vælg venligst en lokation for denne dag.");
       return;
     }
     if (orderItems.every(item => item.quantity === 0)) {
-      alert("Cannot place an empty order.");
+      alert("Kan ikke placere en tom bestilling.");
       return;
     }
     isLoading = true;
@@ -202,70 +203,62 @@
       onLocationChange={handleLocationSelectedFromDropdown}
     />
   {/if}
-
   {#if dayState.isWeekend}
-    <p class="italic text-center text-gray-600">Weekend - No orders</p>
+    <p class="italic text-center text-gray-600">Weekend - Ingen bestillinger</p>
   {:else}
-    {#if optimisticHasOrder}
-      <!-- Receipt View -->
+    {#if optimisticHasOrder}      <!-- Receipt View -->
       <div class="p-3 space-y-3 border border-gray-300 rounded bg-gray-50">
-        <h4 class="font-semibold text-gray-700 text-md">Order Summary:</h4>
+        <h4 class="font-semibold text-gray-700 text-md">Bestillingsoversigt:</h4>
         {#if dayState.selectedLocation}
           <p class="text-sm text-gray-600">
-            <strong>Location:</strong> {dayState.selectedLocation.name}
+            <strong>Lokation:</strong> {dayState.selectedLocation.name}
           </p>
         {/if}
         
         <!-- Show actual order details if available -->
         {#if dayState.existingOrderId && dayState.orderDetails?.orderLines?.length > 0}
           <ul class="pl-0 space-y-1 list-none">
-            {#each dayState.orderDetails.orderLines as line (line.id)}
-              <li class="flex justify-between text-gray-700">
+            {#each dayState.orderDetails.orderLines as line (line.id)}              <li class="flex justify-between text-gray-700">
                 <span>{line.name}</span>
-                <span>Qty: {line.items}</span>
+                <span>Antal: {line.items}</span>
               </li>
             {/each}
           </ul>
         {:else}
           <ul class="pl-0 space-y-1 list-none">
-            {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}
-              <li class="flex justify-between text-gray-700">
+            {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}              <li class="flex justify-between text-gray-700">
                 <span>{item.name}</span>
-                <span>Qty: {item.quantity}</span>
+                <span>Antal: {item.quantity}</span>
               </li>
             {/each}
-          </ul>
-          {#if orderItems.filter(item => item.quantity > 0).length === 0 && !isLoading}
-            <p class="text-sm italic text-gray-500">No items in this order.</p>
+          </ul>          {#if orderItems.filter(item => item.quantity > 0).length === 0 && !isLoading}
+            <p class="text-sm italic text-gray-500">Ingen varer i denne bestilling.</p>
           {/if}
         {/if}
         
         <!-- Show price if available -->
         {#if dayState.orderDetails?.price}
           <p class="font-medium text-right text-gray-700">
-            Total price: {dayState.orderDetails.price.formatted}
+            Totalpris: {dayState.orderDetails.price.formatted}
           </p>
         {/if}
-      </div>
-      <div class="pt-2 border-t border-gray-200">
-        <p class="font-medium text-right text-gray-700">Total items: {getTotalItems()}</p>
+      </div>      <div class="pt-2 border-t border-gray-200">
+        <p class="font-medium text-right text-gray-700">Antal varer i alt: {getTotalItems()}</p>
       </div>      <div class="flex flex-col pt-2 space-y-2">
         <!-- Check if cancellation is disabled in order details or if the day is in the past -->
         {#if dayState.orderDetails?.cancelDisabled || isPastDate(dayState.date)}
-          <button
-            disabled={true}
+          <button            disabled={true}
             class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-gray-400 rounded cursor-not-allowed"
           >
-            Order Cannot Be Cancelled
+            Bestilling kan ikke annulleres
           </button>
         {:else}
           <button
             onclick={cancelOrder} 
-            class:opacity-50={isLoading}
-            disabled={isLoading}
+            class:opacity-50={isLoading}            disabled={isLoading}
             class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-500 rounded hover:bg-red-700"
           >
-            {#if isLoading}Cancelling...{:else}Cancel Order{/if}
+            {#if isLoading}Annullerer...{:else}Annuller bestilling{/if}
           </button>
         {/if}
       </div>
@@ -294,10 +287,8 @@
             </div>
           </div>
         {/each}
-      </div>
-
-      <div class="pt-2 border-t border-gray-200">
-        <p class="font-medium text-right text-gray-700">Total items: {getTotalItems()}</p>
+      </div>      <div class="pt-2 border-t border-gray-200">
+        <p class="font-medium text-right text-gray-700">Antal varer i alt: {getTotalItems()}</p>
       </div>
 
       <div class="flex flex-col pt-2 space-y-2">
@@ -306,13 +297,13 @@
           disabled={isLoading || getTotalItems() === 0 || !dayState.selectedLocation}
           class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-green-500 rounded hover:bg-green-700 disabled:bg-gray-400"
         >
-          {#if isLoading}Placing Order...{:else}Place Order{/if}
+          {#if isLoading}Placerer bestilling...{:else}Placér bestilling{/if}
         </button>
         <button          onclick={saveAsDefault}
           disabled={isLoading}
           class="w-full px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded hover:bg-blue-700 disabled:opacity-50 disabled:bg-gray-400"
         >
-          Save as Default
+          Gem som standard
         </button>
       </div>
     {/if}

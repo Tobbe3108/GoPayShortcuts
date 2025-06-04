@@ -8,12 +8,10 @@
     import { PRODUCT_IDS } from "$lib/constants/products";
     import { isSameDate, isWeekend, createOrderDate, formatISODateWithOffset } from "$lib/utils/dateUtils";
 
-    const MONDAY_INDEX = 1;
-
-    const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
-        [PRODUCT_IDS.BREAKFAST]: { name: "Breakfast", type: "breakfast" },
-        [PRODUCT_IDS.LUNCH]: { name: "Lunch", type: "lunch" },
-        [PRODUCT_IDS.SODA]: { name: "Soda", type: "soda" },
+    const MONDAY_INDEX = 1;    const itemProductMap: Record<number, { name: string, type: 'breakfast' | 'lunch' | 'soda' }> = {
+        [PRODUCT_IDS.BREAKFAST]: { name: "Morgenmad", type: "breakfast" },
+        [PRODUCT_IDS.LUNCH]: { name: "Frokost", type: "lunch" },
+        [PRODUCT_IDS.SODA]: { name: "Sodavand", type: "soda" },
     };
 
     $effect(() => {
@@ -192,10 +190,8 @@
         try {
             const orderLinesPayload: OrderLine[] = items
                 .filter(item => item.quantity > 0)
-                .map(item => ({ productId: item.id, items: item.quantity, buyerParty: "PRIVATE" }));
-
-            if (!location || !location.kitchenId || !location.webshopId) {
-                throw new Error("Location must be selected.");
+                .map(item => ({ productId: item.id, items: item.quantity, buyerParty: "PRIVATE" }));            if (!location || !location.kitchenId || !location.webshopId) {
+                throw new Error("Lokation skal vælges.");
             }
 
             if (orderLinesPayload.length > 0) {                if (dayStateToUpdate.existingOrderId) {
@@ -260,9 +256,8 @@
             }
             return day;
         });
-        
-        // Set success message in the store
-        $orderStore.successMessage = "Default order preferences saved successfully!";        // Clear the success message after 3 seconds
+          // Set success message in the store
+        $orderStore.successMessage = "Standardbestillingsindstillinger gemt!";        // Clear the success message after 3 seconds
         setTimeout(() => {
             $orderStore.successMessage = null;
         }, 3000);
@@ -270,9 +265,8 @@
 
 </script>
 
-<div class="container p-4 mx-auto">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Weekly Food Order</h1>        
+<div class="container p-4 mx-auto">    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Ugentlig Madbestilling</h1>        
         <button 
             onclick={() => { 
                 $authStore.user = null; 
@@ -283,31 +277,28 @@
             }}
             class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-red-500 rounded-lg shadow hover:bg-red-600"
         >
-            Logout
+            Log ud
         </button>
-    </div>    {#if $orderStore.errorMessage}
-        <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
-            <div class="flex justify-between">                <p class="font-bold">Error</p>
+    </div>{#if $orderStore.errorMessage}        <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
+            <div class="flex justify-between">                <p class="font-bold">Fejl</p>
                 <button onclick={() => $orderStore.errorMessage = null} class="font-bold text-red-700 hover:text-red-900">&times;</button>
             </div>
             <p>{$orderStore.errorMessage}</p>
         </div>
     {/if}
     
-    {#if $orderStore.successMessage}
-        <div class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4" role="alert">
-            <div class="flex justify-between">                <p class="font-bold">Success</p>
+    {#if $orderStore.successMessage}        <div class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4" role="alert">
+            <div class="flex justify-between">                <p class="font-bold">Succes</p>
                 <button onclick={() => $orderStore.successMessage = null} class="font-bold text-green-700 hover:text-green-900">&times;</button>
             </div>
             <p>{$orderStore.successMessage}</p>
         </div>
     {/if}
 
-    {#if $orderStore.isLoading && $orderStore.weekDays.length === 0}
-        <div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
+    {#if $orderStore.isLoading && $orderStore.weekDays.length === 0}        <div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
             <LoadingSpinner size="w-12 h-12" />
-            <p class="mt-4 text-gray-600">Loading orders...</p>
-        </div>    {:else if $orderStore.weekDays.length > 0}
+            <p class="mt-4 text-gray-600">Indlæser bestillinger...</p>
+        </div>{:else if $orderStore.weekDays.length > 0}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
                 <DayCard 
                     dayState={dayState} 
@@ -318,8 +309,7 @@
                     on:saveDefault={handleSaveDefault} 
                 />
             {/each}
-        </div>
-    {:else if !$orderStore.isLoading} 
-        <p class="mt-10 text-center text-gray-500">No order data available for this week.</p>
+        </div>    {:else if !$orderStore.isLoading} 
+        <p class="mt-10 text-center text-gray-500">Ingen bestillingsdata tilgængelig for denne uge.</p>
     {/if}
 </div>

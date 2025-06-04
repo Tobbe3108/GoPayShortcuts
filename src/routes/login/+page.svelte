@@ -18,9 +18,9 @@
         }
     });  
 
-    async function handleEmailSubmit() {
+    async function handleEmailSubmit() {       
         if (!email) {
-            $authStore.error = 'Email is required';
+            $authStore.error = 'Email er påkrævet';
             console.debug($authStore.error);
             return;
         }
@@ -35,9 +35,9 @@
         }
     }
 
-    async function handleOTPSubmit() {
+    async function handleOTPSubmit() {        
         if (!otp) {
-            $authStore.error = 'Verification code is required';
+            $authStore.error = 'Verifikationskode er påkrævet';
             console.debug($authStore.error);
             return;
         }
@@ -59,10 +59,9 @@
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-semibold text-gray-800">Food Shortcuts</h1>
+        <div class="text-center mb-8">            <h1 class="text-2xl font-semibold text-gray-800">Mad Genveje</h1>
             <p class="text-gray-600 mt-2">
-                {isEmailStep ? 'Sign in to your account' : 'Enter verification code'}
+                {isEmailStep ? 'Log ind på din konto' : 'Indtast verifikationskode'}
             </p>
         </div>
         {#if $authStore.error}
@@ -72,12 +71,11 @@
         {/if}        
         {#if isEmailStep}
             <form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                <div class="mb-4">                    <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email adresse</label>
                     <input
                         type="email"
                         id="email"
-                        placeholder="Enter your email"
+                        placeholder="Indtast din email"
                         bind:value={email}
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
@@ -89,45 +87,41 @@
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                 >
                     {#if $authStore.loading}
-                        <div class="flex justify-center items-center">
-                            <LoadingSpinner size="w-5 h-5" />
-                            <span class="ml-2">Sending...</span>
+                        <div class="flex justify-center items-center">                            <LoadingSpinner size="w-5 h-5" />
+                            <span class="ml-2">Sender...</span>
                         </div>
                     {:else}
-                        Continue
+                        Fortsæt
                     {/if}
                 </button>
             </form>        
         {:else}
             <form onsubmit={(e) => { e.preventDefault(); handleOTPSubmit(); }}>
-                <div class="mb-4">
-                    <label for="otp" class="block text-gray-700 text-sm font-medium mb-2">Verification Code</label>
+                <div class="mb-4">                    <label for="otp" class="block text-gray-700 text-sm font-medium mb-2">Verifikationskode</label>
                     <input
                         type="text"
                         id="otp"
-                        placeholder="Enter verification code"
+                        placeholder="Indtast verifikationskode"
                         bind:value={otp}
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
-                </div>                
-                <div class="mb-4">                    
+                </div>                  <div class="mb-4">                    
                     <button type="button" onclick={goBackToEmail} class="text-sm text-blue-500 hover:underline">
-                        Back to email
+                        Tilbage til email
                     </button>
-                </div>                
+                </div>
                 <button
                     type="submit"
                     disabled={$authStore.loading}
                     class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                 >
                     {#if $authStore.loading}
-                        <div class="flex justify-center items-center">
-                            <LoadingSpinner size="w-5 h-5" />
-                            <span class="ml-2">Verifying...</span>
+                        <div class="flex justify-center items-center">                            <LoadingSpinner size="w-5 h-5" />
+                            <span class="ml-2">Verificerer...</span>
                         </div>
                     {:else}
-                        Sign In
+                        Log ind
                     {/if}
                 </button>
             </form>
