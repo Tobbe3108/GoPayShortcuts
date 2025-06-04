@@ -14,7 +14,7 @@ const config = {
 			strict: true
 		}),
 		paths: {
-			base: process.env.BASE_PATH || (process.env.NODE_ENV === 'production' ? '/GoPayShortcuts' : '')
+			base: process.env.NODE_ENV === 'production' ? '/GoPayShortcuts' : ''
 		}
 	}
 };
