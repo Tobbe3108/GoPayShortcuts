@@ -70,3 +70,16 @@ export function formatISODateWithOffset(date: Date): string {
   
   return `${year}-${month}-${day}T${timePart}${offset}`;
 }
+
+/**
+ * Checks if a date is in the past (before today)
+ */
+export function isPastDate(date: Date): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const compareDate = new Date(date);
+  compareDate.setHours(0, 0, 0, 0);
+  
+  return compareDate < today;
+}

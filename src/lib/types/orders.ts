@@ -100,5 +100,7 @@ export interface DayOrderState {
       amount: number;
       formatted: string;
     };
+    cancelDisabled?: boolean;
   };
+}
 }

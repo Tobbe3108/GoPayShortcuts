@@ -172,7 +172,7 @@
       // No need for the spread operator to trigger reactivity with $state
     }
   }  // Import date formatting utilities
-  import { formatDay, formatDate } from "$lib/utils/dateUtils";
+  import { formatDay, formatDate, isPastDate } from "$lib/utils/dateUtils";
   
   // Handles the 'locationChanged' event from LocationSelector
   function handleLocationSelectedFromDropdown(newLocation: Location | null) {
@@ -249,15 +249,25 @@
       </div>
       <div class="pt-2 border-t border-gray-200">
         <p class="font-medium text-right text-gray-700">Total items: {getTotalItems()}</p>
-      </div>
-      <div class="flex flex-col pt-2 space-y-2">
-        <button          onclick={cancelOrder} 
-          class:opacity-50={isLoading}
-          disabled={isLoading}
-          class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-500 rounded hover:bg-red-700"
-        >
-          {#if isLoading}Cancelling...{:else}Cancel Order{/if}
-        </button>
+      </div>      <div class="flex flex-col pt-2 space-y-2">
+        <!-- Check if cancellation is disabled in order details or if the day is in the past -->
+        {#if dayState.orderDetails?.cancelDisabled || isPastDate(dayState.date)}
+          <button
+            disabled={true}
+            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-gray-400 rounded cursor-not-allowed"
+          >
+            Order Cannot Be Cancelled
+          </button>
+        {:else}
+          <button
+            onclick={cancelOrder} 
+            class:opacity-50={isLoading}
+            disabled={isLoading}
+            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-500 rounded hover:bg-red-700"
+          >
+            {#if isLoading}Cancelling...{:else}Cancel Order{/if}
+          </button>
+        {/if}
       </div>
     {:else}
       <!-- Order Creation/Modification View -->

@@ -81,25 +81,37 @@
                     dayLocationToSet = existingOrder.deliveryLocation;
                     
                     // Extract order details for display
-                    if (existingOrder.orderDetails) {
+                    if (existingOrder.orderDetails) {                        
                         const orderLines = [];
-                        if (existingOrder.orderDetails.deliveries && 
-                            existingOrder.orderDetails.deliveries[0] && 
-                            existingOrder.orderDetails.deliveries[0].orderLines) {
-                            
-                            orderLines.push(...existingOrder.orderDetails.deliveries[0].orderLines.map(line => ({
-                                id: line.id,
-                                name: line.name,
-                                items: line.items
-                            })));
-                        }
+                        let cancelDisabled = false;
                         
-                        orderDetails = {
+                        if (existingOrder.orderDetails.deliveries && 
+                            existingOrder.orderDetails.deliveries[0]) {
+                            
+                            // Check if cancel is disabled
+                            const delivery = existingOrder.orderDetails.deliveries[0];
+                            
+                            // Cancel is disabled if cancelEnable is explicitly false OR if cancelOrder.cancelEnable is explicitly false
+                            if (delivery.cancelOrder?.cancelEnable === false) {
+                                cancelDisabled = true;
+                            }
+                            
+                            // Process order lines if available
+                            if (delivery.orderLines) {
+                                orderLines.push(...delivery.orderLines.map(line => ({
+                                    id: line.id,
+                                    name: line.name,
+                                    items: line.items
+                                })));
+                            }
+                        }
+                          orderDetails = {
                             orderLines,
                             price: existingOrder.orderDetails.price ? {
                                 amount: existingOrder.orderDetails.price.amount,
                                 formatted: existingOrder.orderDetails.price.formatted
-                            } : undefined
+                            } : undefined,
+                            cancelDisabled
                         };
                     }
                     
