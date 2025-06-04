@@ -258,6 +258,13 @@
             {#if isLoading}Annullerer...{:else}Annuller bestilling{/if}
           </button>
         {/if}
+        <button
+          onclick={saveAsDefault}
+          disabled={isLoading}
+          class="w-full px-4 py-2 font-bold text-white transition-colors bg-slate-600 rounded hover:bg-slate-500 disabled:opacity-50 disabled:bg-gray-400"
+        >
+          Gem som standard
+        </button>
       </div>
     {:else}
       <!-- Order Creation/Modification View -->
@@ -294,11 +301,6 @@
           class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-slate-800 rounded hover:bg-slate-700 disabled:bg-gray-400"
         >
           {#if isLoading}Placerer bestilling...{:else}Placér bestilling{/if}
-        </button>        <button          onclick={saveAsDefault}
-          disabled={isLoading}
-          class="w-full px-4 py-2 font-bold text-white transition-colors bg-slate-600 rounded hover:bg-slate-500 disabled:opacity-50 disabled:bg-gray-400"
-        >
-          Gem som standard
         </button>
       </div>
     {/if}
