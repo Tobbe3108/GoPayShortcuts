@@ -2,10 +2,22 @@ import type { ApiOrder, Location, Order, OrderItemData, OrderLine } from "$lib/t
 import { api } from "$lib/services/apiService";
 import { DANISH_LOCALE, formatISODateWithOffset } from "$lib/utils/dateUtils";
 
+// Define a type for the location response to avoid using 'any'
+interface LocationApiResponse {
+  name: string;
+  kitchens: Array<{
+    id: number;
+    name: string;
+    webshops?: Array<{
+      uid: string;
+    }>;
+  }>;
+}
+
 export const locationService = {
   async getLocations(): Promise<Location[]> {
     try {
-      const response = await api<any[]>('/organization/company/user/locations');
+      const response = await api<LocationApiResponse[]>('/organization/company/user/locations');
       console.log("Locations fetched raw: ", response);
       
       // Transform the complex response into the expected Location format
@@ -138,8 +150,8 @@ export const orderService = {
           }
           ordersByDay.get(deliveryDate)?.push(apiOrder);
         }
-      });      // Combine orders for each day
-      return Array.from(ordersByDay.entries()).map(([_, orders]) => {
+      });        // Combine orders for each day
+      return Array.from(ordersByDay.entries()).map(([, orders]) => {
         // Use the first order as the base
         const baseOrder = orders[0];
         const baseDelivery = baseOrder.deliveries && baseOrder.deliveries[0];
@@ -152,8 +164,23 @@ export const orderService = {
           name: string
         }>();
         
+        // Calculate total price across all orders for this day
+        let totalAmount = 0;
+        let currency = "";
+        let scale = 0;
+        
         // Combine order lines from all orders for this day
         orders.forEach(order => {
+          // Add the order price to the total
+          if (order.price) {
+            totalAmount += order.price.amount;
+            // Use the currency and scale from the first order with a price
+            if (!currency && order.price.currency) {
+              currency = order.price.currency;
+              scale = order.price.scale;
+            }
+          }
+          
           const delivery = order.deliveries && order.deliveries[0];
           if (delivery && delivery.orderLines) {
             delivery.orderLines.forEach(line => {
@@ -174,6 +201,14 @@ export const orderService = {
           }
         });
         
+        // Format the total price
+        const formattedPrice = new Intl.NumberFormat(DANISH_LOCALE, {
+          style: 'currency',
+          currency: currency || 'DKK',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(totalAmount / Math.pow(10, scale || 2));
+        
         // Convert combined map to array
         const orderLines: OrderLine[] = Array.from(combinedOrderLines.values()).map(line => ({
           productId: line.productId,
@@ -184,6 +219,12 @@ export const orderService = {
         // Create combined order details for display
         const combinedOrderDetails = {
           ...baseOrder,
+          price: {
+            amount: totalAmount,
+            scale: scale || 2,
+            currency: currency || 'DKK',
+            formatted: formattedPrice
+          },
           deliveries: baseOrder.deliveries ? [{
             ...baseDelivery,
             orderLines: Array.from(combinedOrderLines.values()).map(line => ({
@@ -191,6 +232,7 @@ export const orderService = {
               items: line.items,
               name: line.name,
               productId: line.productId,
+              buyerParty: "PRIVATE",
               price: { amount: 0, scale: 0, currency: "", formatted: "" },
               itemPrice: { amount: 0, scale: 0, currency: "", formatted: "" }
             }))
