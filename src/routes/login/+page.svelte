@@ -58,8 +58,11 @@
 </script>
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <div class="text-center mb-8">            <h1 class="text-2xl font-semibold text-gray-800">Mad Genveje</h1>
+    <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <img src="/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-24 w-24" />
+            </div>
+            <h1 class="text-2xl font-semibold text-gray-800">GoPay <span class="text-emerald-500 font-bold">BAD</span> Edition</h1>
             <p class="text-gray-600 mt-2">
                 {isEmailStep ? 'Log ind på din konto' : 'Indtast verifikationskode'}
             </p>
@@ -74,17 +77,15 @@
                 <div class="mb-4">                    <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email adresse</label>
                     <input
                         type="email"
-                        id="email"
-                        placeholder="Indtast din email"
+                        id="email"                        placeholder="Indtast din email"
                         bind:value={email}
-                        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         required
                     />
-                </div>                
-                <button
+                </div>                <button
                     type="submit"
                     disabled={$authStore.loading}
-                    class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    class="w-full bg-gradient-to-r from-emerald-400 to-blue-500 text-white py-3 rounded-md hover:from-emerald-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
                 >
                     {#if $authStore.loading}
                         <div class="flex justify-center items-center">                            <LoadingSpinner size="w-5 h-5" />
@@ -100,21 +101,18 @@
                 <div class="mb-4">                    <label for="otp" class="block text-gray-700 text-sm font-medium mb-2">Verifikationskode</label>
                     <input
                         type="text"
-                        id="otp"
-                        placeholder="Indtast verifikationskode"
+                        id="otp"                        placeholder="Indtast verifikationskode"
                         bind:value={otp}
-                        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         required
-                    />
-                </div>                  <div class="mb-4">                    
-                    <button type="button" onclick={goBackToEmail} class="text-sm text-blue-500 hover:underline">
+                    />                </div>                  <div class="mb-4">                    
+                    <button type="button" onclick={goBackToEmail} class="text-sm text-emerald-500 hover:underline">
                         Tilbage til email
                     </button>
-                </div>
-                <button
+                </div>                <button
                     type="submit"
                     disabled={$authStore.loading}
-                    class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    class="w-full bg-gradient-to-r from-emerald-400 to-blue-500 text-white py-3 rounded-md hover:from-emerald-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
                 >
                     {#if $authStore.loading}
                         <div class="flex justify-center items-center">                            <LoadingSpinner size="w-5 h-5" />

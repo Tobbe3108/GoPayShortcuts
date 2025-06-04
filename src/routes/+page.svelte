@@ -265,21 +265,7 @@
 
 </script>
 
-<div class="container p-4 mx-auto">    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Ugentlig Madbestilling</h1>        
-        <button 
-            onclick={() => { 
-                $authStore.user = null; 
-                $authStore.loading = false; 
-                $authStore.error = null; 
-                localStorage.removeItem('food_shortcuts_auth'); 
-                goto('/login'); 
-            }}
-            class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-red-500 rounded-lg shadow hover:bg-red-600"
-        >
-            Log ud
-        </button>
-    </div>{#if $orderStore.errorMessage}        <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
+<div class="container p-4 mx-auto">    {#if $orderStore.errorMessage}        <div class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4" role="alert">
             <div class="flex justify-between">                <p class="font-bold">Fejl</p>
                 <button onclick={() => $orderStore.errorMessage = null} class="font-bold text-red-700 hover:text-red-900">&times;</button>
             </div>
