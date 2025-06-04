@@ -5,12 +5,12 @@
 	import { page } from '$app/stores';
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-slate-50">
 	{#if $authStore.loading && $page.url.pathname !== '/login'}
 		<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
 			<div class="text-center">
 				<LoadingSpinner size="w-12 h-12" />
-				<p class="mt-4 text-gray-600">Validating session...</p>
+				<p class="mt-4 text-slate-600">Validating session...</p>
 			</div>
 		</div>
 	{:else}

@@ -289,21 +289,19 @@
 	<div class="container mx-auto flex items-center justify-between mb-8">
 		<img src="/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
 		{#if $authStore.user && $page.url.pathname !== '/login'}
-			<button
-				onclick={() => {
+			<button				onclick={() => {
 					$authStore.user = null;
 					$authStore.loading = false;
 					$authStore.error = null;
 					localStorage.removeItem('food_shortcuts_auth');
 					goto('/login');
 				}}
-				class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-red-500 rounded-lg shadow hover:bg-red-600"
+				class="px-4 py-2 font-semibold text-white transition duration-150 ease-in-out bg-slate-800 rounded-lg shadow hover:bg-slate-700"
 			>
 				Log ud
 			</button>
 		{/if}
 	</div>
-
 	{#if $orderStore.errorMessage}
 		<div
 			class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4"
@@ -319,27 +317,25 @@
 			<p>{$orderStore.errorMessage}</p>
 		</div>
 	{/if}
-
 	{#if $orderStore.successMessage}
 		<div
-			class="fixed z-50 px-4 py-3 mb-6 text-green-700 bg-green-100 border border-green-400 rounded shadow-lg top-4 right-4"
+			class="fixed z-50 px-4 py-3 mb-6 text-slate-700 bg-slate-100 border border-slate-400 rounded shadow-lg top-4 right-4"
 			role="alert"
 		>
 			<div class="flex justify-between">
 				<p class="font-bold">Succes</p>
 				<button
 					onclick={() => ($orderStore.successMessage = null)}
-					class="font-bold text-green-700 hover:text-green-900">&times;</button
+					class="font-bold text-slate-700 hover:text-slate-900">&times;</button
 				>
 			</div>
 			<p>{$orderStore.successMessage}</p>
 		</div>
 	{/if}
-
 	{#if $orderStore.isLoading && $orderStore.weekDays.length === 0}
 		<div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
 			<LoadingSpinner size="w-12 h-12" />
-			<p class="mt-4 text-gray-600">Indlæser bestillinger...</p>
+			<p class="mt-4 text-slate-600">Indlæser bestillinger...</p>
 		</div>{:else if $orderStore.weekDays.length > 0}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 			{#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
@@ -352,8 +348,7 @@
 					on:saveDefault={handleSaveDefault}
 				/>
 			{/each}
-		</div>
-	{:else if !$orderStore.isLoading}
-		<p class="mt-10 text-center text-gray-500">Ingen bestillingsdata tilgængelig for denne uge.</p>
+		</div>	{:else if !$orderStore.isLoading}
+		<p class="mt-10 text-center text-slate-500">Ingen bestillingsdata tilgængelig for denne uge.</p>
 	{/if}
 </div>

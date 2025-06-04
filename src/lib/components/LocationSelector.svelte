@@ -25,8 +25,7 @@
   }
 </script>
 
-{#if locations && locations.length > 0}
-  <select    class="w-full max-w-xs select select-bordered"
+{#if locations && locations.length > 0}  <select    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-600"
     value={selectedLocation ? selectedLocation.kitchenId.toString() : ""}
     onchange={handleChange}
   >

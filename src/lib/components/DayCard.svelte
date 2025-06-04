@@ -192,9 +192,9 @@
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
 </script>
 
-<div class="bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col space-y-4 border border-gray-200 {dayState.isWeekend ? 'opacity-70 bg-gray-50' : ''} {dayState.isToday ? 'border-blue-500 border-2' : ''}">  <div class="flex items-center justify-between">
-    <h3 class="text-xl font-semibold text-gray-800">{formatDay(dayState.date)}</h3>
-    <span class="text-sm text-gray-500">{formatDate(dayState.date)}</span>
+<div class="bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col space-y-4 border border-slate-200 {dayState.isWeekend ? 'opacity-70 bg-slate-50' : ''} {dayState.isToday ? 'border-slate-800 border-2' : ''}">  <div class="flex items-center justify-between">
+    <h3 class="text-xl font-semibold text-slate-800">{formatDay(dayState.date)}</h3>
+    <span class="text-sm text-slate-500">{formatDate(dayState.date)}</span>
   </div>
 
   {#if !optimisticHasOrder && !dayState.isWeekend}    <LocationSelector 
@@ -202,23 +202,20 @@
       locations={locations} 
       onLocationChange={handleLocationSelectedFromDropdown}
     />
-  {/if}
-  {#if dayState.isWeekend}
-    <p class="italic text-center text-gray-600">Weekend - Ingen bestillinger</p>
+  {/if}  {#if dayState.isWeekend}
+    <p class="italic text-center text-slate-600">Weekend - Ingen bestillinger</p>
   {:else}
-    {#if optimisticHasOrder}      <!-- Receipt View -->
-      <div class="p-3 space-y-3 border border-gray-300 rounded bg-gray-50">
-        <h4 class="font-semibold text-gray-700 text-md">Bestillingsoversigt:</h4>
+    {#if optimisticHasOrder}      <!-- Receipt View -->      <div class="p-3 space-y-3 border border-slate-300 rounded bg-slate-50">
+        <h4 class="font-semibold text-slate-700 text-md">Bestillingsoversigt:</h4>
         {#if dayState.selectedLocation}
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-slate-600">
             <strong>Lokation:</strong> {dayState.selectedLocation.name}
           </p>
         {/if}
         
         <!-- Show actual order details if available -->
         {#if dayState.existingOrderId && dayState.orderDetails?.orderLines?.length > 0}
-          <ul class="pl-0 space-y-1 list-none">
-            {#each dayState.orderDetails.orderLines as line (line.id)}              <li class="flex justify-between text-gray-700">
+          <ul class="pl-0 space-y-1 list-none">            {#each dayState.orderDetails.orderLines as line (line.id)}              <li class="flex justify-between text-slate-700">
                 <span>{line.name}</span>
                 <span>Antal: {line.items}</span>
               </li>
@@ -226,37 +223,37 @@
           </ul>
         {:else}
           <ul class="pl-0 space-y-1 list-none">
-            {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}              <li class="flex justify-between text-gray-700">
+            {#each orderItems.filter(item => item.quantity > 0) as item (item.id)}              <li class="flex justify-between text-slate-700">
                 <span>{item.name}</span>
                 <span>Antal: {item.quantity}</span>
               </li>
             {/each}
           </ul>          {#if orderItems.filter(item => item.quantity > 0).length === 0 && !isLoading}
-            <p class="text-sm italic text-gray-500">Ingen varer i denne bestilling.</p>
+            <p class="text-sm italic text-slate-500">Ingen varer i denne bestilling.</p>
           {/if}
         {/if}
         
         <!-- Show price if available -->
         {#if dayState.orderDetails?.price}
-          <p class="font-medium text-right text-gray-700">
+          <p class="font-medium text-right text-slate-700">
             Totalpris: {dayState.orderDetails.price.formatted}
           </p>
         {/if}
-      </div>      <div class="pt-2 border-t border-gray-200">
-        <p class="font-medium text-right text-gray-700">Antal varer i alt: {getTotalItems()}</p>
+      </div>
+      
+      <div class="pt-2 border-t border-slate-200">
+        <p class="font-medium text-right text-slate-700">Antal varer i alt: {getTotalItems()}</p>
       </div>      <div class="flex flex-col pt-2 space-y-2">
-        <!-- Check if cancellation is disabled in order details or if the day is in the past -->
-        {#if dayState.orderDetails?.cancelDisabled || isPastDate(dayState.date)}
+        <!-- Check if cancellation is disabled in order details or if the day is in the past -->        {#if dayState.orderDetails?.cancelDisabled || isPastDate(dayState.date)}
           <button            disabled={true}
-            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-gray-400 rounded cursor-not-allowed"
+            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-slate-400 rounded cursor-not-allowed"
           >
             Bestilling kan ikke annulleres
           </button>
-        {:else}
-          <button
+        {:else}          <button
             onclick={cancelOrder} 
             class:opacity-50={isLoading}            disabled={isLoading}
-            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-500 rounded hover:bg-red-700"
+            class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-600 rounded hover:bg-red-700"
           >
             {#if isLoading}Annullerer...{:else}Annuller bestilling{/if}
           </button>
@@ -267,41 +264,39 @@
       <div class="space-y-3">
         {#each orderItems as item (item.id)}
           <div class="flex items-center justify-between">
-            <span class="text-gray-700">{item.name}</span>
+            <span class="text-slate-700">{item.name}</span>
             <div class="flex items-center space-x-2">
               <button
                 onclick={() => handleItemChange(item.id, -1)}
                 disabled={isLoading || item.quantity === 0}
-                class="px-2 py-1 font-bold text-gray-700 transition-colors bg-gray-200 rounded-l hover:bg-gray-300 disabled:opacity-50"
+                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
               >
                 -
               </button>
-              <span class="w-8 text-center text-gray-700">{item.quantity}</span>
+              <span class="w-8 text-center text-slate-700">{item.quantity}</span>
               <button
                 onclick={() => handleItemChange(item.id, 1)}
                 disabled={isLoading}
-                class="px-2 py-1 font-bold text-gray-700 transition-colors bg-gray-200 rounded-r hover:bg-gray-300 disabled:opacity-50"
+                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50"
               >
                 +
               </button>
             </div>
           </div>
         {/each}
-      </div>      <div class="pt-2 border-t border-gray-200">
-        <p class="font-medium text-right text-gray-700">Antal varer i alt: {getTotalItems()}</p>
+      </div>      <div class="pt-2 border-t border-slate-200">
+        <p class="font-medium text-right text-slate-700">Antal varer i alt: {getTotalItems()}</p>
       </div>
 
-      <div class="flex flex-col pt-2 space-y-2">
-        <button          onclick={placeOrder} 
+      <div class="flex flex-col pt-2 space-y-2">        <button          onclick={placeOrder} 
           class:opacity-50={isLoading}
           disabled={isLoading || getTotalItems() === 0 || !dayState.selectedLocation}
-          class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-green-500 rounded hover:bg-green-700 disabled:bg-gray-400"
+          class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-slate-800 rounded hover:bg-slate-700 disabled:bg-gray-400"
         >
           {#if isLoading}Placerer bestilling...{:else}Placér bestilling{/if}
-        </button>
-        <button          onclick={saveAsDefault}
+        </button>        <button          onclick={saveAsDefault}
           disabled={isLoading}
-          class="w-full px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded hover:bg-blue-700 disabled:opacity-50 disabled:bg-gray-400"
+          class="w-full px-4 py-2 font-bold text-white transition-colors bg-slate-600 rounded hover:bg-slate-500 disabled:opacity-50 disabled:bg-gray-400"
         >
           Gem som standard
         </button>
