@@ -125,32 +125,89 @@ export const orderService = {
           }
         })
       );
+        // Group orders by day to combine multiple orders for the same day
+      const ordersByDay = new Map<string, ApiOrder[]>();
       
-      // Convert to the Order type expected by the app
-      return detailedOrders.map(apiOrder => {
-        // Get the first delivery and its order lines
+      // Group orders by delivery date
+      detailedOrders.forEach(apiOrder => {
         const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
-        const orderLines: OrderLine[] = [];
+        if (delivery) {
+          const deliveryDate = delivery.deliveryTime.split('T')[0]; // Extract YYYY-MM-DD
+          if (!ordersByDay.has(deliveryDate)) {
+            ordersByDay.set(deliveryDate, []);
+          }
+          ordersByDay.get(deliveryDate)?.push(apiOrder);
+        }
+      });      // Combine orders for each day
+      return Array.from(ordersByDay.entries()).map(([_, orders]) => {
+        // Use the first order as the base
+        const baseOrder = orders[0];
+        const baseDelivery = baseOrder.deliveries && baseOrder.deliveries[0];
         
-        if (delivery && delivery.orderLines) {
-          delivery.orderLines.forEach(line => {
-            orderLines.push({
-              productId: line.productId,
-              items: line.items,
-              buyerParty: "PRIVATE"
+        // Create a map to track combined quantities by product ID
+        const combinedOrderLines = new Map<number, {
+          productId: number,
+          items: number,
+          buyerParty: string,
+          name: string
+        }>();
+        
+        // Combine order lines from all orders for this day
+        orders.forEach(order => {
+          const delivery = order.deliveries && order.deliveries[0];
+          if (delivery && delivery.orderLines) {
+            delivery.orderLines.forEach(line => {
+              if (!combinedOrderLines.has(line.productId)) {
+                combinedOrderLines.set(line.productId, {
+                  productId: line.productId,
+                  items: 0,
+                  buyerParty: "PRIVATE",
+                  name: line.name
+                });
+              }
+              
+              const existingLine = combinedOrderLines.get(line.productId);
+              if (existingLine) {
+                existingLine.items += line.items;
+              }
             });
-          });
-        }          return {
-          id: apiOrder.id.toString(),
-          deliveryTime: delivery ? delivery.deliveryTime : formatISODateWithOffset(new Date()),
+          }
+        });
+        
+        // Convert combined map to array
+        const orderLines: OrderLine[] = Array.from(combinedOrderLines.values()).map(line => ({
+          productId: line.productId,
+          items: line.items,
+          buyerParty: "PRIVATE"
+        }));
+        
+        // Create combined order details for display
+        const combinedOrderDetails = {
+          ...baseOrder,
+          deliveries: baseOrder.deliveries ? [{
+            ...baseDelivery,
+            orderLines: Array.from(combinedOrderLines.values()).map(line => ({
+              id: line.productId,
+              items: line.items,
+              name: line.name,
+              productId: line.productId,
+              price: { amount: 0, scale: 0, currency: "", formatted: "" },
+              itemPrice: { amount: 0, scale: 0, currency: "", formatted: "" }
+            }))
+          }] : []
+        };
+        
+        return {
+          id: baseOrder.id.toString(), // Use the first order's ID
+          deliveryTime: baseDelivery ? baseDelivery.deliveryTime : formatISODateWithOffset(new Date()),
           deliveryLocation: {
-            displayName: apiOrder.kitchen.name,
-            name: apiOrder.kitchen.name,
-            kitchenId: apiOrder.kitchen.id,
-            webshopId: ''  // This might need to come from elsewhere
+            displayName: baseOrder.kitchen.name,
+            name: baseOrder.kitchen.name,
+            kitchenId: baseOrder.kitchen.id,
+            webshopId: ''
           },
           orderLines,
-          orderDetails: apiOrder // Keep the full order details for reference
+          orderDetails: combinedOrderDetails
         };
       });
     } catch (error) {
