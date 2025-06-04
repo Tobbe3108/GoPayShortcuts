@@ -170,19 +170,18 @@ export const orderService = {
         let scale = 0;
         
         // Combine order lines from all orders for this day
-        orders.forEach(order => {
-          // Add the order price to the total
-          if (order.price) {
-            totalAmount += order.price.amount;
-            // Use the currency and scale from the first order with a price
-            if (!currency && order.price.currency) {
-              currency = order.price.currency;
-              scale = order.price.scale;
-            }
-          }
-          
+        orders.forEach(order => {          
           const delivery = order.deliveries && order.deliveries[0];
           if (delivery && delivery.orderLines) {
+            if (delivery.price) {
+              totalAmount += delivery.price.amount;
+              // Use the currency and scale from the first order with a price
+              if (!currency && delivery.price.currency) {
+                currency = delivery.price.currency;
+                scale = delivery.price.scale;
+              }
+            }
+
             delivery.orderLines.forEach(line => {
               if (!combinedOrderLines.has(line.productId)) {
                 combinedOrderLines.set(line.productId, {
