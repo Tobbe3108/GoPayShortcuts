@@ -10,6 +10,19 @@
 			window.addEventListener('error', function(event) {
 				console.error('Global error:', event.error);
 			});
+			
+			// This script handles SPA routing for GitHub Pages
+			(function() {
+				// No need to redirect if we're not in production or not on GitHub Pages
+				if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+				
+				// Check if we need to redirect from a GitHub Pages 404
+				var redirect = sessionStorage.redirect;
+				delete sessionStorage.redirect;
+				if (redirect && redirect != location.href) {
+					history.replaceState(null, null, redirect);
+				}
+			})();
 		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover">

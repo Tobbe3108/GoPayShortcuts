@@ -26,9 +26,10 @@ jobs:
         
       - name: Install dependencies
         run: bun install
-        
-      - name: Build
+        - name: Build
         run: NODE_ENV=production bun run build
+        env:
+          BASE_PATH: /GoPayShortcuts
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
