@@ -13,7 +13,7 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"predeploy": "NODE_ENV=production bun run build",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build -t"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

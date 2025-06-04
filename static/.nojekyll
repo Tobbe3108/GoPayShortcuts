@@ -1,6 +1,0 @@
-# Needed for GitHub Pages compatibility with SvelteKit
-/.nojekyll
-/*
-!/build
-/build/*
-!/CNAME

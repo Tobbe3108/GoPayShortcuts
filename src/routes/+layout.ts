@@ -7,7 +7,6 @@ import { get } from 'svelte/store';
 // Enable static site generation
 export const prerender = true;
 export const ssr = false;
-export const trailingSlash = "always";
 
 // Flag to prevent multiple session checks
 let hasCheckedAuth = false;
