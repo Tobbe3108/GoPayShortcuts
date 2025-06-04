@@ -4,10 +4,14 @@ import { browser } from '$app/environment';
 import authStore from '$lib/stores/authStore';
 import { get } from 'svelte/store';
 
+// Enable static site generation
+export const prerender = true;
+export const ssr = false;
+
 // Flag to prevent multiple session checks
 let hasCheckedAuth = false;
 
-export const load: LayoutLoad = async ({ url, fetch }) => {
+export const load: LayoutLoad = async ({ fetch }) => {
     if (browser) {
         const currentAuth = get(authStore);
         
