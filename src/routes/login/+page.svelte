@@ -61,7 +61,7 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
 	<div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
 		<div class="flex justify-center">
-			<img src="/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-75 w-auto" />
+			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-75 w-auto" />
 		</div>
 		{#if $authStore.error}
 			<div
