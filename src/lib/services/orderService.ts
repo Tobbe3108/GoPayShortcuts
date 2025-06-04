@@ -41,7 +41,8 @@ export const locationService = {
   },
 };
 
-export const orderService = {  async getOrdersForWeek(startDate: Date): Promise<Order[]> {
+export const orderService = {  
+  async getOrdersForWeek(startDate: Date): Promise<Order[]> {
     try {
       // Import the date utility function
       const { formatDateForApi } = await import("$lib/utils/dateUtils");
@@ -61,52 +62,56 @@ export const orderService = {  async getOrdersForWeek(startDate: Date): Promise<
         console.error('Invalid orders response:', ordersResponse);
         return [];
       }
-
-      // Filter out refunded orders by grouping by delivery time and finding pairs
-      // where one has orderType LUNCH and one has orderType REFUND
-      const ordersByDeliveryTime = new Map<string, ApiOrder[]>();
+      console.log(`Fetched orders for the week from ${startDateStr} to ${endDateStr}`, ordersResponse);      
+        // Track LUNCH orders by their unique ID to avoid duplicates
+      const lunchOrdersById = new Map<number, ApiOrder>();
+      // Track refunds by delivery time and amount
+      const refundsByTimeAndAmount = new Map<string, number>();
       
+      ordersResponse.orders.sort(order => order.id)
+
+      // Organize all orders
       ordersResponse.orders.forEach(order => {
-        if (order.deliveries && order.deliveries.length > 0) {
-          const deliveryTime = order.deliveries[0].deliveryTime;
-          if (!ordersByDeliveryTime.has(deliveryTime)) {
-            ordersByDeliveryTime.set(deliveryTime, []);
-          }
-          ordersByDeliveryTime.get(deliveryTime)?.push(order);
+        if (!order.deliveries || order.deliveries.length === 0) return;
+        
+        const deliveryTime = order.deliveries[0].deliveryTime;
+        const amount = Math.abs(order.price.amount);
+        const key = `${deliveryTime}_${amount}`;
+        
+        if (order.orderType === "LUNCH") {
+          lunchOrdersById.set(order.id, order);
+        } else if (order.orderType === "REFUND") {
+          // Count refunds for each delivery time and amount combination
+          refundsByTimeAndAmount.set(key, (refundsByTimeAndAmount.get(key) || 0) + 1);
         }
       });
-
-      // Orders that have NOT been refunded
+      
+      console.log(`Found ${lunchOrdersById.size} lunch orders`);
+      
+      // Create an array of valid lunch orders
       const validOrders: ApiOrder[] = [];
-        // For each delivery time, check if there are REFUND orders
-      for (const [, orders] of ordersByDeliveryTime.entries()) {
-        // Group orders by ID to find pairs
-        const ordersByPriceAmount = new Map<number, ApiOrder[]>();
+      
+      // For each lunch order, check if there's a corresponding refund
+      for (const order of lunchOrdersById.values()) {
+        if (!order.deliveries || order.deliveries.length === 0) continue;
         
-        orders.forEach(order => {
-          const priceAmount = order.price.amount;
-          if (!ordersByPriceAmount.has(priceAmount)) {
-            ordersByPriceAmount.set(priceAmount, []);
-          }
-          ordersByPriceAmount.get(priceAmount)?.push(order);
-        });
+        const deliveryTime = order.deliveries[0].deliveryTime;
+        const amount = order.price.amount;
+        const key = `${deliveryTime}_${amount}`;
         
-        // Find non-refunded orders
-        for (const [amount, ordersByAmount] of ordersByPriceAmount.entries()) {
-          // Skip negative amounts (those are refunds)
-          if (amount <= 0) continue;
-          
-          // Check if there's a corresponding refund order with negative amount
-          const hasRefund = ordersByPriceAmount.has(-amount);
-          
-          // If there's no refund, add these orders as valid
-          if (!hasRefund) {
-            validOrders.push(...ordersByAmount);
-          }
+        // Check if there are refunds for this combination
+        const refundCount = refundsByTimeAndAmount.get(key) || 0;
+        
+        if (refundCount > 0) {
+          // This order has a refund, so decrement the refund count
+          refundsByTimeAndAmount.set(key, refundCount - 1);
+        } else {
+          // This order has no refund, so it's valid
+          validOrders.push(order);
         }
       }
       
-      console.log(`Found ${validOrders.length} valid orders out of ${ordersResponse.orders.length} total`);
+      console.log(`Found ${validOrders.length} valid orders out of ${ordersResponse.orders.length} total`, validOrders);
       
       // For each valid order, fetch the details
       const detailedOrders = await Promise.all(
@@ -153,6 +158,7 @@ export const orderService = {  async getOrdersForWeek(startDate: Date): Promise<
       return [];
     }
   },
+  
   async placeOrder(orderData: { 
     deliveryTime: string; 
     deliveryLocation: Location; 
