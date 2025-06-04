@@ -1,5 +1,6 @@
-import { writable, get } from 'svelte/store';
-import type { DayOrderState, Location, Order } from '$lib/types/orders';
+import { writable } from 'svelte/store';
+import type { DayOrderState, Location } from '$lib/types/orders';
+import { isSameDate } from '$lib/utils/dateUtils';
 
 interface OrderStoreState {
   weekDays: DayOrderState[];
@@ -36,12 +37,11 @@ export const updateOrderStore = {
     
   setSuccessMessage: (successMessage: string | null) => 
     orderStore.update(s => ({ ...s, successMessage })),
-  
-  updateWeekDay: (date: Date, updates: Partial<DayOrderState>) => {
+    updateWeekDay: (date: Date, updates: Partial<DayOrderState>) => {
     orderStore.update(s => ({
       ...s,
       weekDays: s.weekDays.map(day => 
-        day.date.toDateString() === date.toDateString() 
+        isSameDate(day.date, date)
           ? { ...day, ...updates } 
           : day
       )

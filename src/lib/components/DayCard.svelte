@@ -60,11 +60,13 @@
     // Use the current orderItems quantities which are now managed independently
     // from location changes
     setTimeout(() => {
-      dispatch("orderPlaced", { 
+      let data = { 
         date: dayState.date, 
         items: orderItems.filter(i => i.quantity > 0),
         location: dayState.selectedLocation // Use dayState.selectedLocation
-      });
+      }
+      console.log("Placing order with data:", data);
+      dispatch("orderPlaced", data);
       isLoading = false; 
     }, 1000);
   }
@@ -169,10 +171,10 @@
       orderItems[itemIndex] = { ...itemToChange, quantity: newQuantity };
       // No need for the spread operator to trigger reactivity with $state
     }
-  }
-  // These are pure functions, not deriving from reactive state, so they stay as regular functions
-  const getDayName = (date: Date) => date.toLocaleDateString("en-US", { weekday: "long" });
-  const getFormattedDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric" });  // Handles the 'locationChanged' event from LocationSelector
+  }  // Import date formatting utilities
+  import { formatDay, formatDate } from "$lib/utils/dateUtils";
+  
+  // Handles the 'locationChanged' event from LocationSelector
   function handleLocationSelectedFromDropdown(newLocation: Location | null) {
     // The event.detail from LocationSelector is now directly the Location object or null
     // Dispatch an event that the parent component (+page.svelte) will handle
@@ -189,10 +191,9 @@
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
 </script>
 
-<div class="bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col space-y-4 border border-gray-200 {dayState.isWeekend ? 'opacity-70 bg-gray-50' : ''} {dayState.isToday ? 'border-blue-500 border-2' : ''}">
-  <div class="flex items-center justify-between">
-    <h3 class="text-xl font-semibold text-gray-800">{getDayName(dayState.date)}</h3>
-    <span class="text-sm text-gray-500">{getFormattedDate(dayState.date)}</span>
+<div class="bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col space-y-4 border border-gray-200 {dayState.isWeekend ? 'opacity-70 bg-gray-50' : ''} {dayState.isToday ? 'border-blue-500 border-2' : ''}">  <div class="flex items-center justify-between">
+    <h3 class="text-xl font-semibold text-gray-800">{formatDay(dayState.date)}</h3>
+    <span class="text-sm text-gray-500">{formatDate(dayState.date)}</span>
   </div>
 
   {#if !optimisticHasOrder && !dayState.isWeekend}    <LocationSelector 

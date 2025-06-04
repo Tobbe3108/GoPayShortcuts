@@ -6,6 +6,7 @@
     import authStore from "$lib/stores/authStore";
     import { goto } from "$app/navigation";
     import { PRODUCT_IDS } from "$lib/constants/products";
+    import { isSameDate, isWeekend, createOrderDate, formatISODateWithOffset } from "$lib/utils/dateUtils";
 
     const MONDAY_INDEX = 1;
 
@@ -52,10 +53,8 @@
 
             const startOfWeek = getStartOfWeek(new Date());
             const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
-            const workdaysDates = getWorkdays(startOfWeek);
-
-            const newWeekDays = workdaysDates.map(date => {                const existingOrder = fetchedOrders.find(
-                    o => new Date(o.deliveryTime).toDateString() === date.toDateString()
+            const workdaysDates = getWorkdays(startOfWeek);            const newWeekDays = workdaysDates.map(date => {                const existingOrder = fetchedOrders.find(
+                    o => isSameDate(new Date(o.deliveryTime), date)
                 );
 
                 let dayLocationToSet: Location | undefined;
@@ -113,12 +112,9 @@
                             }
                         }
                     }
-                }
-                  // No longer applying fallback location automatically
+                }                  // No longer applying fallback location automatically
                 // Each day will have undefined location unless explicitly set by existing order or user default
-
-                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-                const isToday = date.toDateString() === new Date().toDateString();
+                const isToday = isSameDate(date, new Date());
 
                 return {
                     date,
@@ -128,7 +124,7 @@
                     sodaQuantity: sodaQty,
                     isSaving: false,                    saveError: null,
                     existingOrderId: existingOrder?.id,
-                    isWeekend, 
+                    isWeekend: isWeekend(date), 
                     isToday,
                     orderDetails
                 };
@@ -148,11 +144,10 @@
             loadInitialData();
         }
     });    
-    
-    function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
+      function handleLocationChangeInPage(date: Date, newLocation: Location | null) { // Allow newLocation to be undefined
         // const { date, newLocation } = event.detail; // Removed event destructuring
         $orderStore.weekDays = $orderStore.weekDays.map(day => {
-            if (day.date.toDateString() === date.toDateString()) {
+            if (isSameDate(day.date, date)) {
                 // Preserve existing quantities when changing location
                 return {
                     ...day,
@@ -163,14 +158,13 @@
             return day;
         });
     }
-    
-    async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
+      async function handleOrderUpdate(event: CustomEvent<{ date: Date, items: OrderItemData[], location: Location }>) {
         const { date, items, location } = event.detail;
-        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());
+        const dayStateToUpdate = $orderStore.weekDays.find(d => isSameDate(d.date, date));
         if (!dayStateToUpdate) return;
 
         $orderStore.weekDays = $orderStore.weekDays.map(day => 
-            day.date.toDateString() === date.toDateString() 
+            isSameDate(day.date, date) 
             ? { ...day, isSaving: true, saveError: null } 
             : day
         );
@@ -184,12 +178,13 @@
                 throw new Error("Location must be selected.");
             }
 
-            if (orderLinesPayload.length > 0) {
-                if (dayStateToUpdate.existingOrderId) {
+            if (orderLinesPayload.length > 0) {                if (dayStateToUpdate.existingOrderId) {
                     await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
                 }
+                
+                // Use the utility function to format the date in the exact format required by the API
                 await orderService.placeOrder({
-                    deliveryTime: date.toISOString(),
+                    deliveryTime: formatISODateWithOffset(date),
                     deliveryLocation: location,
                     orderLines: orderLinesPayload
                 });
@@ -199,19 +194,18 @@
             await loadInitialData(); 
         } catch (err: any) {
             console.error("Error updating order:", err);            $orderStore.weekDays = $orderStore.weekDays.map(day => 
-                day.date.toString() === date.toString() 
+                isSameDate(day.date, date) 
                 ? { ...day, isSaving: false, saveError: err.message || "Failed to save order." } 
                 : day
             );
             $orderStore.errorMessage = err.message || "Failed to save order.";
         }
-    }
-
-    async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
+    }    async function handleOrderCancelled(event: CustomEvent<{ date: Date }>) {
         const { date } = event.detail;
-        const dayStateToUpdate = $orderStore.weekDays.find(d => d.date.toDateString() === date.toDateString());        if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
+        const dayStateToUpdate = $orderStore.weekDays.find(d => isSameDate(d.date, date));
+        if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
             $orderStore.weekDays = $orderStore.weekDays.map(day => 
-                day.date.toDateString() === date.toDateString() 
+                isSameDate(day.date, date) 
                 ? { ...day, isSaving: true, saveError: null } 
                 : day
             );
@@ -220,7 +214,7 @@
                 await loadInitialData();
             } catch (err: any) {
                 console.error("Error cancelling order:", err);                $orderStore.weekDays = $orderStore.weekDays.map(day => 
-                    day.date.toDateString() === date.toDateString() 
+                    isSameDate(day.date, date) 
                     ? { ...day, isSaving: false, saveError: err.message || "Failed to cancel order." } 
                     : day
                 );
@@ -291,8 +285,8 @@
             <LoadingSpinner size="w-12 h-12" />
             <p class="mt-4 text-gray-600">Loading orders...</p>
         </div>    {:else if $orderStore.weekDays.length > 0}
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}                <DayCard 
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">            {#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
+                <DayCard 
                     dayState={dayState} 
                     locations={$orderStore.locations} 
                     onLocationChange={handleLocationChangeInPage}

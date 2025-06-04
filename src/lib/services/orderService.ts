@@ -1,5 +1,6 @@
 import type { ApiOrder, Location, Order, OrderItemData, OrderLine } from "$lib/types/orders";
 import { api } from "$lib/services/apiService";
+import { DANISH_LOCALE, formatISODateWithOffset } from "$lib/utils/dateUtils";
 
 export const locationService = {
   async getLocations(): Promise<Location[]> {
@@ -40,14 +41,16 @@ export const locationService = {
   },
 };
 
-export const orderService = {
-  async getOrdersForWeek(startDate: Date): Promise<Order[]> {
+export const orderService = {  async getOrdersForWeek(startDate: Date): Promise<Order[]> {
     try {
+      // Import the date utility function
+      const { formatDateForApi } = await import("$lib/utils/dateUtils");
+      
       // Format dates for API call
-      const startDateStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const startDateStr = formatDateForApi(startDate);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + 6);
-      const endDateStr = endDate.toISOString().split('T')[0];
+      const endDateStr = formatDateForApi(endDate);
 
       console.log(`Fetching orders between ${startDateStr} and ${endDateStr}`);
 
@@ -132,11 +135,9 @@ export const orderService = {
               buyerParty: "PRIVATE"
             });
           });
-        }
-        
-        return {
+        }          return {
           id: apiOrder.id.toString(),
-          deliveryTime: delivery ? delivery.deliveryTime : new Date().toISOString(),
+          deliveryTime: delivery ? delivery.deliveryTime : formatISODateWithOffset(new Date()),
           deliveryLocation: {
             displayName: apiOrder.kitchen.name,
             name: apiOrder.kitchen.name,
@@ -174,10 +175,10 @@ export const orderService = {
       console.info("Placing payment details with payload:", paymentDetailsPayload);
 
       // First API call for payment details
-      // await api(`/suppliers/kitchens/${orderData.deliveryLocation.kitchenId}/payment/paymentDetails/catering`, {
-      //   method: 'POST',
-      //   body: paymentDetailsPayload
-      // });
+      await api(`/suppliers/kitchens/${orderData.deliveryLocation.kitchenId}/payment/paymentDetails/catering`, {
+        method: 'POST',
+        body: paymentDetailsPayload
+      });
 
       // Step 2: "Food pay" call to place the actual order
       const orderPayload = {
@@ -205,25 +206,23 @@ export const orderService = {
       console.info("Placing order with payload:", orderPayload);
 
       // Send the order to the API
-      // const response = await api<{orders: ApiOrder[]}>('/orders/catering', {
-      //   method: 'POST',
-      //   body: orderPayload
-      // });
+      const response = await api<{orders: ApiOrder[]}>('/orders/catering', {
+        method: 'POST',
+        body: orderPayload
+      });
 
-      // if (!response.orders || !response.orders.length) {
-      //   throw new Error('No order returned from API');
-      // }
+      if (!response.orders || !response.orders.length) {
+        throw new Error('No order returned from API');
+      }
 
-      // const apiOrder = response.orders[0];
-      // const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
-
-      // Return the created order in the expected format
+      const apiOrder = response.orders[0];
+      const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
       return {
-        // id: apiOrder.id.toString(),
-        // deliveryTime: delivery ? delivery.deliveryTime : orderData.deliveryTime,
+        id: apiOrder.id.toString(),
+        deliveryTime: delivery ? delivery.deliveryTime : orderData.deliveryTime,
         deliveryLocation: orderData.deliveryLocation,
         orderLines: orderData.orderLines,
-        // orderDetails: apiOrder
+        orderDetails: apiOrder
       };
     } catch (error) {
       console.error('Failed to place order:', error);
