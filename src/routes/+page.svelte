@@ -16,6 +16,8 @@
 	} from '$lib/utils/dateUtils';
 	import { page } from '$app/stores';
 	import { notifications } from '$lib/stores/notificationStore';
+	import { writable } from 'svelte/store';
+	import { getISOWeek } from 'date-fns';
 
 	const MONDAY_INDEX = 1;
 	const itemProductMap: Record<number, { name: string; type: 'breakfast' | 'lunch' | 'soda' }> = {
@@ -24,12 +26,19 @@
 		[PRODUCT_IDS.SODA]: { name: 'Sodavand', type: 'soda' }
 	};
 
+	const today = new Date();
+	const initialWeekStart = getStartOfWeek(today);
+	const selectedWeekStart = writable<Date>(initialWeekStart);
+
 	$effect(() => {
 		if (!$authStore.user) {
 			console.debug('User is not authenticated, redirecting to login');
 			goto(base + '/login');
 		} else {
-			loadInitialData();
+			const unsub = selectedWeekStart.subscribe(() => {
+				loadInitialData();
+			});
+			return unsub;
 		}
 	});
 
@@ -49,6 +58,11 @@
 			workdays.push(day);
 		}
 		return workdays;
+	}
+
+	function getWeekLabel(date: Date) {
+		const week = getISOWeek(date);
+		return `Uge ${week}`;
 	}
 
 	async function loadInitialData() {
@@ -72,7 +86,11 @@
 			// Removed automatic fallback to first location when no default is set
 			// This ensures a location is only used if explicitly selected by the user or saved as default
 
-			const startOfWeek = getStartOfWeek(new Date());
+			let startOfWeekValue = getStartOfWeek(today);
+			selectedWeekStart.subscribe((val) => {
+				startOfWeekValue = val;
+			})();
+			const startOfWeek = startOfWeekValue;
 			const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
 			const workdaysDates = getWorkdays(startOfWeek);
 			const newWeekDays = workdaysDates.map((date) => {
@@ -215,7 +233,7 @@
 			if (orderLinesPayload.length > 0) {
 				if (dayStateToUpdate.existingOrderId) {
 					await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
-				}				// Use the utility function to format the date in the exact format required by the API
+				} // Use the utility function to format the date in the exact format required by the API
 				await orderService.placeOrder({
 					deliveryTime: formatISODateWithOffset(date),
 					deliveryLocation: location,
@@ -245,7 +263,8 @@
 		if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
 			$orderStore.weekDays = $orderStore.weekDays.map((day) =>
 				isSameDate(day.date, date) ? { ...day, isSaving: true, saveError: null } : day
-			);			try {
+			);
+			try {
 				await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
 				notifications.success('Bestilling blev annulleret med succes!');
 				await loadInitialData();
@@ -279,8 +298,9 @@
 					sodaQuantity: items.find((i) => i.type === 'soda')?.quantity ?? 0
 				};
 			}
-			return day;		});
-		
+			return day;
+		});
+
 		// Use the notification system instead of orderStore.successMessage
 		notifications.success('Standardbestillingsindstillinger gemt!');
 	}
@@ -289,8 +309,12 @@
 <div class="container p-4 mx-auto">
 	<div class="container mx-auto flex items-center justify-between mb-8">
 		<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
+		{#if $orderStore.weekDays.length > 0}
+			<div class="text-slate-700 font-bold text-2xl">{getWeekLabel($selectedWeekStart)}</div>
+		{/if}
 		{#if $authStore.user && $page.url.pathname !== '/login'}
-			<button				onclick={() => {
+			<button
+				onclick={() => {
 					$authStore.user = null;
 					$authStore.loading = false;
 					$authStore.error = null;
@@ -301,12 +325,15 @@
 			>
 				Log ud
 			</button>
-		{/if}	</div>
+		{/if}
+	</div>
+
 	{#if $orderStore.isLoading && $orderStore.weekDays.length === 0}
 		<div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
 			<LoadingSpinner size="w-12 h-12" />
 			<p class="mt-4 text-slate-600">Indlæser bestillinger...</p>
-		</div>{:else if $orderStore.weekDays.length > 0}
+		</div>
+	{:else if $orderStore.weekDays.length > 0}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 			{#each $orderStore.weekDays as dayState, i (dayState.date.toISOString())}
 				<DayCard
@@ -318,7 +345,41 @@
 					on:saveDefault={handleSaveDefault}
 				/>
 			{/each}
-		</div>	{:else if !$orderStore.isLoading}
+		</div>
+		<div class="flex flex-col items-center gap-2 mt-8">
+			<div class="flex gap-4">
+				<button
+					class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700"
+					onclick={() =>
+						selectedWeekStart.update((d) => {
+							const nd = new Date(d);
+							nd.setDate(nd.getDate() - 7);
+							return getStartOfWeek(nd);
+						})}
+				>
+					Forrige uge
+				</button>
+				<button
+					class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700"
+					disabled={isSameDate($selectedWeekStart, getStartOfWeek(today))}
+					onclick={() => selectedWeekStart.set(getStartOfWeek(today))}
+				>
+					Denne uge
+				</button>
+				<button
+					class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700"
+					onclick={() =>
+						selectedWeekStart.update((d) => {
+							const nd = new Date(d);
+							nd.setDate(nd.getDate() + 7);
+							return getStartOfWeek(nd);
+						})}
+				>
+					Næste uge
+				</button>
+			</div>
+		</div>
+	{:else if !$orderStore.isLoading}
 		<p class="mt-10 text-center text-slate-500">Ingen bestillingsdata tilgængelig for denne uge.</p>
 	{/if}
 </div>
