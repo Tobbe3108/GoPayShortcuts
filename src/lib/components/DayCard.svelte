@@ -296,21 +296,21 @@
           <div class="flex items-center justify-between">
             <span class="text-slate-700">{item.name}</span>
             <div class="flex items-center space-x-2">
-                <button
-                  onclick={() => handleItemChange(item.id, -1)}
-                  disabled={isLoading || item.quantity === 0 || !isOrderTimeAllowed(item.type, dayState.date)}
-                  class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
-                >
-                  -
-                </button>
-                <span class="w-8 text-center text-slate-700">{item.quantity}</span>
-                <button
-                  onclick={() => handleItemChange(item.id, 1)}
-                  disabled={isLoading || !isOrderTimeAllowed(item.type, dayState.date)}
-                  class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50"
-                >
-                  +
-                </button>
+              <button
+                onclick={() => handleItemChange(item.id, -1)}
+                disabled={isLoading || item.quantity === 0 || !isOrderTimeAllowed(item.type, dayState.date)}
+                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
+              >
+                -
+              </button>
+              <span class="w-8 text-center text-slate-700">{item.quantity}</span>
+              <button
+                onclick={() => handleItemChange(item.id, 1)}
+                disabled={isLoading || !isOrderTimeAllowed(item.type, dayState.date)}
+                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50"
+              >
+                +
+              </button>
             </div>
           </div>
         {/each}
