@@ -59,6 +59,16 @@
       alert("Du kan ikke placere bestillinger for en dag i fortiden.");
       return;
     }
+    for (const item of orderItems) {
+      if (item.type === 'breakfast' && item.quantity > 0 && !isOrderTimeAllowed(item.type, dayState.date)) {
+        alert('Du kan ikke bestille morgenmad mere i dag.');
+        return;
+      }
+      if (item.type === 'lunch' && item.quantity > 0 && !isOrderTimeAllowed(item.type, dayState.date)) {
+        alert('Du kan ikke bestille frokost mere i dag.');
+        return;
+      }
+    }
     isLoading = true;
     optimisticHasOrder = true; 
 
@@ -177,7 +187,7 @@
       // No need for the spread operator to trigger reactivity with $state
     }
   }  // Import date formatting utilities
-  import { formatDay, formatDate, isPastDate } from "$lib/utils/dateUtils";
+  import { formatDay, formatDate, isPastDate, isSameDate } from "$lib/utils/dateUtils";
   
   // Handles the 'locationChanged' event from LocationSelector
   function handleLocationSelectedFromDropdown(newLocation: Location | null) {
@@ -194,6 +204,15 @@
   }
 
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  function isOrderTimeAllowed(itemType: 'breakfast' | 'lunch' | 'soda', date: Date): boolean {
+    const now = new Date();
+    if (!isSameDate(now, date)) return true;
+    const hour = now.getHours();
+    if (itemType === 'breakfast') return hour < 10;
+    if (itemType === 'lunch') return hour < 13;
+    return true;
+  }
 </script>
 
 <div class="bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col space-y-4 border border-slate-200 {dayState.isWeekend ? 'opacity-70 bg-slate-50' : ''} {dayState.isToday ? 'border-slate-800 border-2' : ''}">  <div class="flex items-center justify-between">
@@ -277,21 +296,21 @@
           <div class="flex items-center justify-between">
             <span class="text-slate-700">{item.name}</span>
             <div class="flex items-center space-x-2">
-              <button
-                onclick={() => handleItemChange(item.id, -1)}
-                disabled={isLoading || item.quantity === 0}
-                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
-              >
-                -
-              </button>
-              <span class="w-8 text-center text-slate-700">{item.quantity}</span>
-              <button
-                onclick={() => handleItemChange(item.id, 1)}
-                disabled={isLoading}
-                class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50"
-              >
-                +
-              </button>
+                <button
+                  onclick={() => handleItemChange(item.id, -1)}
+                  disabled={isLoading || item.quantity === 0 || !isOrderTimeAllowed(item.type, dayState.date)}
+                  class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
+                >
+                  -
+                </button>
+                <span class="w-8 text-center text-slate-700">{item.quantity}</span>
+                <button
+                  onclick={() => handleItemChange(item.id, 1)}
+                  disabled={isLoading || !isOrderTimeAllowed(item.type, dayState.date)}
+                  class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50"
+                >
+                  +
+                </button>
             </div>
           </div>
         {/each}
