@@ -55,6 +55,10 @@
       alert("Kan ikke placere en tom bestilling.");
       return;
     }
+    if (isPastDate(dayState.date)) {
+      alert("Du kan ikke placere bestillinger for en dag i fortiden.");
+      return;
+    }
     isLoading = true;
     optimisticHasOrder = true; 
 
@@ -297,7 +301,7 @@
 
       <div class="flex flex-col pt-2 space-y-2">        <button          onclick={placeOrder} 
           class:opacity-50={isLoading}
-          disabled={isLoading || getTotalItems() === 0 || !dayState.selectedLocation}
+          disabled={isLoading || getTotalItems() === 0 || !dayState.selectedLocation || isPastDate(dayState.date)}
           class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-slate-800 rounded hover:bg-slate-700 disabled:bg-gray-400"
         >
           {#if isLoading}Placerer bestilling...{:else}Placér bestilling{/if}
