@@ -5,6 +5,7 @@
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import type { PageData } from './$types';
 	import { base } from '$app/paths';
+	import { notifications } from '$lib/stores/notificationStore';
 
 	const { data } = $props<{ data: PageData }>();
 
@@ -18,11 +19,9 @@
 			goto(base + '/');
 		}
 	});
-
 	async function handleEmailSubmit() {
 		if (!email) {
-			$authStore.error = 'Email er påkrævet';
-			console.debug($authStore.error);
+			notifications.error('Email er påkrævet');
 			return;
 		}
 
@@ -33,13 +32,15 @@
 			console.debug('OTP requested successfully for email:', email);
 		} catch (err) {
 			console.debug('Error during OTP request:', err);
+			if (err instanceof Error) {
+				notifications.error(err.message);
+			}
 		}
 	}
 
 	async function handleOTPSubmit() {
 		if (!otp) {
-			$authStore.error = 'Verifikationskode er påkrævet';
-			console.debug($authStore.error);
+			notifications.error('Verifikationskode er påkrævet');
 			return;
 		}
 
@@ -48,9 +49,11 @@
 			await verifyOTP(otp, data.fetch);
 		} catch (err) {
 			console.debug('Error during OTP verification:', err);
+			if (err instanceof Error) {
+				notifications.error(err.message);
+			}
 		}
 	}
-
 	function goBackToEmail() {
 		console.debug('Going back to email step');
 		isEmailStep = true;
@@ -63,14 +66,6 @@
 		<div class="flex justify-center">
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-75 w-auto" />
 		</div>
-		{#if $authStore.error}
-			<div
-				class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
-				role="alert"
-			>
-				<span>{$authStore.error}</span>
-			</div>
-		{/if}
 		{#if isEmailStep}
 			<form
 				onsubmit={(e) => {

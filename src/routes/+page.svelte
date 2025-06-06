@@ -15,6 +15,7 @@
 		formatISODateWithOffset
 	} from '$lib/utils/dateUtils';
 	import { page } from '$app/stores';
+	import { notifications } from '$lib/stores/notificationStore';
 
 	const MONDAY_INDEX = 1;
 	const itemProductMap: Record<number, { name: string; type: 'breakfast' | 'lunch' | 'soda' }> = {
@@ -214,20 +215,21 @@
 			if (orderLinesPayload.length > 0) {
 				if (dayStateToUpdate.existingOrderId) {
 					await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
-				}
-
-				// Use the utility function to format the date in the exact format required by the API
+				}				// Use the utility function to format the date in the exact format required by the API
 				await orderService.placeOrder({
 					deliveryTime: formatISODateWithOffset(date),
 					deliveryLocation: location,
 					orderLines: orderLinesPayload
 				});
+				notifications.success('Bestilling blev placeret med succes!');
 			} else if (dayStateToUpdate.existingOrderId) {
 				await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
+				notifications.success('Bestilling blev annulleret med succes!');
 			}
 			await loadInitialData();
 		} catch (err: any) {
 			console.error('Error updating order:', err);
+			notifications.error(err.message || 'Fejl ved opdatering af bestilling.');
 			$orderStore.weekDays = $orderStore.weekDays.map((day) =>
 				isSameDate(day.date, date)
 					? { ...day, isSaving: false, saveError: err.message || 'Failed to save order.' }
@@ -243,12 +245,13 @@
 		if (dayStateToUpdate && dayStateToUpdate.existingOrderId) {
 			$orderStore.weekDays = $orderStore.weekDays.map((day) =>
 				isSameDate(day.date, date) ? { ...day, isSaving: true, saveError: null } : day
-			);
-			try {
+			);			try {
 				await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
+				notifications.success('Bestilling blev annulleret med succes!');
 				await loadInitialData();
 			} catch (err: any) {
 				console.error('Error cancelling order:', err);
+				notifications.error(err.message || 'Fejl ved annullering af bestilling.');
 				$orderStore.weekDays = $orderStore.weekDays.map((day) =>
 					isSameDate(day.date, date)
 						? { ...day, isSaving: false, saveError: err.message || 'Failed to cancel order.' }
@@ -276,13 +279,10 @@
 					sodaQuantity: items.find((i) => i.type === 'soda')?.quantity ?? 0
 				};
 			}
-			return day;
-		});
-		// Set success message in the store
-		$orderStore.successMessage = 'Standardbestillingsindstillinger gemt!'; // Clear the success message after 3 seconds
-		setTimeout(() => {
-			$orderStore.successMessage = null;
-		}, 3000);
+			return day;		});
+		
+		// Use the notification system instead of orderStore.successMessage
+		notifications.success('Standardbestillingsindstillinger gemt!');
 	}
 </script>
 
@@ -301,38 +301,7 @@
 			>
 				Log ud
 			</button>
-		{/if}
-	</div>
-	{#if $orderStore.errorMessage}
-		<div
-			class="fixed z-50 px-4 py-3 mb-6 text-red-700 bg-red-100 border border-red-400 rounded shadow-lg top-4 right-4"
-			role="alert"
-		>
-			<div class="flex justify-between">
-				<p class="font-bold">Fejl</p>
-				<button
-					onclick={() => ($orderStore.errorMessage = null)}
-					class="font-bold text-red-700 hover:text-red-900">&times;</button
-				>
-			</div>
-			<p>{$orderStore.errorMessage}</p>
-		</div>
-	{/if}
-	{#if $orderStore.successMessage}
-		<div
-			class="fixed z-50 px-4 py-3 mb-6 text-slate-700 bg-slate-100 border border-slate-400 rounded shadow-lg top-4 right-4"
-			role="alert"
-		>
-			<div class="flex justify-between">
-				<p class="font-bold">Succes</p>
-				<button
-					onclick={() => ($orderStore.successMessage = null)}
-					class="font-bold text-slate-700 hover:text-slate-900">&times;</button
-				>
-			</div>
-			<p>{$orderStore.successMessage}</p>
-		</div>
-	{/if}
+		{/if}	</div>
 	{#if $orderStore.isLoading && $orderStore.weekDays.length === 0}
 		<div class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
 			<LoadingSpinner size="w-12 h-12" />

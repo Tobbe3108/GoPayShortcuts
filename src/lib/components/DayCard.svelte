@@ -3,6 +3,8 @@
   import { createEventDispatcher } from "svelte";
   import LocationSelector from "./LocationSelector.svelte"; 
   import { PRODUCT_IDS } from "$lib/constants/products";
+  import { formatDay, formatDate, isPastDate, isSameDate } from "$lib/utils/dateUtils";
+  import { notifications } from "$lib/stores/notificationStore";
 
   // Ensure onLocationChange is correctly typed in $props
   const { dayState, locations, onLocationChange: onLocationChangeProp } = $props<{
@@ -44,28 +46,28 @@
   });
 
   // dayState.selectedLocation is the source of truth for display and actions.
-  // The LocationSelector will emit an event when the user changes the selection.  
+  // The LocationSelector will emit an event when the user changes the selection.   
   function placeOrder() {
     if (!dayState.selectedLocation) { 
       // Use dayState.selectedLocation
-      alert("Vælg venligst en lokation for denne dag.");
+      notifications.error("Vælg venligst en lokation for denne dag.");
       return;
     }
     if (orderItems.every(item => item.quantity === 0)) {
-      alert("Kan ikke placere en tom bestilling.");
+      notifications.error("Kan ikke placere en tom bestilling.");
       return;
     }
     if (isPastDate(dayState.date)) {
-      alert("Du kan ikke placere bestillinger for en dag i fortiden.");
+      notifications.error("Du kan ikke placere bestillinger for en dag i fortiden.");
       return;
     }
     for (const item of orderItems) {
       if (item.type === 'breakfast' && item.quantity > 0 && !isOrderTimeAllowed(item.type, dayState.date)) {
-        alert('Du kan ikke bestille morgenmad mere i dag.');
+        notifications.error('Du kan ikke bestille morgenmad mere i dag.');
         return;
       }
       if (item.type === 'lunch' && item.quantity > 0 && !isOrderTimeAllowed(item.type, dayState.date)) {
-        alert('Du kan ikke bestille frokost mere i dag.');
+        notifications.error('Du kan ikke bestille frokost mere i dag.');
         return;
       }
     }
@@ -186,8 +188,7 @@
       orderItems[itemIndex] = { ...itemToChange, quantity: newQuantity };
       // No need for the spread operator to trigger reactivity with $state
     }
-  }  // Import date formatting utilities
-  import { formatDay, formatDate, isPastDate, isSameDate } from "$lib/utils/dateUtils";
+  }
   
   // Handles the 'locationChanged' event from LocationSelector
   function handleLocationSelectedFromDropdown(newLocation: Location | null) {
@@ -206,9 +207,10 @@
   const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
 
   function isOrderTimeAllowed(itemType: 'breakfast' | 'lunch' | 'soda', date: Date): boolean {
-    const now = new Date();
-    if (!isSameDate(now, date)) return true;
-    const hour = now.getHours();
+    if (itemType === 'soda') return true;
+    if (isPastDate(date)) return false;
+    
+    const hour = new Date().getHours();
     if (itemType === 'breakfast') return hour < 10;
     if (itemType === 'lunch') return hour < 13;
     return true;

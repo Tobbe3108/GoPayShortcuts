@@ -2,6 +2,7 @@
 	import '../app.css';
 	import authStore from '$lib/stores/authStore';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+	import Notifications from '$lib/components/Notifications.svelte';
 	import { page } from '$app/stores';
 	import { base } from '$app/paths';
 </script>
@@ -17,4 +18,6 @@
 	{:else}
 		<slot />
 	{/if}
+
+	<Notifications />
 </div>
