@@ -12,7 +12,7 @@ export interface Notification {
 function createNotificationStore() {
   const { subscribe, update } = writable<Notification[]>([]);
 
-  function addNotification(message: string, type: NotificationType = 'info', timeout = 3000) {
+  function addNotification(message: string, type: NotificationType = 'info', timeout = 5000) {
     const id = crypto.randomUUID();
     
     update(notifications => [
@@ -37,8 +37,8 @@ function createNotificationStore() {
     subscribe,
     info: (msg: string, timeout?: number) => addNotification(msg, 'info', timeout),
     success: (msg: string, timeout?: number) => addNotification(msg, 'success', timeout),
-    warning: (msg: string, timeout?: number) => addNotification(msg, 'warning', timeout),
-    error: (msg: string, timeout?: number) => addNotification(msg, 'error', timeout),
+    warning: (msg: string, timeout?: number) => { console.warn(msg); addNotification(msg, 'warning', timeout ?? 10000); },
+    error: (msg: string, timeout?: number) => { console.error(msg); addNotification(msg, 'error', timeout ?? 15000); },
     remove: removeNotification
   };
 }
