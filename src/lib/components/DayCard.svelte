@@ -229,11 +229,21 @@
 	}
 
 	const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
-
 	function isOrderTimeAllowed(itemType: 'breakfast' | 'lunch' | 'soda', date: Date): boolean {
 		if (itemType === 'soda') return true;
 		if (isPastDate(date)) return false;
 
+		// If ordering for a future day, allow it regardless of current time
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		const orderDate = new Date(date);
+		orderDate.setHours(0, 0, 0, 0);
+
+		// Allow ordering for future days regardless of current time
+		if (orderDate > today) return true;
+
+		// For same-day orders, apply time restrictions
 		const hour = new Date().getHours();
 		if (itemType === 'breakfast') return hour < 10;
 		if (itemType === 'lunch') return hour < 13;
