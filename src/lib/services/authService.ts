@@ -23,22 +23,27 @@ export function loadAuth(): void {
         const storedAuthDataString = localStorage.getItem(AUTH_KEY);
         if (storedAuthDataString) {
             const storedAuthData: StoredAuthData = JSON.parse(storedAuthDataString);
-            // apiService will use the token from localStorage
-            // Store only UserType (id, email) in the authStore
+            console.debug('Auth loaded from localStorage:', storedAuthData);
+
             updateAuthStore.setUser({ id: storedAuthData.id, email: storedAuthData.email });
             updateAuthStore.setLoading(false);
-            console.debug('Auth loaded from localStorage:', storedAuthData);
         } else {
+            console.debug('No auth data found in localStorage');
+
             updateAuthStore.setUser(null);
             updateAuthStore.setLoading(false);
-            console.debug('No auth data found in localStorage');
         }
     } catch (error) {
         console.error('Failed to load auth from storage', error);
+
         updateAuthStore.setUser(null);
         updateAuthStore.setLoading(false);
         updateAuthStore.setError('Error loading session.');
-        if (browser) localStorage.removeItem(AUTH_KEY);
+        if (browser) 
+        {
+            console.debug('Clearing auth data from localStorage due to error');
+            localStorage.removeItem(AUTH_KEY);
+        }
     }
 }
 
@@ -62,26 +67,33 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         await Promise.race([
             api('/users/me', { method: 'GET' }, fetchFunction),
             timeoutPromise
-        ]);        
+        ]);
         updateAuthStore.setLoading(false);
         updateAuthStore.setError(null); // Clear error on success
         console.debug('Session validation successful');
     } catch (error: any) {
-        console.warn('Session validation error or timeout:', error);
+        if (error.status === 404) {
+            // 404 is not considered a failure for /users/me
+            updateAuthStore.setLoading(false);
+            updateAuthStore.setError(null);
+            console.debug('Session validation returned 404, treating as non-failure');
+            return;
+        }
+
         let storeError: string | null = 'Session check failed. Please try logging in again.';
+
         if (error.message && error.message.includes('timed out')) {
             storeError = 'Session validation timed out. Please check your connection and try again.';
         } else if (error.status === 401) {
-            storeError = null; // No specific error message for 401, user will be logged out.
+            storeError = "Unauthorized";
         }
 
+        console.debug('Clearing auth data due to session validation failure', storeError);
         updateAuthStore.setUser(null);
         updateAuthStore.setLoading(false);
         updateAuthStore.setError(storeError);
-
-        console.debug('Clearing auth data due to session validation failure', storeError);
-
         if (browser) {
+            console.debug('Clearing auth data from localStorage');
             localStorage.removeItem(AUTH_KEY);
         }
     }
@@ -94,6 +106,7 @@ export async function requestOTP(email: string, fetchFunction?: typeof fetch): P
     updateAuthStore.setError(null);
     try {
         if (browser) {
+            console.debug('Storing email in localStorage for OTP request:', email);
             localStorage.setItem(EMAIL_KEY, email);
         }
         await api('/authenticate/username', {
@@ -143,7 +156,9 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
         const userForStore: UserType = { id: userId, email };
         const authDataToStore: StoredAuthData = { ...userForStore, token };
 
+        console.debug('OTP verification successful');
         if (browser) {
+            console.debug('Storing auth data in localStorage:', authDataToStore);
             localStorage.setItem(AUTH_KEY, JSON.stringify(authDataToStore));
             localStorage.removeItem(EMAIL_KEY);
         }        
@@ -156,6 +171,7 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
         updateAuthStore.setLoading(false);
         updateAuthStore.setError('Failed to verify code. Please try again.');
         if (browser) {
+            console.debug('Clearing auth data from localStorage due to OTP verification failure');
             localStorage.removeItem(AUTH_KEY);
         }
         throw error;
@@ -165,6 +181,7 @@ export async function verifyOTP(otp: string, fetchFunction?: typeof fetch): Prom
 export function logout(): void {
     console.debug('Logging out user');
     if (browser) {
+        console.debug('Clearing auth data from localStorage');
         localStorage.removeItem(AUTH_KEY);
         localStorage.removeItem(EMAIL_KEY);
     }
