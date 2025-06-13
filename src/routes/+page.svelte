@@ -101,9 +101,28 @@
 				let lunchQty = 0;
 				let sodaQty = 0;
 				let orderDetails = undefined;
-
 				if (existingOrder) {
-					dayLocationToSet = existingOrder.deliveryLocation;
+					// Get delivery location from existing order, but ensure it has a valid webshopId
+					// The API sometimes returns locations without a webshopId, which breaks additional orders
+					if (existingOrder.deliveryLocation) {
+						if (!existingOrder.deliveryLocation.webshopId) {
+							// Try to find a matching location with complete data
+							const matchingLocation = fetchedLocations.find(
+								(l) => l.kitchenId === existingOrder.deliveryLocation.kitchenId
+							);
+
+							if (matchingLocation) {
+								// Use the complete location data with webshopId
+								dayLocationToSet = matchingLocation;
+							} else {
+								// Fall back to the original location if no match found
+								dayLocationToSet = existingOrder.deliveryLocation;
+							}
+						} else {
+							// Use the original location if it already has a webshopId
+							dayLocationToSet = existingOrder.deliveryLocation;
+						}
+					}
 
 					// Extract order details for display
 					if (existingOrder.orderDetails) {
@@ -210,11 +229,16 @@
 			return day;
 		});
 	}
-
 	async function handleOrderUpdate(
-		event: CustomEvent<{ date: Date; items: OrderItemData[]; location: Location }>
+		event: CustomEvent<{
+			date: Date;
+			items: OrderItemData[];
+			location: Location;
+			isAdditional?: boolean;
+		}>
 	) {
-		const { date, items, location } = event.detail;
+		const { date, items, isAdditional = false } = event.detail;
+		let { location } = event.detail; // Use let for location so we can modify it
 		const dayStateToUpdate = $orderStore.weekDays.find((d) => isSameDate(d.date, date));
 		if (!dayStateToUpdate) return;
 
@@ -226,21 +250,48 @@
 			const orderLinesPayload: OrderLine[] = items
 				.filter((item) => item.quantity > 0)
 				.map((item) => ({ productId: item.id, items: item.quantity, buyerParty: 'PRIVATE' }));
+
+			// For additional orders, try to find a complete location with webshopId if missing
+			if (isAdditional && location && (!location.webshopId || location.webshopId === '')) {
+				console.log('Additional order missing webshopId, searching for complete location');
+				const completeLocation = $orderStore.locations.find(
+					(loc) => loc.kitchenId === location.kitchenId
+				);
+
+				if (completeLocation && completeLocation.webshopId) {
+					console.log('Found complete location for additional order:', completeLocation);
+					location = completeLocation;
+				}
+			}
+
 			if (!location || !location.kitchenId || !location.webshopId) {
+				console.error('Invalid location data:', location);
 				throw new Error('Lokation skal vælges.');
 			}
 
 			if (orderLinesPayload.length > 0) {
-				if (dayStateToUpdate.existingOrderId) {
+				// If this is an additional order, don't cancel the existing one
+				if (dayStateToUpdate.existingOrderId && !isAdditional) {
 					await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
-				} // Use the utility function to format the date in the exact format required by the API
-				await orderService.placeOrder({
-					deliveryTime: formatISODateWithOffset(date),
-					deliveryLocation: location,
-					orderLines: orderLinesPayload
-				});
-				notifications.success('Bestilling blev placeret med succes!');
-			} else if (dayStateToUpdate.existingOrderId) {
+				}
+
+				// Place the order using the appropriate method
+				if (isAdditional) {
+					await orderService.placeAdditionalOrder({
+						deliveryTime: formatISODateWithOffset(date),
+						deliveryLocation: location,
+						orderLines: orderLinesPayload
+					});
+					notifications.success('Ekstra bestilling blev placeret med succes!');
+				} else {
+					await orderService.placeOrder({
+						deliveryTime: formatISODateWithOffset(date),
+						deliveryLocation: location,
+						orderLines: orderLinesPayload
+					});
+					notifications.success('Bestilling blev placeret med succes!');
+				}
+			} else if (dayStateToUpdate.existingOrderId && !isAdditional) {
 				await orderService.cancelOrder(dayStateToUpdate.existingOrderId);
 				notifications.success('Bestilling blev annulleret med succes!');
 			}
@@ -341,6 +392,7 @@
 					locations={$orderStore.locations}
 					onLocationChange={handleLocationChangeInPage}
 					on:orderPlaced={handleOrderUpdate}
+					on:additionalOrderPlaced={handleOrderUpdate}
 					on:orderCancelled={handleOrderCancelled}
 					on:saveDefault={handleSaveDefault}
 				/>

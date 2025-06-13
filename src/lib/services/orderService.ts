@@ -334,6 +334,24 @@ export const orderService = {
     }
   },
 
+  // Add a method specifically for additional orders - identical to placeOrder
+  // This is a separate method for clarity, but uses the same API functionality
+  async placeAdditionalOrder(orderData: { 
+    deliveryTime: string; 
+    deliveryLocation: Location; 
+    orderLines: { productId: number; items: number; buyerParty: "PRIVATE" }[];
+  }): Promise<Order> {
+    try {
+      // This is identical to placeOrder - it uses the same API endpoint
+      // but we keep it separate for clarity in the codebase
+      console.info("Placing additional order");
+      return this.placeOrder(orderData);
+    } catch (error) {
+      console.error('Failed to place additional order:', error);
+      throw error;
+    }
+  },
+
   async cancelOrder(orderId: string): Promise<void> {
     try {
       await api(`/orders/${orderId}`, { method: 'DELETE' });

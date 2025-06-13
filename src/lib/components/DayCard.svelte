@@ -5,6 +5,7 @@
 	import { PRODUCT_IDS } from '$lib/constants/products';
 	import { formatDay, formatDate, isPastDate, isSameDate } from '$lib/utils/dateUtils';
 	import { notifications } from '$lib/stores/notificationStore';
+	import AdditionalOrderButton from './AdditionalOrderButton.svelte';
 
 	// Ensure onLocationChange is correctly typed in $props
 	const {
@@ -362,6 +363,8 @@
 			>
 				Gem som standard
 			</button>
+
+			<AdditionalOrderButton {dayState} on:additionalOrderPlaced />
 		</div>
 	{:else}
 		<div class="flex flex-col pt-2 space-y-2">
