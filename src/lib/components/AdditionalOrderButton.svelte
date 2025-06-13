@@ -89,7 +89,8 @@
 				notifications.error('Du kan ikke bestille frokost mere i dag.');
 				return;
 			}
-		}		isLoading = true;
+		}
+		isLoading = true;
 		setTimeout(() => {
 			// Get complete location data from the store based on kitchenId
 			let locationData = dayState.selectedLocation;
