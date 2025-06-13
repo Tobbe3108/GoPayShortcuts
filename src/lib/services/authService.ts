@@ -65,15 +65,21 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         );
 
         await Promise.race([
-            api('/users/me', { method: 'GET' }, fetchFunction),
+            api('/users/me', { method: 'HEAD' }, fetchFunction),
             timeoutPromise
         ]);
         updateAuthStore.setLoading(false);
         updateAuthStore.setError(null); // Clear error on success
         console.debug('Session validation successful');
-    } catch (error: any) {
-        if (error.status === 404) {
-            // 404 is not considered a failure for /users/me
+    } catch (error) {
+        let errObj: Error & { status?: number };
+        if (typeof error === 'string') {
+            errObj = new Error(error);
+        } else {
+            errObj = error as Error & { status?: number };
+        }
+
+        if (errObj.message.includes('404')) {
             updateAuthStore.setLoading(false);
             updateAuthStore.setError(null);
             console.debug('Session validation returned 404, treating as non-failure');
@@ -82,9 +88,9 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
 
         let storeError: string | null = 'Session check failed. Please try logging in again.';
 
-        if (error.message && error.message.includes('timed out')) {
+        if (errObj.message && errObj.message.includes('timed out')) {
             storeError = 'Session validation timed out. Please check your connection and try again.';
-        } else if (error.status === 401) {
+        } else if (errObj.message.includes('401')) {
             storeError = "Unauthorized";
         }
 
@@ -94,7 +100,7 @@ export async function checkAuth(fetchFunction?: typeof fetch): Promise<void> {
         updateAuthStore.setError(storeError);
         if (browser) {
             console.debug('Clearing auth data from localStorage');
-            localStorage.removeItem(AUTH_KEY);
+            // localStorage.removeItem(AUTH_KEY);
         }
     }
 }
