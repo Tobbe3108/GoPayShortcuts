@@ -180,10 +180,6 @@
 				{/each}
 			</div>
 
-			<div class="pt-2 border-t border-slate-200 mb-4">
-				<p class="font-medium text-right text-slate-700">Antal varer i alt: {getTotalItems()}</p>
-			</div>
-
 			<div class="flex space-x-2">
 				<button
 					onclick={closeModal}

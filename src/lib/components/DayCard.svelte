@@ -262,13 +262,6 @@
 		<span class="text-sm text-slate-500">{formatDate(dayState.date)}</span>
 	</div>
 
-	{#if !optimisticHasOrder && !dayState.isWeekend}
-		<LocationSelector
-			selectedLocation={dayState.selectedLocation}
-			{locations}
-			onLocationChange={handleLocationSelectedFromDropdown}
-		/>
-	{/if}
 	{#if dayState.isWeekend}
 		<p class="italic text-center text-slate-600">Weekend - Ingen bestillinger</p>
 	{:else if optimisticHasOrder}
@@ -308,7 +301,7 @@
 
 			<div class="mt-auto">
 				{#if dayState.orderDetails?.price}
-					<p class="font-medium text-right text-slate-700">
+					<p class="font-medium text-right text-slate-700 border-t border-slate-200">
 						Totalpris: {dayState.orderDetails.price.formatted}
 					</p>
 				{/if}
@@ -316,6 +309,11 @@
 		</div>
 	{:else}
 		<!-- Order Creation/Modification View -->
+		<LocationSelector
+			selectedLocation={dayState.selectedLocation}
+			{locations}
+			onLocationChange={handleLocationSelectedFromDropdown}
+		/>
 		<div class="p-3 space-y-3 flex-1 flex flex-col">
 			{#each orderItems as item (item.id)}
 				<div class="flex items-center justify-between">
@@ -341,12 +339,13 @@
 			{/each}
 		</div>
 	{/if}
-	<div class="pt-2 border-t border-slate-200">
-		<p class="font-medium text-right text-slate-700">Antal varer i alt: {getTotalItems()}</p>
-	</div>
+
 	{#if optimisticHasOrder}
 		<div class="flex flex-col pt-2 space-y-2">
-			{#if !dayState.orderDetails?.cancelDisabled || !isPastDate(dayState.date)}
+			{#if !isPastDate(dayState.date)}
+				<AdditionalOrderButton {dayState} on:additionalOrderPlaced />
+			{/if}
+			{#if !dayState.orderDetails?.cancelDisabled && !isPastDate(dayState.date)}
 				<button
 					onclick={cancelOrder}
 					class:opacity-50={isLoading}
@@ -363,8 +362,6 @@
 			>
 				Gem som standard
 			</button>
-
-			<AdditionalOrderButton {dayState} on:additionalOrderPlaced />
 		</div>
 	{:else}
 		<div class="flex flex-col pt-2 space-y-2">
