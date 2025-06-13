@@ -89,8 +89,7 @@ export interface DayOrderState {
   saveError: string | null;
   existingOrderId: string | undefined;
   isWeekend?: boolean; // Added for display logic in DayCard
-  isToday?: boolean;   // Added for display logic in DayCard
-  orderDetails?: {
+  isToday?: boolean;   // Added for display logic in DayCard  orderDetails?: {
     orderLines: {
       id: number;
       name: string;
@@ -101,6 +100,11 @@ export interface DayOrderState {
       formatted: string;
     };
     cancelDisabled?: boolean;
+    distinctLocations?: {
+      name: string;
+      kitchenId: number;
+      displayName: string;
+    }[];
   };
 }
 }

@@ -139,8 +139,7 @@ export const orderService = {
       );
         // Group orders by day to combine multiple orders for the same day
       const ordersByDay = new Map<string, ApiOrder[]>();
-      
-      // Group orders by delivery date
+        // Group orders by delivery date
       detailedOrders.forEach(apiOrder => {
         const delivery = apiOrder.deliveries && apiOrder.deliveries[0];
         if (delivery) {
@@ -164,7 +163,13 @@ export const orderService = {
           name: string
         }>();
         
-        // Calculate total price across all orders for this day
+        // Track distinct locations for orders on this day
+        const distinctLocations = new Map<number, {
+          name: string,
+          kitchenId: number,
+          displayName: string
+        }>();
+          // Calculate total price across all orders for this day
         let totalAmount = 0;
         let currency = "";
         let scale = 0;
@@ -172,6 +177,16 @@ export const orderService = {
         // Combine order lines from all orders for this day
         orders.forEach(order => {          
           const delivery = order.deliveries && order.deliveries[0];
+          
+          // Add location to distinctLocations map
+          if (order.kitchen && order.kitchen.id) {
+            distinctLocations.set(order.kitchen.id, {
+              name: order.kitchen.name,
+              kitchenId: order.kitchen.id,
+              displayName: order.kitchen.name
+            });
+          }
+          
           if (delivery && delivery.orderLines) {
             if (delivery.price) {
               totalAmount += delivery.price.amount;
@@ -222,8 +237,7 @@ export const orderService = {
             amount: totalAmount,
             scale: scale || 2,
             currency: currency || 'DKK',
-            formatted: formattedPrice
-          },
+            formatted: formattedPrice          },
           deliveries: baseOrder.deliveries ? [{
             ...baseDelivery,
             orderLines: Array.from(combinedOrderLines.values()).map(line => ({
@@ -238,17 +252,25 @@ export const orderService = {
           }] : []
         };
         
+        // Convert distinct locations to an array
+        const locations = Array.from(distinctLocations.values());
+        const primaryLocation = {
+          displayName: baseOrder.kitchen.name,
+          name: baseOrder.kitchen.name,
+          kitchenId: baseOrder.kitchen.id,
+          webshopId: ''
+        };
+        
         return {
           id: baseOrder.id.toString(), // Use the first order's ID
           deliveryTime: baseDelivery ? baseDelivery.deliveryTime : formatISODateWithOffset(new Date()),
-          deliveryLocation: {
-            displayName: baseOrder.kitchen.name,
-            name: baseOrder.kitchen.name,
-            kitchenId: baseOrder.kitchen.id,
-            webshopId: ''
-          },
+          deliveryLocation: primaryLocation,
           orderLines,
-          orderDetails: combinedOrderDetails
+          orderDetails: {
+            ...combinedOrderDetails,
+            // Add distinct locations to orderDetails for display
+            distinctLocations: locations.length > 1 ? locations : undefined
+          }
         };
       });
     } catch (error) {

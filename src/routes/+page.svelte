@@ -157,7 +157,9 @@
 										formatted: existingOrder.orderDetails.price.formatted
 									}
 								: undefined,
-							cancelDisabled
+							cancelDisabled,
+							// Pass through distinctLocations if they exist
+							distinctLocations: existingOrder.orderDetails.distinctLocations
 						};
 					}
 
