@@ -5,6 +5,7 @@
 	import { isPastDate, isOrderTimeAllowed } from '$lib/utils/dateUtils';
 	import { notifications } from '$lib/stores/notificationStore';
 	import orderStore from '$lib/stores/orderStore';
+	import LocationSelector from './LocationSelector.svelte';
 
 	const { dayState } = $props<{
 		dayState: DayOrderState;
@@ -18,10 +19,10 @@
 		[PRODUCT_IDS.LUNCH]: { name: 'Frokost', type: 'lunch' },
 		[PRODUCT_IDS.SODA]: { name: 'Læskedrik', type: 'soda' }
 	};
-
 	// State for the modal
 	let isModalOpen = $state(false);
 	let isLoading = $state(false);
+	let selectedLocation = $state<Location | null>(dayState.selectedLocation || null);
 
 	// Initialize order items with zero quantities
 	let orderItems = $state<OrderItemData[]>(
@@ -32,7 +33,6 @@
 			type: productDetails.type
 		}))
 	);
-
 	function openModal() {
 		// Reset quantities when opening modal
 		orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => ({
@@ -41,6 +41,8 @@
 			quantity: 0,
 			type: productDetails.type
 		}));
+		// Initialize with the current dayState location but allow user to change it
+		selectedLocation = dayState.selectedLocation || null;
 		isModalOpen = true;
 	}
 
@@ -57,7 +59,7 @@
 		}
 	}
 	function placeAdditionalOrder() {
-		if (!dayState.selectedLocation) {
+		if (!selectedLocation) {
 			notifications.error('Lokation skal være valgt for denne dag.');
 			return;
 		}
@@ -93,12 +95,10 @@
 		isLoading = true;
 		setTimeout(() => {
 			// Get complete location data from the store based on kitchenId
-			let locationData = dayState.selectedLocation;
+			let locationData = selectedLocation;
 			console.log('Initial location data:', locationData);
-			console.log('Available locations in store:', $orderStore.locations);
-
-			// Try to find the complete location data in the store if webshopId is missing
-			if (locationData) {
+			console.log('Available locations in store:', $orderStore.locations); // Try to find the complete location data in the store if webshopId is missing
+			if (locationData && locationData.kitchenId) {
 				// Always try to get a fresh copy from the store to ensure complete data
 				console.log('Searching for complete location with kitchenId:', locationData.kitchenId);
 				const completeLocation = $orderStore.locations.find(
@@ -110,7 +110,6 @@
 					locationData = completeLocation;
 				}
 			}
-
 			let data = {
 				date: dayState.date,
 				items: orderItems.filter((i) => i.quantity > 0),
@@ -124,7 +123,13 @@
 		}, 1000);
 	}
 
-	const getTotalItems = () => orderItems.reduce((acc, item) => acc + item.quantity, 0);
+	function handleLocationChange(newLocation: Location | null) {
+		selectedLocation = newLocation;
+	}
+
+	function getTotalItems() {
+		return orderItems.reduce((acc, item) => acc + item.quantity, 0);
+	}
 </script>
 
 <button
@@ -140,6 +145,14 @@
 			<div class="flex justify-between mb-4">
 				<h3 class="text-xl font-semibold text-slate-800">Tilføj ekstra bestilling</h3>
 				<button onclick={closeModal} class="text-gray-500 hover:text-gray-700">✕</button>
+			</div>
+			<div class="mb-4">
+				<p class="block mb-2 text-sm font-medium text-slate-700">Lokation</p>
+				<LocationSelector
+					{selectedLocation}
+					locations={$orderStore.locations}
+					onLocationChange={handleLocationChange}
+				/>
 			</div>
 
 			<div class="p-3 space-y-3 flex-1 flex flex-col">
@@ -181,7 +194,7 @@
 				</button>
 				<button
 					onclick={placeAdditionalOrder}
-					disabled={isLoading || getTotalItems() === 0}
+					disabled={isLoading || getTotalItems() === 0 || !selectedLocation}
 					class="w-1/2 px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-green-600 rounded hover:bg-green-700 disabled:opacity-50 disabled:bg-gray-400"
 				>
 					{#if isLoading}Placerer bestilling...{:else}Placér bestilling{/if}
