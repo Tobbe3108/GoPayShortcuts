@@ -322,9 +322,7 @@
 					<div class="flex items-center space-x-2">
 						<button
 							onclick={() => handleItemChange(item.id, -1)}
-							disabled={isLoading ||
-								item.quantity === 0 ||
-								!isOrderTimeAllowed(item.type, dayState.date)}
+							disabled={isLoading || item.quantity === 0}
 							class="px-2 py-1 font-bold text-slate-700 transition-colors bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50"
 						>
 							-
