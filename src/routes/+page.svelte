@@ -12,7 +12,9 @@
 		isSameDate,
 		isWeekend,
 		createOrderDate,
-		formatISODateWithOffset
+		formatISODateWithOffset,
+		formatDay,
+		formatDate
 	} from '$lib/utils/dateUtils';
 	import { page } from '$app/stores';
 	import { notifications } from '$lib/stores/notificationStore';
@@ -93,117 +95,53 @@
 			const startOfWeek = startOfWeekValue;
 			const fetchedOrders = await orderService.getOrdersForWeek(startOfWeek);
 			const workdaysDates = getWorkdays(startOfWeek);
+
+			// Group orders by date
+			const ordersByDate = new Map<string, Order[]>();
+			fetchedOrders.forEach((order) => {
+				const dateKey = new Date(order.deliveryTime).toISOString().split('T')[0];
+				if (!ordersByDate.has(dateKey)) ordersByDate.set(dateKey, []);
+				ordersByDate.get(dateKey)?.push(order);
+			});
 			const newWeekDays = workdaysDates.map((date) => {
-				const existingOrder = fetchedOrders.find((o) => isSameDate(new Date(o.deliveryTime), date));
-
-				let dayLocationToSet: Location | undefined;
-				let breakfastQty = 0;
-				let lunchQty = 0;
-				let sodaQty = 0;
+				const dateKey = date.toISOString().split('T')[0];
+				const orders = ordersByDate.get(dateKey) || [];
+				let breakfastQty = 0,
+					lunchQty = 0,
+					sodaQty = 0;
+				let selectedLocation = undefined;
+				let existingOrderId = undefined;
 				let orderDetails = undefined;
-				if (existingOrder) {
-					// Get delivery location from existing order, but ensure it has a valid webshopId
-					// The API sometimes returns locations without a webshopId, which breaks additional orders
-					if (existingOrder.deliveryLocation) {
-						if (!existingOrder.deliveryLocation.webshopId) {
-							// Try to find a matching location with complete data
-							const matchingLocation = fetchedLocations.find(
-								(l) => l.kitchenId === existingOrder.deliveryLocation.kitchenId
-							);
-
-							if (matchingLocation) {
-								// Use the complete location data with webshopId
-								dayLocationToSet = matchingLocation;
-							} else {
-								// Fall back to the original location if no match found
-								dayLocationToSet = existingOrder.deliveryLocation;
+				// Combine all orders for the day
+				if (orders.length > 0) {
+					orders.forEach((order) => {
+						order.orderLines.forEach((line: OrderLine) => {
+							const productInfo = itemProductMap[line.productId];
+							if (productInfo) {
+								if (productInfo.type === 'breakfast') breakfastQty += line.items;
+								else if (productInfo.type === 'lunch') lunchQty += line.items;
+								else if (productInfo.type === 'soda') sodaQty += line.items;
 							}
-						} else {
-							// Use the original location if it already has a webshopId
-							dayLocationToSet = existingOrder.deliveryLocation;
-						}
-					}
-
-					// Extract order details for display
-					if (existingOrder.orderDetails) {
-						const orderLines = [];
-						let cancelDisabled = false;
-
-						if (existingOrder.orderDetails.deliveries && existingOrder.orderDetails.deliveries[0]) {
-							// Check if cancel is disabled
-							const delivery = existingOrder.orderDetails.deliveries[0];
-
-							// Cancel is disabled if cancelEnable is explicitly false OR if cancelOrder.cancelEnable is explicitly false
-							if (delivery.cancelOrder?.cancelEnable === false) {
-								cancelDisabled = true;
-							}
-
-							// Process order lines if available
-							if (delivery.orderLines) {
-								orderLines.push(
-									...delivery.orderLines.map((line) => ({
-										id: line.id,
-										name: line.name,
-										items: line.items
-									}))
-								);
-							}
-						}
-						orderDetails = {
-							orderLines,
-							price: existingOrder.orderDetails.price
-								? {
-										amount: existingOrder.orderDetails.price.amount,
-										formatted: existingOrder.orderDetails.price.formatted
-									}
-								: undefined,
-							cancelDisabled,
-							// Pass through distinctLocations if they exist
-							distinctLocations: existingOrder.orderDetails.distinctLocations
-						};
-					}
-
-					existingOrder.orderLines.forEach((line: OrderLine) => {
-						const productInfo = itemProductMap[line.productId];
-						if (productInfo) {
-							if (productInfo.type === 'breakfast') breakfastQty = line.items;
-							else if (productInfo.type === 'lunch') lunchQty = line.items;
-							else if (productInfo.type === 'soda') sodaQty = line.items;
-						}
-					});
-				} else {
-					// No existing order, apply defaults
-					if (defaultOrderPref) {
-						defaultOrderPref.items.forEach((item) => {
-							if (item.type === 'breakfast') breakfastQty = item.quantity;
-							if (item.type === 'lunch') lunchQty = item.quantity;
-							if (item.type === 'soda') sodaQty = item.quantity;
 						});
-						if (defaultOrderPref.location) {
-							// Match by ID for robustness
-							const validDefaultLoc = fetchedLocations.find(
-								(l) => l.kitchenId === defaultOrderPref.location?.kitchenId
-							);
-							if (validDefaultLoc) {
-								dayLocationToSet = validDefaultLoc;
-							}
-						}
-					}
-				} // No longer applying fallback location automatically
-				// Each day will have undefined location unless explicitly set by existing order or user default
-				const isToday = isSameDate(date, new Date());
-
+					});
+					// Use the first order's location and id for display
+					selectedLocation = orders[0].deliveryLocation;
+					existingOrderId = orders[0].id;
+					// Merge orderDetails if needed (show all order lines, sum price, etc.)
+					// For now, just use the first order's details
+					orderDetails = orders[0].orderDetails;
+				}
 				return {
 					date,
-					selectedLocation: dayLocationToSet,
+					selectedLocation,
 					breakfastQuantity: breakfastQty,
 					lunchQuantity: lunchQty,
 					sodaQuantity: sodaQty,
 					isSaving: false,
 					saveError: null,
-					existingOrderId: existingOrder?.id,
+					existingOrderId,
 					isWeekend: isWeekend(date),
-					isToday,
+					isToday: isSameDate(date, new Date()),
 					orderDetails
 				};
 			});
