@@ -1,8 +1,7 @@
 <script lang="ts">
 	import DayCard from '$lib/components/DayCard.svelte';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import { locationService } from '$lib/services/locationService';
-	import { orderService } from '$lib/services/orderService';
+	import { locationService, orderService, localStorageService } from '$lib/services/orderService';
 	import type { Location, OrderItemData, OrderLine } from '../lib/types/orders';
 	import orderStore from '$lib/stores/orderStore';
 	import authStore from '$lib/stores/authStore';
@@ -75,7 +74,7 @@
 			const fetchedLocations = await locationService.getLocations();
 			$orderStore.locations = fetchedLocations;
 
-			const defaultOrderPref = orderService.getDefaultOrder();
+			const defaultOrderPref = localStorageService.getDefaultOrder();
 			let initialSelectedLocation: Location | undefined = undefined;
 			if (defaultOrderPref && defaultOrderPref.location?.kitchenId) {
 				// Match by kitchenId for robustness
@@ -278,7 +277,7 @@
 	) {
 		// Allow location to be undefined
 		const { items, location } = event.detail;
-		orderService.saveDefaultOrder(items, location); // Update all applicable day cards with the new default, including location
+		localStorageService.saveDefaultOrder(items, location); // Update all applicable day cards with the new default, including location
 		$orderStore.weekDays = $orderStore.weekDays.map((day) => {
 			// Only update if no order exists for the day and it's not a weekend
 			if (!day.existingOrderId && !day.isWeekend) {

@@ -1,4 +1,6 @@
 import { browser } from '$app/environment';
+import authStore from '$lib/stores/authStore'; // Changed: import default export
+import { get } from 'svelte/store';
 
 export const API_BASE_URL = 'https://prod.facilitynet.dk/api';
 
@@ -22,6 +24,7 @@ export async function api<T = any>(
 ): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
     
+    const currentAuthStoreState = get(authStore); // Changed: use authStore
     const authHeaders: Record<string, string> = {};
     
     // To get the token, we need to look into localStorage as StoredAuthData includes the token
