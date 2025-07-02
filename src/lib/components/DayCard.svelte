@@ -106,6 +106,29 @@
 		}, 1000);
 	}
 
+	function cancelOrder() {
+		isLoading = true;
+		optimisticHasOrder = false;
+
+		orderItems = Object.entries(itemProductMap).map(([idStr, productDetails]) => ({
+			id: parseInt(idStr),
+			name: productDetails.name,
+			quantity:
+				productDetails.type === 'breakfast'
+					? dayState.breakfastQuantity
+					: productDetails.type === 'lunch'
+						? dayState.lunchQuantity
+						: productDetails.type === 'soda'
+							? dayState.sodaQuantity
+							: 0,
+			type: productDetails.type
+		}));
+
+		setTimeout(() => {
+			dispatch('orderCancelled', { date: dayState.date });
+			isLoading = false;
+		}, 1000);
+	}
 	function saveAsDefault() {
 		// Pass location only if it was explicitly selected
 		const defaultItemsToSave = orderItems.map((item) => ({
@@ -303,6 +326,16 @@
 		<div class="flex flex-col pt-2 space-y-2">
 			{#if !isPastDate(dayState.date)}
 				<AdditionalOrderButton {dayState} on:additionalOrderPlaced />
+			{/if}
+			{#if !dayState.orderDetails?.cancelDisabled && !isPastDate(dayState.date)}
+				<button
+					onclick={cancelOrder}
+					class:opacity-50={isLoading}
+					disabled={isLoading}
+					class="w-full px-4 py-2 font-bold text-white transition-opacity duration-150 ease-in-out bg-red-600 rounded hover:bg-red-700"
+				>
+					{#if isLoading}Annullerer...{:else}Annuller bestilling{/if}
+				</button>
 			{/if}
 			<button
 				onclick={saveAsDefault}
