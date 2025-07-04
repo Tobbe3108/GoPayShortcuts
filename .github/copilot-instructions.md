@@ -16,7 +16,6 @@ A static Svelte webapp that provides usefull shortcuts to features from a bad Fo
 - Write as little code as possible, find and use npm packages over writing your own implementation
 - Minimize indenting, prefer extracting things into more classes, methods, components and so on
 - Rarely use hardcoded values - only when abselutly necessary
-- Write
 
 ## Technical Requirements
 
@@ -37,19 +36,3 @@ A static Svelte webapp that provides usefull shortcuts to features from a bad Fo
 
 - Avoid custom CSS unless absolutely necessary
 - Maintain a consistent color scheme
-
-## App Structure
-
-- Login page
-  - Logins is a two-step process
-    - Step 1: Enter email
-    - Step 2: Enter OTP
-- Page with shortcut actions
-
-## Sample Shortcuts
-
-- Order food and or drink today
-- Order food and or drink all week
-- Delete today's orders
-
-When implementing features, prioritize performance and ease of use, as this is meant to be a quick-access utility app.
