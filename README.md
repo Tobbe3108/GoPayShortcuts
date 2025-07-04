@@ -1,25 +1,13 @@
-# sv
-
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-npx sv create
-
-npx sv create my-app
-```
+# GoPay BAD Edition
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Instal dependencies with `bun i`, start a development server:
 
 ```bash
-npm run dev
+bun dev (then manually open the at http://localhost:5173/)
 
-npm run dev -- --open
+bun dev -- --open (will automatically open the browser)
 ```
 
 ## Building
@@ -27,9 +15,9 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```bash
-npm run build
+bun build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `bun preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
