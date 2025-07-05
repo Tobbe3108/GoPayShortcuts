@@ -1,0 +1,54 @@
+POST https://prod.facilitynet.dk/api/suppliers/kitchens/3237/payment/paymentDetails/catering
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+{
+  "deliveries": [
+    {
+      "deliveryLocation": {
+        "name": "Energinet - Erritsø"
+      },
+      "deliveryTime": "2025-07-08T00:00:00.000+02:00",
+      "orderLines": [
+        {
+          "productId": 33137,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        },
+        {
+          "productId": 33138,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        },
+        {
+          "productId": 33139,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        }
+      ]
+    }
+  ]
+}
+
+Response Ok:
+{
+  "salesConditionsUrl" : "https://prod.facilitynet.dk/api/public/orders/companies/byUUID/eb5df46f-a3ae-4b3f-9ce5-05b39cb1814d/salesConditions/channel/kitchen",
+  "currencyCodes" : [ "DKK" ],
+  "paymentMethods" : [ {
+    "value" : "PAYROLL_DEDUCTION",
+    "translationKey" : "payment-method-salary-reduction",
+    "showSalesConditions" : true,
+    "icon" : {
+      "type" : "IMAGE_URL",
+      "url" : "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+    }
+  } ],
+  "userAccountBalance" : {
+    "amount" : 0,
+    "scale" : 2,
+    "currency" : "DKK",
+    "formatted" : "DKK 0.00"
+  }
+}

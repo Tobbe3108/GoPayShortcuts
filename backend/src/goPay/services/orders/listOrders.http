@@ -1,0 +1,594 @@
+@startDate = 2025-05-26
+@endDate = 2025-05-31
+GET https://prod.facilitynet.dk/api/orders?offset=0&limit=50&orderType=LUNCH&deliveredStartDate={{startDate}}&deliveredEndDate={{endDate}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:29:44 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: close
+Access-Control-Allow-Origin: *
+
+{
+  "orders": [
+    {
+      "displayName": "GoPay #3969551",
+      "id": 3969551,
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2069309,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": -2000,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -20.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": -2000,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -20.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3969539",
+      "id": 3969539,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2069299,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": 2000,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 20.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 2000,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 20.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3969111",
+      "id": 3969111,
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2068970,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": -1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": -1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3969110",
+      "id": 3969110,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2068969,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": 1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3969062",
+      "id": 3969062,
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2068938,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": -1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": -1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3969060",
+      "id": 3969060,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2068937,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-26T00:00:00",
+          "price": {
+            "amount": 1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3983612",
+      "id": 3983612,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2079459,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "price": {
+            "amount": 3200,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 32.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 3200,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 32.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3983234",
+      "id": 3983234,
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2079232,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "price": {
+            "amount": -3700,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -37.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": -3700,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -37.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3978838",
+      "id": 3978838,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2076055,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "price": {
+            "amount": 3700,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 37.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 3700,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 37.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3978836",
+      "id": 3978836,
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2076054,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "price": {
+            "amount": -1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": -1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3978830",
+      "id": 3978830,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2076050,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "price": {
+            "amount": 1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    },
+    {
+      "displayName": "GoPay #3989846",
+      "id": 3989846,
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2084048,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-28T00:00:00",
+          "price": {
+            "amount": 1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 15.00"
+          },
+          "cancelEnable": false
+        }
+      ],
+      "price": {
+        "amount": 1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 15.00"
+      },
+      "paymentDetails": {
+        "paymentMethod": {
+          "value": "PAYROLL_DEDUCTION",
+          "translationKey": "payment-method-salary-reduction",
+          "showSalesConditions": false,
+          "icon": {
+            "type": "IMAGE_URL",
+            "url": "https://facilitynet.dk/remote/gopay/payment-icons/payroll.svg"
+          }
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø"
+      },
+      "isMasterOrder": false
+    }
+  ],
+  "ordersSummary": {
+    "totalAmount": {
+      "amount": 4700,
+      "scale": 2,
+      "currency": "DKK",
+      "formatted": "DKK 47.00"
+    }
+  }
+}

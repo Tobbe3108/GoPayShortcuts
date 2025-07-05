@@ -1,0 +1,57 @@
+GET https://prod.facilitynet.dk/api/organization/company/user/locations
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:15:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: close
+Access-Control-Allow-Origin: *
+[
+  {
+    "id": 56,
+    "name": "Erritsø",
+    "kitchens": [
+      {
+        "id": 3237,
+        "uid": "eb5df46f-a3ae-4b3f-9ce5-05b39cb1814d",
+        "name": "Energinet - Erritsø",
+        "address": {
+          "id": 3234,
+          "streetName": "Tonne Kjærsvej 65 ",
+          "streetNumber": "",
+          "postalCode": "7000",
+          "city": "Fredericia",
+          "country": ""
+        },
+        "webshops": [
+          {
+            "id": 68,
+            "name": "Energinet - Erritsø",
+            "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+            "demoMode": false
+          },
+          {
+            "id": 97,
+            "name": "Energinet Erritsø - Eksterne",
+            "uid": "af2bbefb-5547-42f6-9fa1-f0958efe7019",
+            "demoMode": false
+          }
+        ],
+        "brandingDetails": {
+          "imageUrl": "/api/public/suppliers/kitchens/eb5df46f-a3ae-4b3f-9ce5-05b39cb1814d/image"
+        },
+        "sellerSupplierParty": {
+          "name": "Energinet"
+        }
+      }
+    ]
+  },
+  ...
+]
