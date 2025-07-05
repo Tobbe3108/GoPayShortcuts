@@ -1,0 +1,32 @@
+@email = "tolau@energinet.dk"
+POST https://prod.facilitynet.dk/api/authenticate/username
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+{
+  "username": {{email}}
+}
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:10:41 GMT
+Content-Type: application/json
+Content-Length: 357
+Connection: close
+Access-Control-Allow-Origin: *
+{
+  "authentication": {
+    "token": {{ONE_TIME_TOKEN}}, //50 characters long
+    "type": "ONE_TIME_TOKEN"
+  },
+  "authenticationResult": {
+    "type": "USERNAME",
+    "action": "REQUIRES_ACTIVATION_CODE",
+    "message": "You have received an email with an activation code."
+  },
+  "serviceResponse": {
+    "isUserMessage": false
+  }
+}

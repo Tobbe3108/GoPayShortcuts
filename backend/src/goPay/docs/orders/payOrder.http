@@ -1,0 +1,331 @@
+POST https://prod.facilitynet.dk/api/orders/catering
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+{
+  "kitchen": {
+    "id": 3237
+  },
+  "webshop": {
+    "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879"
+  },
+  "payment": {
+    "method": "PAYROLL_DEDUCTION"
+  },
+  "orderNote": "",
+  "deliveries": [
+    {
+      "deliveryLocation": {
+        "name": "Energinet - Erritsø"
+      },
+      "deliveryTime": "2025-07-08T00:00:00.000+02:00",
+      "orderLines": [
+        {
+          "productId": 33137,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        },
+        {
+          "productId": 33138,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        },
+        {
+          "productId": 33139,
+          "items": 1,
+          "buyerParty": "PRIVATE"
+        }
+      ]
+    }
+  ]
+}
+
+Response Ok:
+{
+  "orders" : [ {
+    "displayName" : "GoPay #4120662",
+    "masterOrderId" : 4120662,
+    "masterOrderUid" : "b0619d2d-146c-4250-afc4-5e463991360f",
+    "id" : 4120662,
+    "uid" : "b0619d2d-146c-4250-afc4-5e463991360f",
+    "orderNote" : "",
+    "orderType" : "LUNCH",
+    "organizers" : [ {
+      "uid" : "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+      "initials" : "TOLAU",
+      "firstname" : "Tobias",
+      "lastname" : "Lauritzen",
+      "name" : "Tobias Lauritzen",
+      "email" : "TOLAU@energinet.dk",
+      "businessPhone" : "",
+      "mobilePhone" : "",
+      "organizerType" : "CREATOR",
+      "companyId" : 3228
+    } ],
+    "deliveries" : [ {
+      "deliveryLocation" : {
+        "name" : "Energinet - Erritsø"
+      },
+      "deliveryTime" : "2025-07-08T00:00:00.000+02:00",
+      "orderLines" : [ {
+        "items" : 1,
+        "itemPrice" : {
+          "amount" : 1700,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 17.00"
+        },
+        "price" : {
+          "amount" : 1700,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 17.00"
+        },
+        "accountingItemPrice" : {
+          "amount" : 1700,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 17.00"
+        },
+        "accountingPrice" : {
+          "amount" : 1700,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 17.00"
+        },
+        "productId" : 33137,
+        "name" : "Morgenmad",
+        "buyerParty" : "PRIVATE"
+      }, {
+        "items" : 1,
+        "itemPrice" : {
+          "amount" : 1500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 15.00"
+        },
+        "price" : {
+          "amount" : 1500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 15.00"
+        },
+        "accountingItemPrice" : {
+          "amount" : 1500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 15.00"
+        },
+        "accountingPrice" : {
+          "amount" : 1500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 15.00"
+        },
+        "productId" : 33138,
+        "name" : "Frokost",
+        "buyerParty" : "PRIVATE"
+      }, {
+        "items" : 1,
+        "itemPrice" : {
+          "amount" : 500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 5.00"
+        },
+        "price" : {
+          "amount" : 500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 5.00"
+        },
+        "accountingItemPrice" : {
+          "amount" : 500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 5.00"
+        },
+        "accountingPrice" : {
+          "amount" : 500,
+          "scale" : 2,
+          "currency" : "DKK",
+          "formatted" : "DKK 5.00"
+        },
+        "productId" : 33139,
+        "name" : "Læskedrik",
+        "buyerParty" : "PRIVATE"
+      } ],
+      "price" : {
+        "amount" : 3700,
+        "scale" : 2,
+        "currency" : "DKK",
+        "formatted" : "DKK 37.00"
+      },
+      "orderId" : 0
+    } ],
+    "receipt" : {
+      "posPrintingMode" : "AUTO",
+      "download" : {
+        "qrCode" : {
+          "imageUrl" : "https://prod.facilitynet.dk/api/public/receipts/b0619d2d-146c-4250-afc4-5e463991360f/qr"
+        }
+      }
+    },
+    "amount" : {
+      "amount" : 3700,
+      "scale" : 2,
+      "currency" : "DKK",
+      "formatted" : "DKK 37.00"
+    },
+    "accountingSupplierParty" : {
+      "id" : 3234
+    },
+    "customer" : {
+      "id" : 3861688,
+      "initials" : "TOLAU",
+      "displayInitials" : "TL",
+      "username" : "TOLAU@energinet.dk",
+      "displayName" : "Tobias Lauritzen",
+      "givenName" : "Tobias",
+      "surName" : "Lauritzen",
+      "email" : "TOLAU@energinet.dk",
+      "phoneNumber" : "",
+      "mobileNumber" : "",
+      "customerTypeId" : 1,
+      "isPrivateAccount" : false,
+      "companyId" : 3228,
+      "companyName" : "Energinet",
+      "language" : "en_US",
+      "uid" : "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+      "uidHash" : "13240f27b301cd8102e3e8c4c3586dc6a3ef77b0ab8ee6eef65ae3010131033d",
+      "accountId" : 86666,
+      "accountBalance" : {
+        "amount" : 0,
+        "scale" : 2,
+        "currency" : "DKK",
+        "formatted" : "DKK 0.00"
+      },
+      "isSubscribedToLunch" : false,
+      "location" : {
+        "id" : 56,
+        "name" : "Erritsø",
+        "kitchen" : {
+          "id" : 3237,
+          "name" : "Energinet - Erritsø"
+        },
+        "selectLocation" : false
+      },
+      "wallets" : { },
+      "isTest" : false,
+      "userSettings" : [ {
+        "name" : "ACCEPT_PUSH_NOTIFICATIONS",
+        "translationKey" : "settings-push-notifications",
+        "value" : "false",
+        "elementType" : "TOGGLE"
+      }, {
+        "name" : "ORDER_EMAIL_RECEIPT",
+        "translationKey" : "settings-receipts-via-email",
+        "value" : "false",
+        "elementType" : "TOGGLE"
+      }, {
+        "name" : "ACCEPT_SMS_NOTIFICATIONS",
+        "translationKey" : "settings-sms-notifications",
+        "value" : "false",
+        "elementType" : "TOGGLE"
+      }, {
+        "name" : "LANGUAGE_CODE",
+        "value" : "en_US"
+      } ],
+      "userSettingsMap" : {
+        "LANGUAGE_CODE" : "en_US"
+      },
+      "company" : {
+        "uid" : "12af4796-7151-4f4b-9529-287886315f00",
+        "name" : "Energinet",
+        "streetName" : "Tonne Kjærsvej",
+        "streetNumber" : "65",
+        "postalCode" : "7000",
+        "city" : "Fredericia",
+        "companySetup" : {
+          "emailReceipts" : true,
+          "userSynchronization" : true
+        },
+        "vatnumber" : "28980671"
+      },
+      "actions" : [ {
+        "type" : "UPDATE",
+        "isAvailable" : false,
+        "reason" : "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+      }, {
+        "type" : "DELETE",
+        "isAvailable" : false,
+        "reason" : "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+      } ]
+    },
+    "payment" : {
+      "method" : "PAYROLL_DEDUCTION"
+    },
+    "paymentDetails" : {
+      "method" : "PAYROLL_DEDUCTION",
+      "isOnlinePayment" : false,
+      "bankAccountStatement" : "GoPay lunch",
+      "remoteIp" : "93.160.107.43",
+      "toBePaidAsPrivate" : {
+        "amount" : 3700,
+        "scale" : 2,
+        "currency" : "DKK",
+        "formatted" : "DKK 37.00"
+      },
+      "toBePaidAsCompany" : {
+        "amount" : 0,
+        "scale" : 2,
+        "currency" : "DKK",
+        "formatted" : "DKK 0.00"
+      },
+      "webShopId" : 68
+    },
+    "kitchen" : {
+      "id" : 3237,
+      "name" : "Energinet - Erritsø",
+      "streetName" : "Tonne Kjærsvej 65 ",
+      "postalCode" : "7000",
+      "city" : "Fredericia",
+      "webshop" : {
+        "id" : 68,
+        "uid" : "3c5879be-1174-4d34-8d13-ddfcee02f879",
+        "showQrReciept" : true,
+        "demoMode" : false
+      },
+      "companySettings" : {
+        "SHOW_WEEK_MENU" : "false"
+      }
+    },
+    "created" : "2025-07-05 18:38:17",
+    "isMasterOrder" : false
+  } ],
+  "paymentDetails" : {
+    "method" : "PAYROLL_DEDUCTION",
+    "isOnlinePayment" : false,
+    "bankAccountStatement" : "GoPay lunch",
+    "remoteIp" : "93.160.107.43",
+    "toBePaidAsPrivate" : {
+      "amount" : 3700,
+      "scale" : 2,
+      "currency" : "DKK",
+      "formatted" : "DKK 37.00"
+    },
+    "toBePaidAsCompany" : {
+      "amount" : 0,
+      "scale" : 2,
+      "currency" : "DKK",
+      "formatted" : "DKK 0.00"
+    },
+    "webShopId" : 68
+  },
+  "transactionResponse" : {
+    "message" : "#4120662",
+    "subject" : "Ordren er gennemført"
+  }
+}
