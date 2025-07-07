@@ -4,6 +4,7 @@ content-type: application/json
 Accept: */*
 Origin: https://prod.facilitynet.dk
 X-Client-Type: mobile-web
+
 {
   "username": {{email}}
 }
