@@ -15,4 +15,10 @@ export class Schemas {
       },
     };
   }
+
+  static BearerAuth() {
+    return {
+      security: [{ bearerAuth: [] }],
+    };
+  }
 }
