@@ -144,9 +144,16 @@ export class GoPayClient {
    * Get user's available locations
    */
   async getLocations(): Promise<Location[] | Response> {
-    const response = await this.request<Location[]>(
+    let response = await this.request<Location[]>(
       "/organization/company/user/locations",
-      "GET"
+      "GET",
+      {
+        cf: {
+          cacheTtlByStatus: {
+            "200-299": 86400, // 1 day
+          },
+        },
+      }
     );
 
     return response;

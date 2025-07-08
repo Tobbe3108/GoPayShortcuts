@@ -28,6 +28,8 @@ export class GetLocations extends OpenAPIRoute {
     const client = createGoPayClient(c);
     const locations = await client.getLocations();
     if (locations instanceof Response) return locations;
+
+    c.res.headers.set("Cache-Control", "max-age=43200"); // Cache for 12 hours
     return c.json(
       locations.map((location) => {
         const kitchen = location.kitchens && location.kitchens[0];
