@@ -2,11 +2,13 @@ import {
   Bool,
   contentJson,
   InputValidationException,
+  Obj,
   OpenAPIRoute,
   Str,
 } from "chanfana";
 import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../types";
+import { Schemas } from "./Shared/Schemas";
 
 export class RequestOTP extends OpenAPIRoute {
   schema = {
@@ -28,21 +30,17 @@ export class RequestOTP extends OpenAPIRoute {
         description: "OTP request result",
       },
       ...InputValidationException.schema(),
-      "500": {
-        description: "Internal Server Error",
-        ...contentJson(
-          z.object({
-            error: Str({ example: "An error occurred while requesting OTP" }),
-          })
-        ),
-      },
+      ...Schemas.InternalServerError(),
     },
   };
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
     const client = createGoPayClient(c.env);
-    await client.requestOTP(data.body.email);
+
+    var response = await client.requestOTP(data.body.email);
+    if (response instanceof Response) return response;
+
     return new Response(null, { status: 204 });
   }
 }

@@ -1,4 +1,5 @@
 import {
+  Bool,
   contentJson,
   InputValidationException,
   OpenAPIRoute,
@@ -7,6 +8,7 @@ import {
 import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../types";
 import { LoginResponse } from "../goPay/types";
+import { Schemas } from "./Shared/Schemas";
 
 export class Login extends OpenAPIRoute {
   schema = {
@@ -33,21 +35,28 @@ export class Login extends OpenAPIRoute {
         ),
       },
       ...InputValidationException.schema(),
-      "500": {
-        description: "Internal Server Error",
+      "401": {
+        description: "Unauthorized",
         ...contentJson(
           z.object({
-            error: z.string(),
+            status: Str(),
+            details: Str(),
+            displayMessage: Str(),
+            isUserMessage: Bool(),
           })
         ),
       },
+      ...Schemas.InternalServerError(),
     },
   };
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
     const client = createGoPayClient(c.env);
-    const loginRes: LoginResponse = await client.login(data.body.otp);
-    return { token: loginRes.authentication.token };
+
+    const response = await client.login(data.body.otp);
+    if (response instanceof Response) return response;
+
+    return { token: response.authentication.token };
   }
 }

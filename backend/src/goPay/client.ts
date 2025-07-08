@@ -17,17 +17,10 @@ import {
 
 export class GoPayClient {
   private apiUrl: string;
-  private headers: HeadersInit;
   private token: string | null = null;
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
-    this.headers = {
-      "content-type": "application/json",
-      Accept: "*/*",
-      Origin: "https://prod.facilitynet.dk",
-      "X-Client-Type": "mobile-web",
-    };
   }
 
   /**
@@ -41,7 +34,14 @@ export class GoPayClient {
    * Creates headers for requests, including authentication token if available
    */
   private getHeaders(): HeadersInit {
-    const headers = { ...this.headers };
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "*/*",
+      Origin: "https://prod.facilitynet.dk",
+      "X-Client-Type": "mobile-web",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    };
 
     if (this.token) {
       headers["x-api-key"] = this.token;
@@ -50,17 +50,34 @@ export class GoPayClient {
     return headers;
   }
 
+  private async gatherResponse<T>(response: Response) {
+    const { headers } = response;
+    const contentType = headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      return (await response.json()) as T;
+    } else if (contentType.includes("application/text")) {
+      return (await response.text()) as T;
+    } else if (contentType.includes("text/html")) {
+      return (await response.text()) as T;
+    } else {
+      return (await response.text()) as T;
+    }
+  }
+
   /**
    * Generic method to handle API requests
    */
   private async request<T>(
     endpoint: string,
-    method: string = "GET",
-    body?: any
-  ): Promise<T> {
+    method: string,
+    body?: any,
+    options?: RequestInit
+  ): Promise<T | Response> {
     const url: string = `${this.apiUrl}${endpoint}`;
 
-    const options: RequestInit = {
+    options = {
+      ...options,
       method,
       headers: this.getHeaders(),
     };
@@ -71,34 +88,16 @@ export class GoPayClient {
 
     try {
       const response = await fetch(url, options);
+      if (!response.ok) return response;
 
-      if (!response.ok) {
-        const error: ApiError = {
-          statusCode: response.status,
-          message: response.statusText,
-        };
-
-        try {
-          const errorBody = await response.json();
-          error.error = errorBody;
-        } catch (e) {
-          // Ignore parsing errors for error responses
-        }
-
-        throw error;
-      }
-
-      return (await response.json()) as T;
+      const result = await this.gatherResponse<T>(response);
+      return result;
     } catch (error) {
       console.error("API request failed:", error);
 
-      if ((error as ApiError).statusCode) {
-        throw error;
-      }
-
       throw {
         statusCode: 500,
-        message: "Network error",
+        message: (error as Error).message || "Internal Server Error",
         error,
       } as ApiError;
     }
@@ -109,7 +108,7 @@ export class GoPayClient {
   /**
    * Request a one-time password to be sent to the user's email
    */
-  async requestOTP(email: string): Promise<RequestOTPResponse> {
+  async requestOTP(email: string): Promise<RequestOTPResponse | Response> {
     const request: RequestOTPRequest = {
       username: email,
     };
@@ -117,7 +116,8 @@ export class GoPayClient {
     const response = await this.request<RequestOTPResponse>(
       "/authenticate/username",
       "POST",
-      request
+      request,
+      { cache: "no-store" }
     );
 
     return response;
@@ -126,7 +126,7 @@ export class GoPayClient {
   /**
    * Login with activation code
    */
-  async login(otp: string): Promise<LoginResponse> {
+  async login(otp: string): Promise<LoginResponse | Response> {
     const request: LoginRequest = {
       type: "ACTIVATION_CODE",
       value: otp,
@@ -135,7 +135,8 @@ export class GoPayClient {
     const response = await this.request<LoginResponse>(
       "/authenticate/byType",
       "POST",
-      request
+      request,
+      { cache: "no-store" }
     );
 
     return response;
@@ -146,7 +147,7 @@ export class GoPayClient {
   /**
    * Get user's available locations
    */
-  async getLocations(): Promise<Location[]> {
+  async getLocations(): Promise<T | Response> {
     const response = await this.request<Location[]>(
       "/organization/company/user/locations",
       "GET"
@@ -165,7 +166,7 @@ export class GoPayClient {
     endDate: string,
     offset: number = 0,
     limit: number = 50
-  ): Promise<ListOrdersResponse> {
+  ): Promise<ListOrdersResponse | Response> {
     const response = await this.request<ListOrdersResponse>(
       `/orders?offset=${offset}&limit=${limit}&orderType=LUNCH&deliveredStartDate=${startDate}&deliveredEndDate=${endDate}`,
       "GET"
@@ -180,7 +181,7 @@ export class GoPayClient {
   async placeOrder(
     kitchenId: number,
     deliveries: OrderDelivery[]
-  ): Promise<PlaceOrderResponse> {
+  ): Promise<PlaceOrderResponse | Response> {
     const request: PlaceOrderRequest = {
       deliveries: deliveries,
     };
@@ -201,7 +202,7 @@ export class GoPayClient {
     orderId: number,
     paymentMethod: string,
     acceptedSalesConditions: boolean
-  ): Promise<PayOrderResponse> {
+  ): Promise<PayOrderResponse | Response> {
     const request: PayOrderRequest = {
       paymentMethod: paymentMethod,
       acceptedSalesConditions: acceptedSalesConditions,
@@ -219,7 +220,9 @@ export class GoPayClient {
   /**
    * Get details for a specific order
    */
-  async getOrderDetails(orderId: number): Promise<GetOrderDetailsResponse> {
+  async getOrderDetails(
+    orderId: number
+  ): Promise<GetOrderDetailsResponse | Response> {
     const response = await this.request<GetOrderDetailsResponse>(
       `/orders/${orderId}`,
       "GET"
@@ -231,7 +234,7 @@ export class GoPayClient {
   /**
    * Delete/Cancel an order
    */
-  async deleteOrder(orderId: number): Promise<DeleteOrderResponse> {
+  async deleteOrder(orderId: number): Promise<DeleteOrderResponse | Response> {
     const response = await this.request<DeleteOrderResponse>(
       `/orders/${orderId}`,
       "DELETE"
