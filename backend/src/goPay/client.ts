@@ -27,9 +27,6 @@ export class GoPayClient {
     }
   }
 
-  /**
-   * Creates headers for requests, including authentication token if available
-   */
   private getHeaders(): HeadersInit {
     const headers = {
       "Content-Type": "application/json",
@@ -62,9 +59,6 @@ export class GoPayClient {
     }
   }
 
-  /**
-   * Generic method to handle API requests
-   */
   private async request<T>(
     endpoint: string,
     options?: RequestInit,
@@ -98,11 +92,6 @@ export class GoPayClient {
     }
   }
 
-  // Authentication Methods
-
-  /**
-   * Request a one-time password to be sent to the user's email
-   */
   async requestOTP(email: string): Promise<RequestOTPResponse | Response> {
     const request: RequestOTPRequest = {
       username: email,
@@ -110,17 +99,16 @@ export class GoPayClient {
 
     const response = await this.request<RequestOTPResponse>(
       "/authenticate/username",
-      "POST",
-      request,
-      { cache: "no-store" }
+      {
+        method: "POST",
+        cache: "no-store",
+      },
+      request
     );
 
     return response;
   }
 
-  /**
-   * Login with activation code
-   */
   async login(otp: string): Promise<LoginResponse | Response> {
     const request: LoginRequest = {
       type: "ACTIVATION_CODE",
@@ -129,19 +117,16 @@ export class GoPayClient {
 
     const response = await this.request<LoginResponse>(
       "/authenticate/byType",
-      "POST",
-      request,
-      { cache: "no-store" }
+      {
+        method: "POST",
+        cache: "no-store",
+      },
+      request
     );
 
     return response;
   }
 
-  // Location Methods
-
-  /**
-   * Get user's available locations
-   */
   async getLocations(): Promise<Location[] | Response> {
     let response = await this.request<Location[]>(
       "/organization/company/user/locations",
@@ -157,11 +142,6 @@ export class GoPayClient {
     return response;
   }
 
-  // Order Methods
-
-  /**
-   * Get a list of orders for a specific date range
-   */
   async listOrders(
     startDate: string,
     endDate: string,
@@ -175,9 +155,6 @@ export class GoPayClient {
     return response;
   }
 
-  /**
-   * Place a new order
-   */
   async placeOrder(
     kitchenId: number,
     deliveries: OrderDelivery[]
@@ -197,9 +174,6 @@ export class GoPayClient {
     return response;
   }
 
-  /**
-   * Pay for an order
-   */
   async payOrder(
     orderId: number,
     paymentMethod: string,
@@ -221,9 +195,6 @@ export class GoPayClient {
     return response;
   }
 
-  /**
-   * Get details for a specific order
-   */
   async getOrderDetails(
     orderId: number
   ): Promise<GetOrderDetailsResponse | Response> {
@@ -234,9 +205,6 @@ export class GoPayClient {
     return response;
   }
 
-  /**
-   * Delete/Cancel an order
-   */
   async deleteOrder(orderId: number): Promise<DeleteOrderResponse | Response> {
     const response = await this.request<DeleteOrderResponse>(
       `/orders/${orderId}`,
