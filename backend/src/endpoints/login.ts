@@ -19,7 +19,7 @@ export class Login extends OpenAPIRoute {
         content: {
           "application/json": {
             schema: z.object({
-              otp: z.number().describe("One-time password (OTP)"),
+              otp: z.string().describe("One-time password (OTP)"),
             }),
           },
         },
@@ -52,7 +52,7 @@ export class Login extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
-    const client = createGoPayClient(c.env);
+    const client = createGoPayClient(c);
 
     const response = await client.login(data.body.otp);
     if (response instanceof Response) return response;

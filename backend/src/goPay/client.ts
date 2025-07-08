@@ -19,15 +19,11 @@ export class GoPayClient {
   private apiUrl: string;
   private token: string | null = null;
 
-  constructor(apiUrl: string) {
+  constructor(apiUrl: string, token?: string) {
     this.apiUrl = apiUrl;
-  }
-
-  /**
-   * Sets the authentication token for subsequent requests
-   */
-  setToken(token: string): void {
-    this.token = token;
+    if (token) {
+      this.token = token;
+    }
   }
 
   /**
@@ -147,7 +143,7 @@ export class GoPayClient {
   /**
    * Get user's available locations
    */
-  async getLocations(): Promise<T | Response> {
+  async getLocations(): Promise<Location[] | Response> {
     const response = await this.request<Location[]>(
       "/organization/company/user/locations",
       "GET"

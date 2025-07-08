@@ -29,6 +29,17 @@ export class RequestOTP extends OpenAPIRoute {
       "204": {
         description: "OTP request result",
       },
+      "404": {
+        description: "Not Found",
+        ...contentJson(
+          z.object({
+            status: Str(),
+            details: Str(),
+            displayMessage: Str(),
+            isUserMessage: Bool(),
+          })
+        ),
+      },
       ...InputValidationException.schema(),
       ...Schemas.InternalServerError(),
     },
@@ -36,7 +47,7 @@ export class RequestOTP extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
-    const client = createGoPayClient(c.env);
+    const client = createGoPayClient(c);
 
     var response = await client.requestOTP(data.body.email);
     if (response instanceof Response) return response;
