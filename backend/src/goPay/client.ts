@@ -1,3 +1,4 @@
+import { open } from "fs";
 import {
   RequestOTPRequest,
   RequestOTPResponse,
@@ -66,16 +67,14 @@ export class GoPayClient {
    */
   private async request<T>(
     endpoint: string,
-    method: string,
-    body?: any,
-    options?: RequestInit
+    options?: RequestInit,
+    body?: any
   ): Promise<T | Response> {
     const url: string = `${this.apiUrl}${endpoint}`;
 
     options = {
       ...options,
-      method,
-      headers: this.getHeaders(),
+      headers: { ...this.getHeaders(), ...options?.headers },
     };
 
     if (body) {
@@ -122,10 +121,10 @@ export class GoPayClient {
   /**
    * Login with activation code
    */
-  async login(otp: number): Promise<LoginResponse | Response> {
+  async login(otp: string): Promise<LoginResponse | Response> {
     const request: LoginRequest = {
       type: "ACTIVATION_CODE",
-      value: otp.toString(),
+      value: otp,
     };
 
     const response = await this.request<LoginResponse>(
@@ -146,11 +145,10 @@ export class GoPayClient {
   async getLocations(): Promise<Location[] | Response> {
     let response = await this.request<Location[]>(
       "/organization/company/user/locations",
-      "GET",
       {
         cf: {
           cacheTtlByStatus: {
-            "200-299": 86400, // 1 day
+            "200-299": 2629800, // 30 days
           },
         },
       }
@@ -171,8 +169,7 @@ export class GoPayClient {
     limit: number = 50
   ): Promise<ListOrdersResponse | Response> {
     const response = await this.request<ListOrdersResponse>(
-      `/orders?offset=${offset}&limit=${limit}&orderType=LUNCH&deliveredStartDate=${startDate}&deliveredEndDate=${endDate}`,
-      "GET"
+      `/orders?offset=${offset}&limit=${limit}&orderType=LUNCH&deliveredStartDate=${startDate}&deliveredEndDate=${endDate}`
     );
 
     return response;
@@ -191,7 +188,9 @@ export class GoPayClient {
 
     const response = await this.request<PlaceOrderResponse>(
       `/suppliers/kitchens/${kitchenId}/payment/paymentDetails/catering`,
-      "POST",
+      {
+        method: "POST",
+      },
       request
     );
 
@@ -213,7 +212,9 @@ export class GoPayClient {
 
     const response = await this.request<PayOrderResponse>(
       `/orders/${orderId}/pay`,
-      "POST",
+      {
+        method: "POST",
+      },
       request
     );
 
@@ -227,8 +228,7 @@ export class GoPayClient {
     orderId: number
   ): Promise<GetOrderDetailsResponse | Response> {
     const response = await this.request<GetOrderDetailsResponse>(
-      `/orders/${orderId}`,
-      "GET"
+      `/orders/${orderId}`
     );
 
     return response;
@@ -240,7 +240,9 @@ export class GoPayClient {
   async deleteOrder(orderId: number): Promise<DeleteOrderResponse | Response> {
     const response = await this.request<DeleteOrderResponse>(
       `/orders/${orderId}`,
-      "DELETE"
+      {
+        method: "DELETE",
+      }
     );
 
     return response;

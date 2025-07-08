@@ -55,7 +55,7 @@ export class Login extends OpenAPIRoute {
     const client = createGoPayClient(c);
 
     const response = await client.login(data.body.otp);
-    if (response instanceof Response) return response;
+    if (response instanceof Response) return response; // Error responses
 
     return { token: response.authentication.token };
   }

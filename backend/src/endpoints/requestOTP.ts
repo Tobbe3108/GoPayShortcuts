@@ -50,7 +50,7 @@ export class RequestOTP extends OpenAPIRoute {
     const client = createGoPayClient(c);
 
     var response = await client.requestOTP(data.body.email);
-    if (response instanceof Response) return response;
+    if (response instanceof Response) return response; // Error responses
 
     return new Response(null, { status: 204 });
   }

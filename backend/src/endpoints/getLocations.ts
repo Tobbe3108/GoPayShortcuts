@@ -13,7 +13,6 @@ export class GetLocations extends OpenAPIRoute {
         description: "List of locations",
         ...contentJson(
           z.object({
-            displayName: z.string(),
             name: z.string(),
             kitchenId: z.number(),
             webshopId: z.string(),
@@ -26,21 +25,20 @@ export class GetLocations extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const client = createGoPayClient(c);
-    const locations = await client.getLocations();
-    if (locations instanceof Response) return locations;
+    const response = await client.getLocations();
+    if (response instanceof Response) return response; // Error responses
 
-    c.res.headers.set("Cache-Control", "max-age=43200"); // Cache for 12 hours
-    return c.json(
-      locations.map((location) => {
-        const kitchen = location.kitchens && location.kitchens[0];
-        const webshop = kitchen.webshops && kitchen.webshops[0];
-        return {
-          displayName: location.name,
-          name: kitchen.name,
-          kitchenId: kitchen.id,
-          webshopId: webshop.uid,
-        };
-      })
-    );
+    const locations = response.map((location) => {
+      const kitchen = location.kitchens && location.kitchens[0];
+      const webshop = kitchen.webshops && kitchen.webshops[0];
+      return {
+        name: location.name,
+        kitchenId: kitchen.id,
+        webshopId: webshop.uid,
+      };
+    });
+
+    c.res.headers.set("Cache-Control", "max-age=2629800"); // Cache for 30 days
+    return c.json(locations);
   }
 }
