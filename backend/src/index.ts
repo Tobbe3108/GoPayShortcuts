@@ -1,9 +1,10 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
 
-import { Login } from "./endpoints/login";
-import { RequestOTP } from "./endpoints/requestOTP";
-import { GetLocations } from "./endpoints/getLocations";
+import { Login } from "./endpoints/auth/login";
+import { RequestOTP } from "./endpoints/auth/requestOTP";
+import { GetLocations } from "./endpoints/locations/getLocations";
+import { ListOrders } from "./endpoints/orders/listOrders";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -56,6 +57,7 @@ openapi.registry.registerComponent("securitySchemes", "bearerAuth", {
 openapi.post("/api/request-otp", RequestOTP);
 openapi.post("/api/login", Login);
 openapi.get("/api/locations", GetLocations);
+openapi.get("/api/orders", ListOrders);
 
 // Export the Hono app
 export default app;

@@ -1,7 +1,7 @@
 import { contentJson, OpenAPIRoute } from "chanfana";
-import { type AppContext, createGoPayClient } from "../types";
+import { type AppContext, createGoPayClient } from "../../types";
 import { z } from "zod";
-import { Schemas } from "./Shared/Schemas";
+import { Schemas } from "../Shared/Schemas";
 
 export class GetLocations extends OpenAPIRoute {
   schema = {

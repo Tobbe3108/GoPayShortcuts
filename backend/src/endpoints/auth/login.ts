@@ -2,35 +2,40 @@ import {
   Bool,
   contentJson,
   InputValidationException,
-  Obj,
   OpenAPIRoute,
   Str,
 } from "chanfana";
 import { z } from "zod";
-import { type AppContext, createGoPayClient } from "../types";
-import { Schemas } from "./Shared/Schemas";
+import { type AppContext, createGoPayClient } from "../../types";
+import { Schemas } from "../Shared/Schemas";
 
-export class RequestOTP extends OpenAPIRoute {
+export class Login extends OpenAPIRoute {
   schema = {
     tags: ["Auth"],
-    summary: "Request a one-time password (OTP)",
+    summary: "Login with one-time password (OTP)",
     request: {
       body: {
         content: {
           "application/json": {
             schema: z.object({
-              email: Str({ example: "user@example.com", required: true }),
+              otp: z.string().describe("One-time password (OTP)"),
             }),
           },
         },
       },
     },
     responses: {
-      "204": {
-        description: "OTP request result",
+      "200": {
+        description: "Returns token on successful login",
+        ...contentJson(
+          z.object({
+            token: Str(),
+          })
+        ),
       },
-      "404": {
-        description: "Not Found",
+      ...InputValidationException.schema(),
+      "401": {
+        description: "Unauthorized",
         ...contentJson(
           z.object({
             status: Str(),
@@ -40,7 +45,6 @@ export class RequestOTP extends OpenAPIRoute {
           })
         ),
       },
-      ...InputValidationException.schema(),
       ...Schemas.InternalServerError(),
     },
   };
@@ -49,9 +53,9 @@ export class RequestOTP extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>();
     const client = createGoPayClient(c);
 
-    var response = await client.requestOTP(data.body.email);
+    const response = await client.login(data.body.otp);
     if (response instanceof Response) return response; // Error responses
 
-    return new Response(null, { status: 204 });
+    return { token: response.authentication.token };
   }
 }
