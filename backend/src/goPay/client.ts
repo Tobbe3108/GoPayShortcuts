@@ -126,10 +126,10 @@ export class GoPayClient {
   /**
    * Login with activation code
    */
-  async login(otp: string): Promise<LoginResponse | Response> {
+  async login(otp: number): Promise<LoginResponse | Response> {
     const request: LoginRequest = {
       type: "ACTIVATION_CODE",
-      value: otp,
+      value: otp.toString(),
     };
 
     const response = await this.request<LoginResponse>(

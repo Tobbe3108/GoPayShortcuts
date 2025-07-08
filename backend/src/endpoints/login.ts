@@ -19,7 +19,7 @@ export class Login extends OpenAPIRoute {
         content: {
           "application/json": {
             schema: z.object({
-              otp: z.string().describe("One-time password (OTP)"),
+              otp: z.number().describe("One-time password (OTP)"),
             }),
           },
         },
