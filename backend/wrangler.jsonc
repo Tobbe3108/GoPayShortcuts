@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "go-pay-bad-edition",
+	"name": "gopaybadedition",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-07-05",
 	"observability": {
