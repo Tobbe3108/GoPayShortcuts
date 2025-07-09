@@ -56,6 +56,12 @@ export class Login extends OpenAPIRoute {
     const response = await client.login(data.body.otp);
     if (response instanceof Response) return response; // Error responses
 
-    return { token: response.authentication.token };
+    return {
+      token: response.authentication.token,
+    } as LoginResponse;
   }
 }
+
+type LoginResponse = {
+  token: string;
+};

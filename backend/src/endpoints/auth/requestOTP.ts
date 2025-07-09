@@ -2,7 +2,6 @@ import {
   Bool,
   contentJson,
   InputValidationException,
-  Obj,
   OpenAPIRoute,
   Str,
 } from "chanfana";

@@ -35,10 +35,16 @@ export class GetLocations extends OpenAPIRoute {
         name: location.name,
         kitchenId: kitchen.id,
         webshopId: webshop.uid,
-      };
+      } as GetLocationsResponse;
     });
 
     c.res.headers.set("Cache-Control", "max-age=2629800"); // Cache for 30 days
-    return c.json(locations);
+    return locations;
   }
 }
+
+type GetLocationsResponse = {
+  name: string;
+  kitchenId: number;
+  webshopId: string;
+};
