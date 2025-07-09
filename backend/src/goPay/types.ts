@@ -172,8 +172,93 @@ export interface DeleteOrderResponse {
   success: boolean;
 }
 
+// Detailed Order Types
+export interface DetailedOrderOrderLine extends OrderLine {
+  id: number;
+  itemPrice: Price;
+  price: Price;
+  name: string;
+}
+
+export interface DetailedOrderDelivery extends Delivery {
+  orderNote?: string;
+  orderLines: DetailedOrderOrderLine[];
+  cancelOrder?: {
+    cancelEnable: boolean;
+    shortMessage?: string;
+    message?: string;
+  };
+}
+
+export interface DetailedOrder extends Order {
+  shopChannel: string;
+  uid: string;
+  creditNoteDetails?: {
+    creditNoteOrderIds?: number[];
+    originalOrderId?: number;
+  };
+  deliveries: DetailedOrderDelivery[];
+  receipt?: Record<string, unknown>;
+  buyerCustomerParty?: {
+    name: string;
+    streetName: string;
+    streetNumber: string;
+    postalCode: string;
+    city: string;
+    vatnumber: string;
+  };
+  accountingCustomerParty?: {
+    id: number;
+  };
+  sellerSupplierParty?: {
+    id: number;
+    name: string;
+  };
+  customer?: {
+    id: number;
+    displayName: string;
+    userGroupId: number;
+  };
+  paymentDetails?: {
+    method: string;
+    isOnlinePayment: boolean;
+    isCaptured: boolean;
+    created: string;
+    toBePaidAsPrivate: Price;
+    toBePaidAsCompany: Price;
+    card?: Record<string, unknown>;
+    acquirerId: number;
+    webShopId: number;
+    accounting: {
+      dimensions: unknown[];
+      costCenter: string;
+    };
+    status: string;
+    channel: {
+      type: string;
+    };
+  };
+  kitchen?: {
+    id: number;
+    name: string;
+    phoneNumber: string;
+    email: string;
+    streetName: string;
+    streetNumber: string;
+    postalCode: string;
+    city: string;
+    webshop: Webshop;
+    vatnumber: string;
+  };
+  webshop?: Webshop;
+  permaLink?: string;
+  test?: boolean;
+  created?: string;
+  isMasterOrder?: boolean;
+}
+
 export interface GetOrderDetailsResponse {
-  order: Order;
+  orders: DetailedOrder[];
 }
 
 // Error Types

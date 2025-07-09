@@ -1,4 +1,3 @@
-import { open } from "fs";
 import {
   RequestOTPRequest,
   RequestOTPResponse,
@@ -14,6 +13,7 @@ import {
   GetOrderDetailsResponse,
   ApiError,
   OrderDelivery,
+  DetailedOrder,
 } from "./types";
 
 export class GoPayClient {
@@ -195,14 +195,13 @@ export class GoPayClient {
     return response;
   }
 
-  async getOrderDetails(
-    orderId: number
-  ): Promise<GetOrderDetailsResponse | Response> {
+  async getOrderDetails(orderId: number): Promise<DetailedOrder | Response> {
     const response = await this.request<GetOrderDetailsResponse>(
       `/orders/${orderId}`
     );
 
-    return response;
+    if (response instanceof Response) return response;
+    return response.orders[0];
   }
 
   async deleteOrder(orderId: number): Promise<DeleteOrderResponse | Response> {
