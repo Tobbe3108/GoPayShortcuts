@@ -15,13 +15,11 @@ export class Login extends OpenAPIRoute {
     summary: "Login with one-time password (OTP)",
     request: {
       body: {
-        content: {
-          "application/json": {
-            schema: z.object({
-              otp: z.string().describe("One-time password (OTP)"),
-            }),
-          },
-        },
+        ...contentJson(
+          z.object({
+            otp: z.string().describe("One-time password (OTP)"),
+          })
+        ),
       },
     },
     responses: {

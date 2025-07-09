@@ -15,13 +15,11 @@ export class RequestOTP extends OpenAPIRoute {
     summary: "Request a one-time password (OTP)",
     request: {
       body: {
-        content: {
-          "application/json": {
-            schema: z.object({
-              email: Str({ example: "user@example.com", required: true }),
-            }),
-          },
-        },
+        ...contentJson(
+          z.object({
+            email: Str({ example: "user@example.com", required: true }),
+          })
+        ),
       },
     },
     responses: {
