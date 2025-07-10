@@ -1,0 +1,309 @@
+GET https://prod.facilitynet.dk/api/suppliers/kitchens/{{kitchenId}}/menues/catering?date={{date}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Thu, 10 Jul 2025 11:35:02 GMT
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{
+  "menues": [
+    {
+      "date": "2025-07-10",
+      "displayDate": "Thursday 10/07",
+      "productGroups": [
+        {
+          "id": 4116,
+          "name": "Kantinemad",
+          "products": [
+            {
+              "id": 33138,
+              "subject": "Frokost",
+              "name": "Frokost",
+              "description": "",
+              "price": {
+                "amount": 1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 15.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33138/image?now=2023-08-30 13:21:49",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33138/image?now=2023-08-30 13:21:49",
+                "cardColor": "#02ec88"
+              }
+            },
+            {
+              "id": 33139,
+              "subject": "L\u00e6skedrik",
+              "name": "L\u00e6skedrik",
+              "description": "",
+              "price": {
+                "amount": 500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 5.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33139/image?now=2023-08-30 13:39:43",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33139/image?now=2023-08-30 13:39:43",
+                "cardColor": "#02ec88"
+              }
+            },
+            {
+              "id": 33137,
+              "subject": "Morgenmad",
+              "name": "Morgenmad",
+              "description": "",
+              "price": {
+                "amount": 1700,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 17.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33137/image?now=2023-08-30 13:19:01",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33137/image?now=2023-08-30 13:19:01",
+                "cardColor": "#02ec88"
+              }
+            }
+          ]
+        },
+        {
+          "id": 4409,
+          "name": "G\u00e6ster",
+          "products": [
+            {
+              "id": 33141,
+              "subject": "G\u00e6st frokost",
+              "name": "G\u00e6st frokost",
+              "description": "",
+              "price": {
+                "amount": 0,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 0.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33141/image?now=2023-08-30 13:42:26",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33141/image?now=2023-08-30 13:42:26",
+                "cardColor": "#02ec88"
+              }
+            },
+            {
+              "id": 33142,
+              "subject": "G\u00e6st l\u00e6skedrik",
+              "name": "G\u00e6st l\u00e6skedrik",
+              "description": "",
+              "price": {
+                "amount": 0,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 0.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33142/image?now=2023-08-30 13:42:56",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33142/image?now=2023-08-30 13:42:56",
+                "cardColor": "#02ec88"
+              }
+            },
+            {
+              "id": 33140,
+              "subject": "G\u00e6st morgenmad",
+              "name": "G\u00e6st morgenmad",
+              "description": "",
+              "price": {
+                "amount": 0,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 0.00"
+              },
+              "imageUrl": "/api/public/suppliers/kitchens/3237/products/33140/image?now=2023-08-30 13:42:09",
+              "orderDetails": {
+                "availability": {
+                  "isAvailable": true
+                }
+              },
+              "userDetails": {
+                "favoriteType": "LUNCH",
+                "canFavorite": true
+              },
+              "productType": "LUNCH",
+              "kitchen": {
+                "id": 3237,
+                "name": "Energinet - Errits\u00f8",
+                "streetName": "Tonne Kj\u00e6rsvej 65 ",
+                "streetNumber": "",
+                "postalCode": "Fredericia",
+                "webshop": {
+                  "id": 68,
+                  "name": "Energinet - Errits\u00f8",
+                  "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+                  "demoMode": false
+                },
+                "brandingDetails": {
+                  "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+                }
+              },
+              "cardDetails": {
+                "imageUrl": "/api/public/suppliers/kitchens/3237/products/33140/image?now=2023-08-30 13:42:09",
+                "cardColor": "#02ec88"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "kitchen": {
+    "id": 3237,
+    "name": "Energinet - Errits\u00f8",
+    "streetName": "Tonne Kj\u00e6rsvej 65 ",
+    "streetNumber": "",
+    "postalCode": "Fredericia",
+    "webshop": {
+      "id": 68,
+      "name": "Energinet - Errits\u00f8",
+      "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+      "demoMode": false
+    },
+    "brandingDetails": {
+      "imageUrl": "/api/public/suppliers/webshop/byUUID/3c5879be-1174-4d34-8d13-ddfcee02f879/image?now=2025-07-10T13:35:02.442"
+    }
+  }
+}

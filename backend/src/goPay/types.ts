@@ -159,8 +159,8 @@ export interface PlaceOrderResponse {
 }
 
 export interface PayOrderRequest {
-  kitchen: Pick<Kitchen, 'id'>;
-  webshop: Pick<Webshop, 'uid'>;
+  kitchen: Pick<Kitchen, "id">;
+  webshop: Pick<Webshop, "uid">;
   payment: {
     method: string;
   };
@@ -275,4 +275,62 @@ export interface ApiError {
   statusCode: number;
   message: string;
   error?: any;
+}
+
+// Product API Types
+export interface ProductsResponse {
+  menues: Menu[];
+  kitchen: KitchenSummary;
+}
+
+export interface Menu {
+  date: string;
+  displayDate: string;
+  productGroups: ProductGroup[];
+}
+
+export interface ProductGroup {
+  id: number;
+  name: string;
+  products: Product[];
+}
+
+export interface Product {
+  id: number;
+  subject: string;
+  name: string;
+  description: string;
+  price: Price;
+  imageUrl: string;
+  orderDetails: ProductOrderDetails;
+  userDetails: ProductUserDetails;
+  productType: string;
+  kitchen: KitchenSummary;
+  cardDetails: ProductCardDetails;
+}
+
+export interface ProductOrderDetails {
+  availability: {
+    isAvailable: boolean;
+  };
+}
+
+export interface ProductUserDetails {
+  favoriteType: string;
+  canFavorite: boolean;
+}
+
+export interface ProductCardDetails {
+  imageUrl: string;
+  cardColor: string;
+}
+
+export interface KitchenSummary {
+  id: number;
+  name: string;
+  streetName: string;
+  streetNumber: string;
+  postalCode: string;
+  webshop: Webshop;
+  brandingDetails: BrandingDetails;
 }

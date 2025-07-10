@@ -14,6 +14,7 @@ import {
   ApiError,
   OrderDelivery,
   DetailedOrder,
+  ProductsResponse,
 } from "./types";
 
 export class GoPayClient {
@@ -138,6 +139,22 @@ export class GoPayClient {
         },
       }
     );
+
+    return response;
+  }
+
+  async getProducts(kitchenId: number): Promise<ProductsResponse | Response> {
+    const endpoint = `/suppliers/kitchens/${kitchenId}/menues/catering?date=${
+      new Date().toISOString().split("T")[0]
+    }`;
+
+    const response = await this.request<ProductsResponse>(endpoint, {
+      cf: {
+        cacheTtlByStatus: {
+          "200-299": 2629800, // 30 days
+        },
+      },
+    });
 
     return response;
   }
