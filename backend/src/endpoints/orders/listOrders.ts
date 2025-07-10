@@ -54,6 +54,7 @@ export class ListOrders extends OpenAPIRoute {
     const groups = aggregateOrderLines(filteredOrders);
     const orders = convertGroupRecordsToArray(groups);
 
+    c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
     return { orders: orders } as ListOrdersResponse;
   }
 }

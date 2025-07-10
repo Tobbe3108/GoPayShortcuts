@@ -34,6 +34,8 @@ export class GetProducts extends OpenAPIRoute {
     if (response instanceof Response) return response;
 
     const productsResponse = extractProducts(response);
+
+    c.res.headers.set("Cache-Control", "max-age=2629800"); // Cache for 30 days
     return productsResponse;
   }
 }
