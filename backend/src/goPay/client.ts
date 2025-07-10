@@ -175,17 +175,22 @@ export class GoPayClient {
   }
 
   async payOrder(
-    orderId: number,
-    paymentMethod: string,
-    acceptedSalesConditions: boolean
+    kitchenId: number,
+    webshopUId: string,
+    deliveries: OrderDelivery[]
   ): Promise<PayOrderResponse | Response> {
     const request: PayOrderRequest = {
-      paymentMethod: paymentMethod,
-      acceptedSalesConditions: acceptedSalesConditions,
+      kitchen: { id: kitchenId },
+      webshop: { uid: webshopUId },
+      payment: {
+        method: "PAYROLL_DEDUCTION",
+      },
+      orderNote: "",
+      deliveries: deliveries,
     };
 
     const response = await this.request<PayOrderResponse>(
-      `/orders/${orderId}/pay`,
+      `/orders/catering`,
       {
         method: "POST",
       },

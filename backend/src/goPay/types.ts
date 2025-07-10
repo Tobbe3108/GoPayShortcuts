@@ -159,8 +159,17 @@ export interface PlaceOrderResponse {
 }
 
 export interface PayOrderRequest {
-  paymentMethod: string;
-  acceptedSalesConditions: boolean;
+  kitchen: Pick<Kitchen, 'id'>;
+  webshop: Pick<Webshop, 'uid'>;
+  payment: {
+    method: string;
+  };
+  orderNote: string;
+  deliveries: Array<{
+    deliveryLocation: DeliveryLocation;
+    deliveryTime: string;
+    orderLines: OrderLine[];
+  }>;
 }
 
 export interface PayOrderResponse {

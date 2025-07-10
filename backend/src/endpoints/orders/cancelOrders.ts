@@ -23,9 +23,7 @@ export class CancelOrders extends OpenAPIRoute {
         ...contentJson(
           z.object({
             date: Str({ example: "2024-07-01", required: true }),
-            kitchenIds: z
-              .array(z.number({ required_error: "kitchenId is required" }))
-              .min(1),
+            kitchenId: z.number({ required_error: "kitchenId is required" }),
           })
         ),
       },
@@ -50,15 +48,15 @@ export class CancelOrders extends OpenAPIRoute {
   async handle(c: AppContext) {
     const client = createGoPayClient(c);
     const data = await this.getValidatedData<typeof this.schema>();
-    const { date, kitchenIds } =
-      (data.body as { date: string; kitchenIds: number[] }) ?? {};
+    const { date, kitchenId } =
+      (data.body as { date: string; kitchenId: number }) ?? {};
 
     const response = await client.listOrders(date, date);
     if (response instanceof Response) return response; // Error responses
 
     const details = await fetchOrderDetails(response.orders, client);
     const validOrders = excludeRefundedOrders(details).filter(
-      (order) => order.kitchen?.id && kitchenIds.includes(order.kitchen.id)
+      (order) => order.kitchen?.id === kitchenId
     );
 
     if (!allCanBeCanceled(validOrders)) {

@@ -6,6 +6,7 @@ import { RequestOTP } from "./endpoints/auth/requestOTP";
 import { GetLocations } from "./endpoints/locations/getLocations";
 import { ListOrders } from "./endpoints/orders/listOrders";
 import { CancelOrders } from "./endpoints/orders/cancelOrders";
+import { AddOrder } from "./endpoints/orders/addOrder";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -60,6 +61,7 @@ openapi.post("/api/login", Login);
 openapi.get("/api/locations", GetLocations);
 openapi.get("/api/orders", ListOrders);
 openapi.delete("/api/orders", CancelOrders);
+openapi.post("/api/orders", AddOrder);
 
 // Export the Hono app
 export default app;

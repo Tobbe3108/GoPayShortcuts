@@ -13,9 +13,8 @@ export class GetLocations extends OpenAPIRoute {
         description: "List of locations",
         ...contentJson(
           z.object({
-            name: z.string(),
             kitchenId: z.number(),
-            webshopId: z.string(),
+            name: z.string(),
           })
         ),
       },
@@ -30,11 +29,9 @@ export class GetLocations extends OpenAPIRoute {
 
     const locations = response.map((location) => {
       const kitchen = location.kitchens && location.kitchens[0];
-      const webshop = kitchen.webshops && kitchen.webshops[0];
       return {
-        name: location.name,
         kitchenId: kitchen.id,
-        webshopId: webshop.uid,
+        name: location.name,
       } as GetLocationsResponse;
     });
 
@@ -44,7 +41,6 @@ export class GetLocations extends OpenAPIRoute {
 }
 
 type GetLocationsResponse = {
-  name: string;
   kitchenId: number;
-  webshopId: string;
+  name: string;
 };
