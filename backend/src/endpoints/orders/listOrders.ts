@@ -9,6 +9,7 @@ import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
 import { DetailedOrder, Order } from "../../goPay/types";
 import { fetchOrderDetails, filterOrders } from "./shared/ordersUtils";
+import { formatAmount } from "../Shared/priceUtils";
 
 export class ListOrders extends OpenAPIRoute {
   schema = {
@@ -118,10 +119,6 @@ function aggregateOrderLines(
       grouped[date][kitchenId].orderlines.push(existingOrderLine);
     }
     return existingOrderLine;
-  }
-
-  function formatAmount(amount: number, scale: number): number {
-    return amount / Math.pow(10, scale);
   }
 }
 
