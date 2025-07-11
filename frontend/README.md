@@ -1,23 +1,23 @@
-# GoPay BAD Edition
+# Frontend (Svelte + Tailwind)
 
-## Developing
+A static Svelte webapp providing shortcuts to features from a bad food ordering app. Lightweight, responsive, and easy to use.
 
-Instal dependencies with `bun i`, start a development server:
+## Features
 
-```bash
-bun dev (then manually open the at http://localhost:5173/)
+- Svelte + TypeScript
+- Tailwind CSS for all styling
+- Responsive design (mobile & desktop)
+- Shared state via Svelte stores
 
-bun dev -- --open (will automatically open the browser)
+## Development
+
+```sh
+bun install
+bun run dev
 ```
 
-## Building
+## Build for Production
 
-To create a production version of your app:
-
-```bash
-bun build
+```sh
+bun run build
 ```
-
-You can preview the production build with `bun preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
