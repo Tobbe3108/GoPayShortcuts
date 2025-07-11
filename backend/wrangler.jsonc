@@ -11,6 +11,7 @@
 		"enabled": true,
 	},
 	"vars": { 
-		"GOPAY_API_URL": "https://prod.facilitynet.dk/api" 
+		"GOPAY_API_URL": "https://prod.facilitynet.dk/api",
+		"USE_LOCAL_MOCK_CLIENTS": true,
 	}
 }
