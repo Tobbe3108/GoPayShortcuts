@@ -10,6 +10,7 @@ import { Schemas } from "../Shared/Schemas";
 import {
   fetchOrderDetails,
   filterOrders as excludeRefundedOrders,
+  cancelOrdersBatch,
 } from "./shared/ordersUtils";
 
 export class CancelOrders extends OpenAPIRoute {
@@ -58,32 +59,11 @@ export class CancelOrders extends OpenAPIRoute {
     const validOrders = excludeRefundedOrders(details).filter(
       (order) =>
         order.kitchen?.id === kitchenId &&
-        order.deliveries.some((delivery) => !delivery.cancelOrder?.cancelEnable)
+        order.deliveries.some((delivery) => delivery.cancelOrder?.cancelEnable)
     );
 
-    const results = await Promise.all(
-      validOrders.map(async (order) => {
-        const response = await client.deleteOrder(order.id);
-        if (response instanceof Response) return { failed: true, response };
-        return { failed: false, response: null };
-      })
-    );
-
-    const anyFailed = results.some((r) => r.failed);
-    if (anyFailed) {
-      const errorResponses = results
-        .filter((r) => r.failed)
-        .map((r) => r.response.json() as Promise<any>);
-      return c.json(
-        {
-          errors: (await Promise.all(errorResponses)).map(
-            (error) => error.displayMessage || error.details || "Unknown error"
-          ),
-        },
-        { status: 400 }
-      );
-    }
-
+    const result = await cancelOrdersBatch(client, validOrders);
+    if (result instanceof Response) return result; // Error responses
     return new Response(null, { status: 204 });
   }
 }

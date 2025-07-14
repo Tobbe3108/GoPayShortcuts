@@ -7,9 +7,11 @@ import {
 import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
-import { DetailedOrder, Order } from "../../goPay/types";
-import { fetchOrderDetails, filterOrders } from "./shared/ordersUtils";
-import { formatAmount } from "../Shared/priceUtils";
+import {
+  fetchOrderDetails,
+  filterOrders,
+  buildSimplifiedOrderFromDetailed,
+} from "./shared/ordersUtils";
 
 export class ListOrders extends OpenAPIRoute {
   schema = {
@@ -51,105 +53,23 @@ export class ListOrders extends OpenAPIRoute {
 
     const details = await fetchOrderDetails(ordersResp.orders, client);
     const filteredOrders = filterOrders(details);
-    const groups = aggregateOrderLines(filteredOrders);
-    const orders = convertGroupRecordsToArray(groups);
+
+    const simplifiedOrders = filteredOrders.map((order) => {
+      const delivery = order.deliveries?.[0];
+      const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
+      const kitchenId = order.kitchen?.id || NaN;
+      const cancelEnabled = order.deliveries.every(
+        (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
+      );
+      return buildSimplifiedOrderFromDetailed(
+        order,
+        date,
+        kitchenId,
+        cancelEnabled
+      );
+    });
 
     c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
-    return { orders: orders } as ListOrdersResponse;
+    return { orders: simplifiedOrders };
   }
 }
-
-function aggregateOrderLines(
-  details: DetailedOrder[]
-): Record<string, Record<number, SimplifiedOrder>> {
-  const groups: Record<string, Record<number, SimplifiedOrder>> = {};
-
-  for (const order of details) {
-    const delivery = order.deliveries?.[0];
-    const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
-    const kitchenId = order.kitchen?.id || NaN;
-
-    for (const delivery of order.deliveries || []) {
-      for (const deliveryOrderLine of delivery.orderLines || []) {
-        const orderLine = initGroup(
-          groups,
-          date,
-          kitchenId,
-          deliveryOrderLine.productId
-        );
-        orderLine.quantity += deliveryOrderLine.items;
-        orderLine.price += formatAmount(
-          deliveryOrderLine.price?.amount,
-          deliveryOrderLine.price?.scale
-        );
-      }
-
-      if (!delivery.cancelOrder?.cancelEnable) {
-        groups[date][kitchenId].cancelEnabled = false;
-      }
-    }
-  }
-  return groups;
-
-  function initGroup(
-    grouped: Record<string, Record<number, SimplifiedOrder>>,
-    date: string,
-    kitchenId: number,
-    productId: number
-  ): OrderLine {
-    if (!grouped[date]) grouped[date] = {};
-    if (!grouped[date][kitchenId]) {
-      grouped[date][kitchenId] = {
-        date,
-        kitchenId: kitchenId,
-        orderlines: [],
-        cancelEnabled: true,
-      };
-    }
-
-    let existingOrderLine = grouped[date][kitchenId].orderlines.find(
-      (ol) => ol.productId === productId
-    );
-
-    if (!existingOrderLine) {
-      existingOrderLine = {
-        productId,
-        quantity: 0,
-        price: 0,
-      };
-      grouped[date][kitchenId].orderlines.push(existingOrderLine);
-    }
-    return existingOrderLine;
-  }
-}
-
-function convertGroupRecordsToArray(
-  groups: Record<string, Record<number, SimplifiedOrder>>
-): SimplifiedOrder[] {
-  const simplifiedOrders: SimplifiedOrder[] = [];
-  for (const date of Object.keys(groups)) {
-    for (const location of Object.keys(groups[date])) {
-      simplifiedOrders.push(groups[date][location]);
-    }
-  }
-  return simplifiedOrders.sort((a, b) => {
-    return new Date(a.date).getDate() - new Date(b.date).getDate();
-  });
-}
-
-type ListOrdersResponse = {
-  orders: SimplifiedOrder[];
-};
-
-type SimplifiedOrder = {
-  date: string;
-  kitchenId: number;
-  orderlines: OrderLine[];
-  cancelEnabled: boolean;
-};
-
-type OrderLine = {
-  productId: number;
-  quantity: number;
-  price: number;
-};
