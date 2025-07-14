@@ -30,6 +30,11 @@ export class MeyersClient {
       method: "POST",
       headers: headers,
       body: JSON.stringify(payload),
+      cf: {
+        cacheTtlByStatus: {
+          "200-299": 86400 * 7, // 7 days
+        },
+      },
     });
     if (!response.ok) return response;
 

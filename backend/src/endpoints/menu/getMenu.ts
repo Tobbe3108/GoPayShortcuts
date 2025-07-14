@@ -46,6 +46,7 @@ export class GetMenu extends OpenAPIRoute {
       });
     }
 
+    c.res.headers.set("Cache-Control", `max-age=${86400 * 7}`); // Cache for 7 days
     return result;
   }
 }

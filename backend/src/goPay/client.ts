@@ -134,7 +134,7 @@ export class GoPayClient {
       {
         cf: {
           cacheTtlByStatus: {
-            "200-299": 2629800, // 30 days
+            "200-299": 86400 * 30, // 30 days
           },
         },
       }
@@ -151,7 +151,7 @@ export class GoPayClient {
     const response = await this.request<ProductsResponse>(endpoint, {
       cf: {
         cacheTtlByStatus: {
-          "200-299": 2629800, // 30 days
+          "200-299": 86400 * 30, // 30 days
         },
       },
     });
