@@ -1,8 +1,14 @@
 import type { Context } from "hono";
 import { GoPayClient } from "./goPay/client";
 import { GoPayClientMock } from "./goPay/client.mock";
+import { MeyersClient } from "./meyers/client";
 
 export type AppContext = Context<{ Bindings: Env }>;
+
+export const createMeyersClient = (context: AppContext): MeyersClient => {
+  const apiUrl = context.env.MEYERS_API_URL;
+  return new MeyersClient(apiUrl);
+};
 
 export const createGoPayClient = (context: AppContext): GoPayClient => {
   const apiUrl = context.env.GOPAY_API_URL;
