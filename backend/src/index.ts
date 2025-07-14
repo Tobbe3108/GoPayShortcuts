@@ -16,7 +16,11 @@ const app = new Hono<{ Bindings: Env }>();
 // Global auth middleware for all /api routes
 app.use("/api/*", async (c, next) => {
   const path = c.req.path;
-  if (path === "/api/login" || path === "/api/request-otp") {
+  if (
+    path === "/api/login" ||
+    path === "/api/request-otp" ||
+    path === "/api/menu"
+  ) {
     await next();
     return;
   }

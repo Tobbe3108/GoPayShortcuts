@@ -7,7 +7,6 @@ export class GetMenu extends OpenAPIRoute {
   schema = {
     tags: ["Menu"],
     summary: "Get the current Meyers menu (simplified)",
-    ...Schemas.BearerAuth(),
     responses: {
       200: {
         description: "Simplified menu data from Meyers",
