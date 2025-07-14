@@ -7,7 +7,6 @@ import {
 import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
-import { DetailedOrder } from "../../goPay/types";
 import {
   fetchOrderDetails,
   filterOrders as excludeRefundedOrders,
@@ -16,7 +15,8 @@ import {
 export class CancelOrders extends OpenAPIRoute {
   schema = {
     tags: ["Orders"],
-    summary: "Cancel all orders for one or more kitchens on a specific date",
+    summary:
+      "Cancel all still cancellable orders for the kitchen on a specific date",
     ...Schemas.BearerAuth(),
     request: {
       body: {
@@ -56,17 +56,10 @@ export class CancelOrders extends OpenAPIRoute {
 
     const details = await fetchOrderDetails(response.orders, client);
     const validOrders = excludeRefundedOrders(details).filter(
-      (order) => order.kitchen?.id === kitchenId
+      (order) =>
+        order.kitchen?.id === kitchenId &&
+        order.deliveries.some((delivery) => !delivery.cancelOrder?.cancelEnable)
     );
-
-    if (!allCanBeCanceled(validOrders)) {
-      return c.json(
-        {
-          message: "Orders on the specified date cannot be cancelled",
-        },
-        { status: 400 }
-      );
-    }
 
     const results = await Promise.all(
       validOrders.map(async (order) => {
@@ -93,15 +86,4 @@ export class CancelOrders extends OpenAPIRoute {
 
     return new Response(null, { status: 204 });
   }
-}
-
-function allCanBeCanceled(orders: DetailedOrder[]): boolean {
-  for (const order of orders) {
-    for (const delivery of order.deliveries || []) {
-      if (!delivery.cancelOrder?.cancelEnable) {
-        return false;
-      }
-    }
-  }
-  return true;
 }
