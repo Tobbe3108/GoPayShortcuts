@@ -8,6 +8,7 @@ import { ListOrders } from "./endpoints/orders/listOrders";
 import { CancelOrders } from "./endpoints/orders/cancelOrders";
 import { AddOrder } from "./endpoints/orders/addOrder";
 import { GetProducts } from "./endpoints/products/getProducts";
+import { GetMenu } from "./endpoints/menu/getMenu";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -72,6 +73,7 @@ openapi.get("/api/orders", ListOrders);
 openapi.delete("/api/orders", CancelOrders);
 openapi.post("/api/orders", AddOrder);
 openapi.get("/api/products", GetProducts);
+openapi.get("/api/menu", GetMenu);
 
 // Export the Hono app
 export default app;
