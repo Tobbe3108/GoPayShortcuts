@@ -10,12 +10,13 @@ import {
   cancelOrdersBatch,
 } from "./shared/ordersUtils";
 import { DetailedOrder } from "../../goPay/types";
+import { Schemas } from "../Shared/Schemas";
 
-export class UpdateDayOrders extends OpenAPIRoute {
+export class UpdateDay extends OpenAPIRoute {
   schema = {
     tags: ["Orders"],
     summary: "Update orders for a kitchen and day to match desired state",
-    ...InputValidationException.schema(),
+    ...Schemas.BearerAuth(),
     request: {
       body: {
         ...contentJson(
@@ -43,6 +44,7 @@ export class UpdateDayOrders extends OpenAPIRoute {
         ),
       },
       ...InputValidationException.schema(),
+      ...Schemas.InternalServerError(),
     },
   };
 
@@ -78,9 +80,7 @@ export class UpdateDayOrders extends OpenAPIRoute {
 
     // Find which orders are fully cancelable
     const cancelableOrders = filteredOrders.filter((order) =>
-      order.deliveries.every(
-        (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
-      )
+      order.deliveries.every((d) => d.cancelOrder.cancelEnable === true)
     );
     const fixedOrders = filteredOrders.filter(
       (order) => !cancelableOrders.includes(order)
@@ -107,34 +107,58 @@ export class UpdateDayOrders extends OpenAPIRoute {
 
     // If any fixedMap quantity exceeds the desired, this is an over-order that cannot be fixed
 
-    // Cancel orders if all their products are not needed in the desiredMap (after fixedMap adjustment)
+    // Keep only as many orders as needed to fulfill the desired quantity for each product
+    // Cancel all surplus orders, even if they contain the desired product
+    // Do not create a new order if the desired quantity is already fulfilled by existing orders
     const toCancel: DetailedOrder[] = [];
-    cancelableOrders.forEach((order) => {
-      // Sum up all products in this order
-      let needed = false;
-      order.deliveries.forEach((delivery) => {
-        delivery.orderLines.forEach((line) => {
-          if ((desiredMap[line.productId] || 0) > 0) needed = true;
-        });
-      });
-      if (!needed) toCancel.push(order);
+    const keptOrders: DetailedOrder[] = [];
+    const neededMap = { ...desiredMap };
+
+    // Sort cancelable orders so that single-product orders are preferred for keeping (to minimize splits)
+    const sortedOrders = [...cancelableOrders].sort((a, b) => {
+      const aLines = a.deliveries.reduce(
+        (sum, d) => sum + d.orderLines.length,
+        0
+      );
+      const bLines = b.deliveries.reduce(
+        (sum, d) => sum + d.orderLines.length,
+        0
+      );
+      return aLines - bLines;
     });
+
+    for (const order of sortedOrders) {
+      let canKeep = true;
+      // Check if this order can be used to fulfill any desired quantity
+      for (const delivery of order.deliveries) {
+        for (const line of delivery.orderLines) {
+          if ((neededMap[line.productId] || 0) <= 0) {
+            canKeep = false;
+            break;
+          }
+        }
+        if (!canKeep) break;
+      }
+      if (canKeep) {
+        // Use this order to fulfill as much as possible
+        for (const delivery of order.deliveries) {
+          for (const line of delivery.orderLines) {
+            neededMap[line.productId] = Math.max(
+              0,
+              (neededMap[line.productId] || 0) - line.items
+            );
+          }
+        }
+        keptOrders.push(order);
+      } else {
+        toCancel.push(order);
+      }
+    }
 
     // Calculate what still needs to be created
-    // Subtract all cancelable orders' products from desiredMap if they are being canceled
-    toCancel.forEach((order) => {
-      order.deliveries.forEach((delivery) => {
-        delivery.orderLines.forEach((line) => {
-          // Add back the canceled quantity to desiredMap
-          desiredMap[line.productId] =
-            (desiredMap[line.productId] || 0) + line.items;
-        });
-      });
-    });
-
-    // Now, for each productId in desiredMap, collect any remaining quantity > 0 into a single order
+    // Only create what is still needed after keeping minimal set
     const toCreate: { productId: number; quantity: number }[] = [];
-    for (const [productIdStr, quantity] of Object.entries(desiredMap)) {
+    for (const [productIdStr, quantity] of Object.entries(neededMap)) {
       if (quantity > 0)
         toCreate.push({ productId: Number(productIdStr), quantity });
     }
@@ -144,7 +168,7 @@ export class UpdateDayOrders extends OpenAPIRoute {
     if (cancelResults instanceof Response) return cancelResults; // Error response
 
     // Create a single new order if needed
-    let createResult: ProductQuantity[] | Response;
+    let createResult: ProductQuantity[] | Response | undefined = undefined;
     if (toCreate.length > 0) {
       createResult = await createAndPayOrder(client, kitchenId, date, toCreate);
     }
@@ -152,15 +176,30 @@ export class UpdateDayOrders extends OpenAPIRoute {
 
     // Compose the new order state as an array of SimplifiedOrder
     const simplifiedOrders = [];
+
     for (const order of fixedOrders) {
       simplifiedOrders.push(
-        buildSimplifiedOrderFromDetailed(order, date, kitchenId, false)
+        buildSimplifiedOrderFromDetailed(date, kitchenId, order, false)
       );
     }
 
-    simplifiedOrders.push(
-      buildSimplifiedOrderFromProducts(date, kitchenId, createResult)
-    );
+    for (const order of keptOrders) {
+      simplifiedOrders.push(
+        buildSimplifiedOrderFromDetailed(date, kitchenId, order, true)
+      );
+    }
+
+    if (createResult !== undefined) {
+      simplifiedOrders.push(
+        await buildSimplifiedOrderFromProducts(
+          client,
+          date,
+          kitchenId,
+          createResult,
+          true
+        )
+      );
+    }
 
     return { orders: simplifiedOrders };
   }
