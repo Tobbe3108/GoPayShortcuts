@@ -60,9 +60,9 @@ export class ListOrders extends OpenAPIRoute {
         (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
       );
       return buildSimplifiedOrderFromDetailed(
-        order,
         date,
         kitchenId,
+        order,
         cancelEnabled
       );
     });

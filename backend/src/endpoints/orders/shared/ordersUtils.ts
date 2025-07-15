@@ -1,5 +1,7 @@
-import { Order, DetailedOrder } from "../../../goPay/types";
+import { Order, DetailedOrder, ProductsResponse } from "../../../goPay/types";
 import { GoPayClient } from "../../../goPay/client";
+import { formatAmount } from "../../Shared/priceUtils";
+import { extractProducts } from "../../Shared/productUtils";
 
 export type ProductQuantity = { productId: number; quantity: number };
 
@@ -42,9 +44,9 @@ export async function fetchOrderDetails(
 }
 
 export function buildSimplifiedOrderFromDetailed(
-  order: DetailedOrder,
   date: string,
   kitchenId: number,
+  order: DetailedOrder,
   cancelEnabled: boolean
 ): SimplifiedOrder {
   const orderlines: { productId: number; quantity: number; price: number }[] =
@@ -58,7 +60,7 @@ export function buildSimplifiedOrderFromDetailed(
         orderlines.push({
           productId: line.productId,
           quantity: line.items,
-          price: 0,
+          price: formatAmount(line.price.amount, line.price.scale),
         });
     });
   });
@@ -66,19 +68,26 @@ export function buildSimplifiedOrderFromDetailed(
   return { date, kitchenId, orderlines, cancelEnabled };
 }
 
-export function buildSimplifiedOrderFromProducts(
+export async function buildSimplifiedOrderFromProducts(
+  client: GoPayClient,
   date: string,
   kitchenId: number,
-  products: ProductQuantity[]
-): SimplifiedOrder {
+  products: ProductQuantity[],
+  cancelEnabled: boolean
+): Promise<SimplifiedOrder> {
+  const productsWithPrices = await client.getProducts(kitchenId);
+  const productsResponse = extractProducts(
+    productsWithPrices as ProductsResponse
+  );
+
   const orderlines = products.map(({ productId, quantity }) => ({
     productId,
     quantity,
-    price: 0,
+    price: productsResponse.find((p) => p.id === productId)?.price || 0,
   }));
 
   orderlines.sort((a, b) => a.productId - b.productId);
-  return { date, kitchenId, orderlines, cancelEnabled: true };
+  return { date, kitchenId, orderlines, cancelEnabled };
 }
 
 export async function getDeliveryLocation(

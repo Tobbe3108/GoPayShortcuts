@@ -2,8 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { type AppContext, createGoPayClient } from "../../types";
 import { z } from "zod";
 import { Schemas } from "../Shared/Schemas";
-import { ProductsResponse } from "../../goPay/types";
-import { formatAmount } from "../Shared/priceUtils";
+import { extractProducts } from "../Shared/productUtils";
 
 export class GetProducts extends OpenAPIRoute {
   schema = {
@@ -34,27 +33,7 @@ export class GetProducts extends OpenAPIRoute {
     if (response instanceof Response) return response;
 
     const productsResponse = extractProducts(response);
-
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`); // Cache for 30 days
+    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`);
     return productsResponse;
   }
 }
-
-function extractProducts(response: ProductsResponse) {
-  return response.menues[0].productGroups
-    .find((group) => group.name === "Kantinemad")
-    .products.map(
-      (product) =>
-        ({
-          id: product.id,
-          name: product.name,
-          price: formatAmount(product.price?.amount, product.price?.scale),
-        } as GetProductsResponse)
-    );
-}
-
-type GetProductsResponse = {
-  id: number;
-  name: string;
-  price: number;
-};
