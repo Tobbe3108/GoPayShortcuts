@@ -1,6 +1,5 @@
 import { Order, DetailedOrder } from "../../../goPay/types";
 import { GoPayClient } from "../../../goPay/client";
-import { fa } from "zod/v4/locales";
 
 export type ProductQuantity = { productId: number; quantity: number };
 
@@ -30,18 +29,14 @@ export async function fetchOrderDetails(
     })
   );
 
-  return details;
-}
-
-export function filterOrders(orders: DetailedOrder[]): DetailedOrder[] {
   const refundedOrders = new Set<number>();
-  for (const order of orders) {
+  for (const order of details) {
     if (order.creditNoteDetails?.creditNoteOrderIds?.length > 0) {
       refundedOrders.add(order.id);
     }
   }
 
-  return orders.filter(
+  return details.filter(
     (order) => order.orderType !== "REFUND" && !refundedOrders.has(order.id)
   );
 }

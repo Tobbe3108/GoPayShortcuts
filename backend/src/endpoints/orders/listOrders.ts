@@ -9,7 +9,6 @@ import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
 import {
   fetchOrderDetails,
-  filterOrders,
   buildSimplifiedOrderFromDetailed,
 } from "./shared/ordersUtils";
 
@@ -51,10 +50,9 @@ export class ListOrders extends OpenAPIRoute {
     const ordersResp = await client.listOrders(start, end);
     if (ordersResp instanceof Response) return ordersResp; // Error responses
 
-    const details = await fetchOrderDetails(ordersResp.orders, client);
-    const filteredOrders = filterOrders(details);
+    const validOrders = await fetchOrderDetails(ordersResp.orders, client);
 
-    const simplifiedOrders = filteredOrders.map((order) => {
+    const simplifiedOrders = validOrders.map((order) => {
       const delivery = order.deliveries?.[0];
       const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
       const kitchenId = order.kitchen?.id || NaN;

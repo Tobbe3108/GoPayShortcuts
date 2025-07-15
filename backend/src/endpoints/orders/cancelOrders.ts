@@ -7,11 +7,7 @@ import {
 import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
-import {
-  fetchOrderDetails,
-  filterOrders as excludeRefundedOrders,
-  cancelOrdersBatch,
-} from "./shared/ordersUtils";
+import { fetchOrderDetails, cancelOrdersBatch } from "./shared/ordersUtils";
 
 export class CancelOrders extends OpenAPIRoute {
   schema = {
@@ -55,14 +51,14 @@ export class CancelOrders extends OpenAPIRoute {
     const response = await client.listOrders(date, date);
     if (response instanceof Response) return response; // Error responses
 
-    const details = await fetchOrderDetails(response.orders, client);
-    const validOrders = excludeRefundedOrders(details).filter(
+    const validOrders = await fetchOrderDetails(response.orders, client);
+    const filteredOrders = validOrders.filter(
       (order) =>
         order.kitchen?.id === kitchenId &&
         order.deliveries.some((delivery) => delivery.cancelOrder?.cancelEnable)
     );
 
-    const result = await cancelOrdersBatch(client, validOrders);
+    const result = await cancelOrdersBatch(client, filteredOrders);
     if (result instanceof Response) return result; // Error responses
     return new Response(null, { status: 204 });
   }

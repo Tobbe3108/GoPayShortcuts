@@ -55,8 +55,8 @@ export class UpdateDayOrders extends OpenAPIRoute {
     const ordersResp = await client.listOrders(date, date);
     if (ordersResp instanceof Response) return ordersResp;
 
-    const details = await fetchOrderDetails(ordersResp.orders, client);
-    const validOrders = details.filter(
+    const validOrders = await fetchOrderDetails(ordersResp.orders, client);
+    const filteredOrders = validOrders.filter(
       (order) => order.kitchen?.id === kitchenId
     );
 
@@ -67,7 +67,7 @@ export class UpdateDayOrders extends OpenAPIRoute {
 
     // Build a map of current productId -> quantity (from all orders)
     const currentMap: Record<number, number> = {};
-    validOrders.forEach((order) => {
+    filteredOrders.forEach((order) => {
       order.deliveries.forEach((delivery) => {
         delivery.orderLines.forEach((line) => {
           currentMap[line.productId] =
@@ -77,12 +77,12 @@ export class UpdateDayOrders extends OpenAPIRoute {
     });
 
     // Find which orders are fully cancelable
-    const cancelableOrders = validOrders.filter((order) =>
+    const cancelableOrders = filteredOrders.filter((order) =>
       order.deliveries.every(
         (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
       )
     );
-    const fixedOrders = validOrders.filter(
+    const fixedOrders = filteredOrders.filter(
       (order) => !cancelableOrders.includes(order)
     );
 
@@ -152,14 +152,12 @@ export class UpdateDayOrders extends OpenAPIRoute {
 
     // Compose the new order state as an array of SimplifiedOrder
     const simplifiedOrders = [];
-    // Add fixed (non-cancelable) orders
     for (const order of fixedOrders) {
       simplifiedOrders.push(
         buildSimplifiedOrderFromDetailed(order, date, kitchenId, false)
       );
     }
 
-    // Add created order(s) if any
     simplifiedOrders.push(
       buildSimplifiedOrderFromProducts(date, kitchenId, createResult)
     );
