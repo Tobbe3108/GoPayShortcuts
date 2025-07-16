@@ -1,0 +1,27 @@
+// API Error type
+export interface ApiError {
+	status: string;
+	details: string;
+	displayMessage: string;
+	isUserMessage: boolean;
+}
+
+// Auth types
+export type RequestOTPResponse = Record<string, never>;
+
+export interface LoginResponse {
+	token: string;
+}
+
+// Location types
+export interface Location {
+	id: number;
+	name: string;
+	address: string;
+}
+
+// Common request options
+export interface RequestOptions {
+	token?: string;
+	signal?: AbortSignal;
+}

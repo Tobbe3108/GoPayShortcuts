@@ -1,36 +1,14 @@
 import { browser } from '$app/environment';
+import type {
+	ApiError,
+	RequestOTPResponse,
+	LoginResponse,
+	Location,
+	RequestOptions
+} from '$lib/types/api';
 
 // API Base URL - environment aware
 export const API_BASE_URL = browser ? '/api' : 'http://localhost:8787/api';
-
-// Error type for API responses
-export interface ApiError {
-	status: string;
-	details: string;
-	displayMessage: string;
-	isUserMessage: boolean;
-}
-
-// Request OTP response (empty for 204)
-export type RequestOTPResponse = Record<string, never>;
-
-// Login response
-export interface LoginResponse {
-	token: string;
-}
-
-// Location type from backend
-export interface Location {
-	id: number;
-	name: string;
-	address: string;
-}
-
-// Common request options
-interface RequestOptions {
-	token?: string;
-	signal?: AbortSignal;
-}
 
 /**
  * API client that directly maps to our backend endpoints
