@@ -4,21 +4,8 @@ import { base } from '$app/paths';
 import { get } from 'svelte/store';
 
 /**
- * Checks if a route is protected and redirects to login if user is not authenticated
- *
- * Usage example:
- * ```ts
- * // In your +page.ts file:
- * import { protectRoute } from '$lib/utils/protectedRoute';
- *
- * export function load() {
- *   protectRoute();
- *
- *   return {
- *     // your data here
- *   };
- * }
- * ```
+ * Protects a route by checking if the user is authenticated.
+ * If not authenticated, redirects to the login page.
  */
 export function protectRoute() {
 	const isAuthenticated = get(authStore).isAuthenticated;
