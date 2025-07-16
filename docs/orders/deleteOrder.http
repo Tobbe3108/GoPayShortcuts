@@ -1,0 +1,527 @@
+DELETE https://prod.facilitynet.dk/api/orders/{{orderId}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:21:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: close
+Access-Control-Allow-Origin: *
+{
+  "orders": [
+    {
+      "displayName": "GoPay #4120655",
+      "masterOrderId": 4120655,
+      "masterOrderUid": "15849298-b077-4f72-a5a3-9544b140d97d",
+      "id": 4120655,
+      "uid": "15849298-b077-4f72-a5a3-9544b140d97d",
+      "orderType": "REFUND",
+      "organizers": [
+        {
+          "uid": "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+          "initials": "TOLAU",
+          "firstname": "Tobias",
+          "lastname": "Lauritzen",
+          "name": "Tobias Lauritzen",
+          "email": "TOLAU@energinet.dk",
+          "businessPhone": "",
+          "mobilePhone": "",
+          "organizerType": "CREATOR",
+          "companyId": 3228
+        }
+      ],
+      "deliveries": [
+        {
+          "id": 2177588,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-07-07T00:00:00",
+          "orderNote": "",
+          "orderLines": [
+            {
+              "id": 2422808,
+              "items": 1,
+              "itemPrice": {
+                "amount": -1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK -15.00"
+              },
+              "price": {
+                "amount": -1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK -15.00"
+              },
+              "accountingItemPrice": {
+                "amount": -1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK -15.00"
+              },
+              "accountingPrice": {
+                "amount": -1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK -15.00"
+              },
+              "productId": 33138,
+              "name": "Frokost",
+              "buyerParty": "PRIVATE"
+            }
+          ],
+          "price": {
+            "amount": -1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -15.00"
+          },
+          "cancelOrder": {
+            "cancelEnable": true
+          },
+          "orderId": 0
+        }
+      ],
+      "receipt": {
+        "posPrintingMode": "AUTO",
+        "download": {
+          "qrCode": {
+            "imageUrl": "https://prod.facilitynet.dk/api/public/receipts/15849298-b077-4f72-a5a3-9544b140d97d/qr"
+          }
+        }
+      },
+      "amount": {
+        "amount": -1500,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK -15.00"
+      },
+      "accountingSupplierParty": {
+        "id": 3234
+      },
+      "customer": {
+        "id": 3861688,
+        "initials": "TOLAU",
+        "displayInitials": "TL",
+        "username": "TOLAU@energinet.dk",
+        "displayName": "Tobias Lauritzen",
+        "givenName": "Tobias",
+        "surName": "Lauritzen",
+        "email": "TOLAU@energinet.dk",
+        "phoneNumber": "",
+        "mobileNumber": "",
+        "customerTypeId": 1,
+        "isPrivateAccount": false,
+        "companyId": 3228,
+        "companyName": "Energinet",
+        "language": "en_US",
+        "uid": "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+        "uidHash": "13240f27b301cd8102e3e8c4c3586dc6a3ef77b0ab8ee6eef65ae3010131033d",
+        "accountId": 86666,
+        "accountBalance": {
+          "amount": 0,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK 0.00"
+        },
+        "isSubscribedToLunch": false,
+        "location": {
+          "id": 56,
+          "name": "Erritsø",
+          "kitchen": {
+            "id": 3237,
+            "name": "Energinet - Erritsø"
+          },
+          "selectLocation": false
+        },
+        "wallets": {},
+        "isTest": false,
+        "userSettings": [
+          {
+            "name": "ACCEPT_PUSH_NOTIFICATIONS",
+            "translationKey": "settings-push-notifications",
+            "value": "false",
+            "elementType": "TOGGLE"
+          },
+          {
+            "name": "ORDER_EMAIL_RECEIPT",
+            "translationKey": "settings-receipts-via-email",
+            "value": "false",
+            "elementType": "TOGGLE"
+          },
+          {
+            "name": "ACCEPT_SMS_NOTIFICATIONS",
+            "translationKey": "settings-sms-notifications",
+            "value": "false",
+            "elementType": "TOGGLE"
+          },
+          {
+            "name": "LANGUAGE_CODE",
+            "value": "en_US"
+          }
+        ],
+        "userSettingsMap": {
+          "LANGUAGE_CODE": "en_US"
+        },
+        "company": {
+          "uid": "12af4796-7151-4f4b-9529-287886315f00",
+          "name": "Energinet",
+          "streetName": "Tonne Kjærsvej",
+          "streetNumber": "65",
+          "postalCode": "7000",
+          "city": "Fredericia",
+          "companySetup": {
+            "emailReceipts": true,
+            "userSynchronization": true
+          },
+          "vatnumber": "28980671"
+        },
+        "actions": [
+          {
+            "type": "UPDATE",
+            "isAvailable": false,
+            "reason": "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+          },
+          {
+            "type": "DELETE",
+            "isAvailable": false,
+            "reason": "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+          }
+        ]
+      },
+      "payment": {
+        "method": "PAYROLL_DEDUCTION"
+      },
+      "paymentDetails": {
+        "method": "PAYROLL_DEDUCTION",
+        "isOnlinePayment": false,
+        "isCaptured": false,
+        "created": "2025-07-05T18:20:00",
+        "bankAccountStatement": "GoPay",
+        "remoteIp": "93.160.107.43",
+        "toBePaidAsPrivate": {
+          "amount": -1500,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK -15.00"
+        },
+        "toBePaidAsCompany": {
+          "amount": 0,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK 0.00"
+        },
+        "card": {},
+        "acquirerId": 0,
+        "webShopId": 68,
+        "accounting": {
+          "dimensions": [],
+          "costCenter": ""
+        },
+        "status": "CANCELLED",
+        "channel": {
+          "type": "mobile_web"
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø",
+        "phoneNumber": "",
+        "email": "",
+        "streetName": "Tonne Kjærsvej 65 ",
+        "streetNumber": "0",
+        "postalCode": "7000",
+        "city": "Fredericia",
+        "webshop": {
+          "id": 68,
+          "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+          "showQrReciept": true,
+          "demoMode": false
+        },
+        "companySettings": {
+          "SHOW_WEEK_MENU": "false"
+        },
+        "vatnumber": "28980671"
+      },
+      "created": "2025-07-05 18:21:31",
+      "isMasterOrder": false,
+      "parentOrder": {
+        "shopChannel": "-",
+        "displayName": "GoPay #4120654",
+        "id": 4120654,
+        "uid": "383d8fc3-e611-4e1e-9a03-3c4855beab68",
+        "orderNumberCode": "LU",
+        "orderType": "REFUND",
+        "organizers": [
+          {
+            "uid": "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+            "initials": "TOLAU",
+            "firstname": "Tobias",
+            "lastname": "Lauritzen",
+            "name": "Tobias Lauritzen",
+            "email": "TOLAU@energinet.dk",
+            "businessPhone": "",
+            "mobilePhone": "",
+            "organizerType": "CREATOR",
+            "companyId": 3228
+          }
+        ],
+        "creditNoteDetails": {
+          "creditNoteOrderIds": []
+        },
+        "deliveries": [
+          {
+            "id": 2177588,
+            "deliveryType": "PICK_UP",
+            "type": "PICK_UP",
+            "deliveryTime": "2025-07-07T00:00:00",
+            "orderNote": "",
+            "orderLines": [
+              {
+                "id": 2422808,
+                "items": 1,
+                "itemPrice": {
+                  "amount": -1500,
+                  "scale": 2,
+                  "currency": "DKK",
+                  "formatted": "DKK -15.00"
+                },
+                "price": {
+                  "amount": -1500,
+                  "scale": 2,
+                  "currency": "DKK",
+                  "formatted": "DKK -15.00"
+                },
+                "accountingItemPrice": {
+                  "amount": -1500,
+                  "scale": 2,
+                  "currency": "DKK",
+                  "formatted": "DKK -15.00"
+                },
+                "accountingPrice": {
+                  "amount": -1500,
+                  "scale": 2,
+                  "currency": "DKK",
+                  "formatted": "DKK -15.00"
+                },
+                "productId": 33138,
+                "name": "Frokost",
+                "buyerParty": "PRIVATE"
+              }
+            ],
+            "price": {
+              "amount": -1500,
+              "scale": 2,
+              "currency": "DKK",
+              "formatted": "DKK -15.00"
+            },
+            "cancelOrder": {
+              "cancelEnable": true
+            },
+            "orderId": 0
+          }
+        ],
+        "receipt": {},
+        "price": {
+          "amount": 1500,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK 15.00"
+        },
+        "buyerCustomerParty": {
+          "name": "Energinet",
+          "streetName": "Tonne Kjærsvej",
+          "streetNumber": "65",
+          "postalCode": "7000",
+          "city": "Fredericia",
+          "vatnumber": "28980671"
+        },
+        "accountingCustomerParty": {
+          "id": 3228
+        },
+        "accountingSupplierParty": {
+          "id": 3234
+        },
+        "sellerSupplierParty": {
+          "id": 3234,
+          "name": "Energinet"
+        },
+        "customer": {
+          "id": 3861688,
+          "initials": "TOLAU",
+          "displayInitials": "TL",
+          "username": "TOLAU@energinet.dk",
+          "displayName": "Tobias Lauritzen",
+          "givenName": "Tobias",
+          "surName": "Lauritzen",
+          "email": "TOLAU@energinet.dk",
+          "phoneNumber": "",
+          "mobileNumber": "",
+          "customerTypeId": 1,
+          "isPrivateAccount": false,
+          "companyId": 3228,
+          "companyName": "Energinet",
+          "language": "en_US",
+          "uid": "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+          "uidHash": "13240f27b301cd8102e3e8c4c3586dc6a3ef77b0ab8ee6eef65ae3010131033d",
+          "accountId": 86666,
+          "accountBalance": {
+            "amount": 0,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 0.00"
+          },
+          "isSubscribedToLunch": false,
+          "location": {
+            "id": 56,
+            "name": "Erritsø",
+            "kitchen": {
+              "id": 3237,
+              "name": "Energinet - Erritsø"
+            },
+            "selectLocation": false
+          },
+          "wallets": {},
+          "isTest": false,
+          "userSettings": [
+            {
+              "name": "ACCEPT_PUSH_NOTIFICATIONS",
+              "translationKey": "settings-push-notifications",
+              "value": "false",
+              "elementType": "TOGGLE"
+            },
+            {
+              "name": "ORDER_EMAIL_RECEIPT",
+              "translationKey": "settings-receipts-via-email",
+              "value": "false",
+              "elementType": "TOGGLE"
+            },
+            {
+              "name": "ACCEPT_SMS_NOTIFICATIONS",
+              "translationKey": "settings-sms-notifications",
+              "value": "false",
+              "elementType": "TOGGLE"
+            },
+            {
+              "name": "LANGUAGE_CODE",
+              "value": "en_US"
+            }
+          ],
+          "userSettingsMap": {
+            "LANGUAGE_CODE": "en_US"
+          },
+          "company": {
+            "uid": "12af4796-7151-4f4b-9529-287886315f00",
+            "name": "Energinet",
+            "streetName": "Tonne Kjærsvej",
+            "streetNumber": "65",
+            "postalCode": "7000",
+            "city": "Fredericia",
+            "companySetup": {
+              "emailReceipts": true,
+              "userSynchronization": true
+            },
+            "vatnumber": "28980671"
+          },
+          "actions": [
+            {
+              "type": "UPDATE",
+              "isAvailable": false,
+              "reason": "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+            },
+            {
+              "type": "DELETE",
+              "isAvailable": false,
+              "reason": "Your company has setup user syncronization, so updates for your account must be done by your company administrator."
+            }
+          ]
+        },
+        "payment": {
+          "method": "PAYROLL_DEDUCTION"
+        },
+        "paymentDetails": {
+          "method": "PAYROLL_DEDUCTION",
+          "isOnlinePayment": false,
+          "isCaptured": false,
+          "created": "2025-07-05T18:20:00",
+          "bankAccountStatement": "GoPay",
+          "remoteIp": "93.160.107.43",
+          "toBePaidAsPrivate": {
+            "amount": -1500,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK -15.00"
+          },
+          "toBePaidAsCompany": {
+            "amount": 0,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 0.00"
+          },
+          "card": {},
+          "acquirerId": 0,
+          "webShopId": 68,
+          "accounting": {
+            "dimensions": [],
+            "costCenter": ""
+          },
+          "status": "CANCELLED",
+          "channel": {
+            "type": "mobile_web"
+          }
+        },
+        "kitchen": {
+          "id": 3237,
+          "name": "Energinet - Erritsø",
+          "phoneNumber": "",
+          "email": "",
+          "streetName": "Tonne Kjærsvej 65 ",
+          "streetNumber": "0",
+          "postalCode": "7000",
+          "city": "Fredericia",
+          "webshop": {
+            "id": 68,
+            "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+            "showQrReciept": true,
+            "demoMode": false
+          },
+          "companySettings": {
+            "SHOW_WEEK_MENU": "false"
+          },
+          "vatnumber": "28980671"
+        },
+        "webshop": {
+          "id": 68,
+          "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+          "showQrReciept": true,
+          "demoMode": false
+        },
+        "permaLink": "https://prod.facilitynet.dk/api/public/orders/383d8fc3-e611-4e1e-9a03-3c4855beab68",
+        "test": false,
+        "created": "2025-07-05 18:20:42",
+        "isMasterOrder": false
+      }
+    }
+  ]
+}
+
+Response Fail:
+HTTP/1.1 406 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:17:54 GMT
+Content-Type: application/json
+Content-Length: 189
+Connection: close
+Access-Control-Allow-Origin: *
+{
+  "status": "NOT_ACCEPTED",
+  "details": "OrderId: 3978838 has already been cancelled.",
+  "displayMessage": "OrderId: 3978838 has already been cancelled.",
+  "isUserMessage": false
+}

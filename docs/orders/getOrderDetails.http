@@ -1,0 +1,214 @@
+@orderId = 3978838
+GET https://prod.facilitynet.dk/api/orders/{{orderId}}
+x-api-key: {{login.response.body.$.authentication.token}}
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:28:33 GMT
+Content-Type: application/json
+Content-Length: 4264
+Connection: close
+Access-Control-Allow-Origin: *
+
+{
+  "orders": [
+    {
+      "shopChannel": "-",
+      "displayName": "GoPay #3978838",
+      "id": 3978838,
+      "uid": "6b9515dc-2b89-486e-b98c-58036218c02e",
+      "orderType": "LUNCH",
+      "organizers": [
+        {
+          "name": "Tobias Lauritzen"
+        }
+      ],
+      "creditNoteDetails": {
+        "creditNoteOrderIds": [
+          3983234
+        ]
+      },
+      "deliveries": [
+        {
+          "id": 2076055,
+          "deliveryType": "PICK_UP",
+          "type": "PICK_UP",
+          "deliveryTime": "2025-05-27T00:00:00",
+          "orderNote": "",
+          "orderLines": [
+            {
+              "id": 2309217,
+              "items": 1,
+              "itemPrice": {
+                "amount": 1700,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 17.00"
+              },
+              "price": {
+                "amount": 1700,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 17.00"
+              },
+              "productId": 33137,
+              "name": "Morgenmad",
+              "buyerParty": "PRIVATE"
+            },
+            {
+              "id": 2309218,
+              "items": 1,
+              "itemPrice": {
+                "amount": 1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 15.00"
+              },
+              "price": {
+                "amount": 1500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 15.00"
+              },
+              "productId": 33138,
+              "name": "Frokost",
+              "buyerParty": "PRIVATE"
+            },
+            {
+              "id": 2309219,
+              "items": 1,
+              "itemPrice": {
+                "amount": 500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 5.00"
+              },
+              "price": {
+                "amount": 500,
+                "scale": 2,
+                "currency": "DKK",
+                "formatted": "DKK 5.00"
+              },
+              "productId": 33139,
+              "name": "Læskedrik",
+              "buyerParty": "PRIVATE"
+            }
+          ],
+          "price": {
+            "amount": 3700,
+            "scale": 2,
+            "currency": "DKK",
+            "formatted": "DKK 37.00"
+          },
+          "cancelOrder": {
+            "cancelEnable": false,
+            "shortMessage": "Order cancellation has been exceeded",
+            "message": "You must cancel your order no later than 09:00."
+          }
+        }
+      ],
+      "receipt": {},
+      "price": {
+        "amount": 8600,
+        "scale": 2,
+        "currency": "DKK",
+        "formatted": "DKK 86.00"
+      },
+      "buyerCustomerParty": {
+        "name": "Energinet",
+        "streetName": "Tonne Kjærsvej",
+        "streetNumber": "65",
+        "postalCode": "7000",
+        "city": "Fredericia",
+        "vatnumber": "28980671"
+      },
+      "accountingCustomerParty": {
+        "id": 3228
+      },
+      "sellerSupplierParty": {
+        "id": 3234,
+        "name": "Energinet"
+      },
+      "customer": {
+        "id": 3861688,
+        "displayName": "Tobias Lauritzen",
+        "userGroupId": 1
+      },
+      "paymentDetails": {
+        "method": "PAYROLL_DEDUCTION",
+        "isOnlinePayment": false,
+        "isCaptured": false,
+        "created": "2025-05-26T09:16:00",
+        "toBePaidAsPrivate": {
+          "amount": 3700,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK 37.00"
+        },
+        "toBePaidAsCompany": {
+          "amount": 0,
+          "scale": 2,
+          "currency": "DKK",
+          "formatted": "DKK 0.00"
+        },
+        "card": {},
+        "acquirerId": 0,
+        "webShopId": 68,
+        "accounting": {
+          "dimensions": [],
+          "costCenter": ""
+        },
+        "status": "INVOICED",
+        "channel": {
+          "type": "mobile_app"
+        }
+      },
+      "kitchen": {
+        "id": 3237,
+        "name": "Energinet - Erritsø",
+        "phoneNumber": "",
+        "email": "",
+        "streetName": "Tonne Kjærsvej 65 ",
+        "streetNumber": "0",
+        "postalCode": "7000",
+        "city": "Fredericia",
+        "webshop": {
+          "id": 68,
+          "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+          "demoMode": false
+        },
+        "vatnumber": "28980671"
+      },
+      "webshop": {
+        "id": 68,
+        "uid": "3c5879be-1174-4d34-8d13-ddfcee02f879",
+        "demoMode": false
+      },
+      "permaLink": "https://prod.facilitynet.dk/api/public/orders/6b9515dc-2b89-486e-b98c-58036218c02e",
+      "test": false,
+      "created": "2025-05-26 09:16:24",
+      "isMasterOrder": false
+    }
+  ]
+}
+
+Response Fail:
+HTTP/1.1 404 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:29:01 GMT
+Content-Type: application/json
+Content-Length: 147
+Connection: close
+Access-Control-Allow-Origin: *
+
+{
+  "status": "FAILED",
+  "details": "Order id 397883 not found.",
+  "displayMessage": "Order id 397883 not found.",
+  "isUserMessage": false
+}

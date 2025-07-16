@@ -1,0 +1,57 @@
+POST https://prod.facilitynet.dk/api/authenticate/byType
+content-type: application/json
+Accept: */*
+Origin: https://prod.facilitynet.dk
+X-Client-Type: mobile-web
+{
+  "type": "ACTIVATION_CODE",
+  "value": {{ACTIVATION_CODE}} //6 digits
+}
+
+Response Ok:
+HTTP/1.1 200 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:14:01 GMT
+Content-Type: application/json
+Content-Length: 642
+Connection: close
+Access-Control-Allow-Origin: *
+{
+  "user": {
+    "id": 3861688,
+    "username": "TOLAU@energinet.dk",
+    "userTypeId": 6,
+    "userType": "USER",
+    "userGroupId": 1,
+    "companyId": 3228,
+    "uid": "caf4a56c-318d-4bbc-b339-887d3e1e3321",
+    "companyAuthenticationType": "EMAIL_ACTIVATION_CODE"
+  },
+  "authentication": {
+    "token": {{TOKEN}} //50 characters long
+  },
+  "authenticationResult": {
+    "type": "ACTIVATION_CODE_AUTHENTICATION",
+    "action": "AUTHENTICATION_COMPLETE",
+    "message": "Velkommen, du kan nu bruge appen."
+  },
+  "authenticationByType": {
+    "type": "ACTIVATION_CODE",
+    "value": "885105"
+  }
+}
+
+Response Fail:
+HTTP/1.1 401 
+Server: nginx/1.18.0
+Date: Sat, 05 Jul 2025 16:13:13 GMT
+Content-Type: application/json
+Content-Length: 177
+Connection: close
+Access-Control-Allow-Origin: *
+{
+  "status": "FAILED",
+  "details": "Activation code not valid or has expired.",
+  "displayMessage": "Activation code not valid or has expired.",
+  "isUserMessage": false
+}

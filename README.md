@@ -1,23 +1,37 @@
-# GoPay BAD Edition
+# GoPay Bad Edition
 
-## Developing
+A static Svelte webapp and Cloudflare Worker backend providing fast, user-friendly shortcuts to features from GoPay.
 
-Instal dependencies with `bun i`, start a development server:
+## Overview
 
-```bash
-bun dev (then manually open the at http://localhost:5173/)
+- **Frontend:** Svelte + TypeScript, styled with Tailwind, static site, responsive, no backend dependencies, deployable to GitHub Pages.
+- **Backend:** Cloudflare Worker (TypeScript, ES modules), provides API endpoints, integrates with GoPay/Meyers, secure and scalable.
 
-bun dev -- --open (will automatically open the browser)
+## Structure
+
+- `frontend/` — Svelte app (static, responsive, Azure-ready)
+- `backend/` — Cloudflare Worker (API, integrations)
+- `docs/` — HTTP call samples, API docs
+- `static/` — Static assets (images, etc)
+
+## Quick Start
+
+### Frontend
+
+```sh
+cd frontend
+bun install
+bun run dev
 ```
 
-## Building
+### Backend
 
-To create a production version of your app:
-
-```bash
-bun build
+```sh
+cd backend
+npm install
+npx wrangler dev
 ```
 
-You can preview the production build with `bun preview`.
+## License
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+See [LICENSE](./LICENSE)
