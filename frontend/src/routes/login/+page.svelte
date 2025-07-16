@@ -2,11 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 	import { notifications } from '$lib/stores/notificationStore';
-
-	const { data } = $props<{ data: PageData }>();
 
 	let email = $state('');
 	let otp = $state('');

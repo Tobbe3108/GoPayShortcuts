@@ -6,7 +6,6 @@ import { base } from '$app/paths';
 import { get } from 'svelte/store';
 
 export const load: PageLoad = async () => {
-	// If we're in the browser and already authenticated, redirect to home
 	if (browser) {
 		const state = get(authStore);
 		if (state.isAuthenticated) {
