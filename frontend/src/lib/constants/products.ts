@@ -1,5 +1,0 @@
-export const PRODUCT_IDS = {
-  BREAKFAST: 33137,
-  LUNCH: 33138,
-  SODA: 33139
-};
