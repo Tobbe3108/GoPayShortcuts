@@ -8,6 +8,17 @@ A static Svelte webapp providing shortcuts to features from a bad food ordering 
 - Tailwind CSS for all styling
 - Responsive design (mobile & desktop)
 - Shared state via Svelte stores
+- Atomic design component architecture
+
+## Component Architecture
+
+The application follows atomic design principles with components organized as:
+
+- **Atoms**: Basic building blocks (Button, Input, Label, Card)
+- **Molecules**: Simple groups of UI elements (FormField)
+- **Organisms**: Complex UI components (AuthForm)
+- **Templates**: Page layouts (LoginLayout, MainLayout)
+- **Pages**: Specific instances of templates with real content
 
 ## Development
 

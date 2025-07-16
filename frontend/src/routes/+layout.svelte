@@ -3,8 +3,8 @@
 	import { authStore } from '$lib/stores/auth';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import Notifications from '$lib/components/Notifications.svelte';
-	import { page } from '$app/stores';
 	import { base } from '$app/paths';
+	import { page } from '$app/stores';
 </script>
 
 <div class="min-h-screen bg-slate-50">

@@ -25,3 +25,12 @@ export interface RequestOptions {
 	token?: string;
 	signal?: AbortSignal;
 }
+
+// Event types for components
+export interface InputEvent {
+	detail: string;
+}
+
+export interface FormSubmitEvent<T = Record<string, unknown>> {
+	detail: T;
+}
