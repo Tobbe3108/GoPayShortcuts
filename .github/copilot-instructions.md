@@ -11,7 +11,9 @@
     Ensure clear and maintainable code
     Handle errors gracefully at appropriate levels
     Implement logging for important operations and errors
-    Write as little code as possible, find and use npm packages over writing your own implementation
+    Always prioritize existing npm packages over custom implementations
+    Before writing any custom utility or component, search for and use established npm packages
+    Only write custom code when no suitable package exists or when packages are significantly oversized
     Minimize indenting, prefer extracting things into more classes, methods, components and so on
     Rarely use hardcoded values - only when absolutely necessary
   </generalGuidelines>
@@ -28,13 +30,44 @@
   <frontendStructure>
     Organize components by feature when possible
     Implement responsive design using Tailwind breakpoints
-    Keep components small and composable
+    Use atomic design principles for UI components
+    Break UI into atoms, molecules, organisms, templates, and pages
+    Keep components small, focused, and composable
+    Create reusable primitive components for basic UI elements (buttons, inputs, cards)
+    Compose primitive components into larger feature components
+    Ensure components have clear, single responsibilities
+    Use props for configuration rather than creating multiple similar components
   </frontendStructure>
 
   <stylingGuidelines>
     Avoid custom CSS unless absolutely necessary
     Maintain a consistent color scheme
   </stylingGuidelines>
+  
+  <componentArchitecture>
+    Follow atomic design methodology for UI components:
+    - Atoms: Basic building blocks (buttons, inputs, icons)
+    - Molecules: Simple groups of UI elements functioning together (form fields with labels, search bars)
+    - Organisms: Complex UI components composed of molecules and atoms (navigation bars, product cards)
+    - Templates: Page layouts without specific content
+    - Pages: Specific instances of templates with real content
+    Establish a component library with consistent patterns
+    Create component variants using props rather than creating new components
+    Use composition over inheritance for component relationships
+    Implement prop validation for all components
+>  </componentArchitecture>
+  
+  <packageManagement>
+    Thoroughly research and select well-maintained npm packages for common functionality
+    Prefer packages with TypeScript support, good documentation, and active maintenance
+    Consider bundle size impact when selecting packages
+    For data manipulation use libraries like lodash-es or ramda
+    For form handling prefer packages like svelte-forms-lib or svelte-use-form
+    For date/time manipulation use date-fns (lighter) over moment.js
+    For HTTP requests use fetch API or lightweight wrappers
+    Document any non-obvious package choices with brief explanations
+    Keep dependencies updated and secure
+  </packageManagement>
   
 </FrontendInstructions>
 
