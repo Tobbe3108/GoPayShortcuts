@@ -1,4 +1,5 @@
-import { apiClient, type Location } from './apiClient';
+import { apiClient } from './apiClient';
+import type { Location } from '$lib/types/api';
 import { authStore } from '../stores/auth';
 import { get } from 'svelte/store';
 
