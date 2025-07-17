@@ -90,16 +90,6 @@
 			onFocus={() => {}}
 		/>
 
-		<div class="mb-4">
-			<button
-				type="button"
-				class="text-sm text-slate-700 hover:text-slate-900 hover:underline"
-				onclick={goBackToEmail}
-			>
-				Tilbage til email
-			</button>
-		</div>
-
 		<Button
 			type="submit"
 			disabled={isLoading || otp.length === 0}
@@ -117,5 +107,15 @@
 				{/if}
 			{/snippet}
 		</Button>
+
+		<div class="mt-4 text-center">
+			<button
+				type="button"
+				class="inline-flex items-center justify-center text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline transition-colors cursor-pointer"
+				onclick={goBackToEmail}
+			>
+				Tilbage
+			</button>
+		</div>
 	</form>
 {/if}
