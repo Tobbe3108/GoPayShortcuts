@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Button from '../atoms/Button.svelte';
 
 	let { onLogout = () => {}, isAuthenticated = false, children } = $props();
@@ -11,7 +11,7 @@
 		<div class="container mx-auto flex items-center justify-between mb-8">
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
 
-			{#if isAuthenticated && $page.url.pathname !== '/login'}
+			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={onLogout}>
 					{#snippet children()}
 						Log ud

@@ -4,11 +4,16 @@
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import Notifications from '$lib/components/Notifications.svelte';
 	import { base } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <div class="min-h-screen bg-slate-50">
-	{#if $authStore.isLoading && $page.url.pathname !== base + '/login'}
+	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}
 		<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
 			<div class="text-center">
 				<LoadingSpinner size="w-12 h-12" />
@@ -16,7 +21,7 @@
 			</div>
 		</div>
 	{:else}
-		<slot />
+		{@render children?.()}
 	{/if}
 
 	<Notifications />
