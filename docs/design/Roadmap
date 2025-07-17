@@ -1,0 +1,48 @@
+## 1. Setup and Foundation
+- Create type definitions for orders, products, locations
+- Implement API service for the PATCH /api/orders endpoint
+- Set up Svelte stores for order and menu state management
+
+## 2. Core UI Components
+- Create Icon component for edit, save, delete icons
+- Build QuantitySelector component for +/- controls
+- Implement OrderCard component with default and edit states
+- Build LocationPicker component for location selection
+
+## 3. Layout Structure
+- Create DayColumn component to display orders for a day
+- Implement WeekGrid for desktop layout (Monday-Friday columns)
+- Build MobileDayNav for swipeable day navigation on mobile
+- Update MainLayout to include the "Show Menus" toggle
+
+## 4. State Management and Logic
+- Implement day/week navigation utilities
+- Create order transformation and filtering logic
+- Add location filtering (used vs. available)
+- Implement edit mode state management
+
+## 5. Interactions and Features
+- Add "Add Location" button and popover
+- Implement menu display toggle and content
+- Handle locked orders (visual treatment and restrictions)
+- Add additional order placement for same day/kitchen
+
+## 6. Animation and Polish
+- Add transitions for edit mode entry/exit
+- Implement save confirmation animation
+- Add delete card animation
+- Implement add location animation
+- Add mobile day navigation transitions
+
+## 7. Responsive Design
+- Ensure desktop grid layout works properly
+- Implement mobile view with proper breakpoints
+- Test and refine touch interactions for mobile
+
+## 8. Testing and Finalization
+- Test all interactions and edge cases
+- Ensure accessibility compliance
+- Optimize performance
+- Final polish and bug fixes
+
+This sequence follows a logical progression from data and API foundation to UI components, then layout, interactions, animations, and responsive design.

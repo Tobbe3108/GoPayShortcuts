@@ -3,16 +3,16 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "gopaybadedition",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-07-05",
-	"observability": {
-		"enabled": true,
-	},
-	"vars": { 
-		"GOPAY_API_URL": "https://prod.facilitynet.dk/api",
-		"MEYERS_API_URL": "https://meyers.kanpla.dk/api",
-		"USE_LOCAL_MOCK_CLIENTS": false,
-	}
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gopaybadedition",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-07-05",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "GOPAY_API_URL": "https://prod.facilitynet.dk/api",
+    "MEYERS_API_URL": "https://meyers.kanpla.dk/api",
+    "USE_LOCAL_MOCK_CLIENTS": true
+  }
 }

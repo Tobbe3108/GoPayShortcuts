@@ -12,7 +12,7 @@ import {
 import { DetailedOrder } from "../../goPay/types";
 import { Schemas } from "../Shared/Schemas";
 
-export class UpdateDay extends OpenAPIRoute {
+export class PatchOrdersState extends OpenAPIRoute {
   schema = {
     tags: ["Orders"],
     summary: "Update orders for a kitchen and day to match desired state",
