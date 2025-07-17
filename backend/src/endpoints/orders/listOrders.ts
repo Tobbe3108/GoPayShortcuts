@@ -19,8 +19,16 @@ export class ListOrders extends OpenAPIRoute {
     ...Schemas.BearerAuth(),
     request: {
       query: z.object({
-        start: Str({ example: "2024-07-01", required: true }),
-        end: Str({ example: "2024-07-07", required: true }),
+        start: Str({
+          example: "2024-07-01",
+          required: true,
+          description: "Start date in YYYY-MM-DD format",
+        }),
+        end: Str({
+          example: "2024-07-07",
+          required: true,
+          description: "End date in YYYY-MM-DD format",
+        }),
       }),
     },
     responses: {
@@ -30,11 +38,31 @@ export class ListOrders extends OpenAPIRoute {
           z.object({
             orders: z.array(
               z.object({
-                order: z.any(), // Could be refined to match GetOrderDetailsResponse
+                order: z.object({
+                  id: z.number(),
+                  date: z.string(),
+                  kitchenId: z.number(),
+                  kitchenName: z.string(),
+                  status: z.string(),
+                  orderLines: z.array(
+                    z.object({
+                      id: z.number(),
+                      name: z.string(),
+                      price: z.number(),
+                      quantity: z.number(),
+                    })
+                  ),
+                  totalPrice: z.number(),
+                  cancelEnabled: z.boolean(),
+                }),
               })
             ),
           })
         ),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...InputValidationException.schema(),
       ...Schemas.InternalServerError(),
