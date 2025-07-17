@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Label from '../atoms/Label.svelte';
 	import Input from '../atoms/Input.svelte';
-	import type { InputEvent } from '$lib/types/api';
 
 	export let id: string;
 	export let label: string;
@@ -13,22 +12,21 @@
 	export let disabled = false;
 	export let autocomplete: 'on' | 'off' = 'off';
 	export let className = '';
-	
-	// Callback props instead of event dispatching
+
+	export let transform: ((value: string) => string) | undefined = undefined;
+	export let validate: ((value: string) => boolean) | undefined = undefined;
+
 	export let onInput: ((value: any) => void) | undefined = undefined;
 	export let onBlur: (() => void) | undefined = undefined;
 	export let onFocus: (() => void) | undefined = undefined;
 
-	function handleInput(event: InputEvent): void {
-		if (onInput) onInput(event.detail);
+	function getValue() {
+		return value;
 	}
 
-	function handleBlur(): void {
-		if (onBlur) onBlur();
-	}
-
-	function handleFocus(): void {
-		if (onFocus) onFocus();
+	function setValue(newValue: string) {
+		value = newValue;
+		if (onInput) onInput(newValue);
 	}
 </script>
 
@@ -45,9 +43,10 @@
 		{required}
 		{disabled}
 		{autocomplete}
-		{value}
-		on:input={handleInput}
-		on:blur={handleBlur}
-		on:focus={handleFocus}
+		{transform}
+		{validate}
+		bind:value={getValue, setValue}
+		{onBlur}
+		{onFocus}
 	/>
 </div>
