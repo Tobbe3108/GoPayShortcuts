@@ -20,7 +20,7 @@
 			<span>{notification.message}</span>
 			<button
 				class="ml-4 text-current opacity-70 hover:opacity-100"
-				on:click={() => notifications.remove(notification.id)}
+				onclick={() => notifications.remove(notification.id)}
 			>
 				✕
 			</button>

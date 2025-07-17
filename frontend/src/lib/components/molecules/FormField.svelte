@@ -2,23 +2,25 @@
 	import Label from '../atoms/Label.svelte';
 	import Input from '../atoms/Input.svelte';
 
-	export let id: string;
-	export let label: string;
-	export let type = 'text';
-	export let name = id;
-	export let placeholder = '';
-	export let value = '';
-	export let required = false;
-	export let disabled = false;
-	export let autocomplete: 'on' | 'off' = 'off';
-	export let className = '';
+	type AutoCompleteAttribute = 'on' | 'off';
 
-	export let transform: ((value: string) => string) | undefined = undefined;
-	export let validate: ((value: string) => boolean) | undefined = undefined;
-
-	export let onInput: ((value: any) => void) | undefined = undefined;
-	export let onBlur: (() => void) | undefined = undefined;
-	export let onFocus: (() => void) | undefined = undefined;
+	let {
+		id,
+		label,
+		type = 'text',
+		name = id,
+		placeholder = '',
+		value = $bindable(''),
+		required = false,
+		disabled = false,
+		autocomplete = 'off' as AutoCompleteAttribute,
+		className = '',
+		transform,
+		validate,
+		onInput = (value: string) => {},
+		onBlur = () => {},
+		onFocus = () => {}
+	} = $props();
 
 	function getValue() {
 		return value;
@@ -32,7 +34,9 @@
 
 <div class="mb-4 {className}">
 	<Label forId={id}>
-		{label}
+		{#snippet children()}
+			{label}
+		{/snippet}
 	</Label>
 
 	<Input
@@ -48,5 +52,6 @@
 		bind:value={getValue, setValue}
 		{onBlur}
 		{onFocus}
+		{onInput}
 	/>
 </div>

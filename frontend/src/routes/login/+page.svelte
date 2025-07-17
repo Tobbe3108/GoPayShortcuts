@@ -6,9 +6,9 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
-	let email = '';
-	let otp = '';
-	let isEmailStep = true;
+	let email = $state('');
+	let otp = $state('');
+	let isEmailStep = $state(true);
 
 	async function handleEmailSubmit(emailValue: string): Promise<void> {
 		if (!emailValue) {
@@ -54,13 +54,15 @@
 </script>
 
 <LoginLayout>
-	<AuthForm
-		{isEmailStep}
-		bind:email
-		bind:otp
-		isLoading={$authStore.isLoading}
-		onEmailSubmit={handleEmailSubmit}
-		onOtpSubmit={handleOTPSubmit}
-		onBackToEmail={goBackToEmail}
-	/>
+	{#snippet children()}
+		<AuthForm
+			{isEmailStep}
+			bind:email
+			bind:otp
+			isLoading={$authStore.isLoading}
+			onEmailSubmit={handleEmailSubmit}
+			onOtpSubmit={handleOTPSubmit}
+			onBackToEmail={goBackToEmail}
+		/>
+	{/snippet}
 </LoginLayout>
