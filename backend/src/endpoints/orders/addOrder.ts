@@ -17,12 +17,19 @@ export class AddOrder extends OpenAPIRoute {
         ...contentJson(
           z.object({
             order: z.object({
-              date: z.string(),
-              kitchenId: z.number(),
+              date: z.string().describe("Order date in YYYY-MM-DD format"),
+              kitchenId: z
+                .number()
+                .describe(
+                  "ID of the kitchen where the order will be delivered"
+                ),
               orderlines: z.array(
                 z.object({
-                  productId: z.number(),
-                  quantity: z.number(),
+                  productId: z.number().describe("ID of the product to order"),
+                  quantity: z
+                    .number()
+                    .min(1)
+                    .describe("Quantity of the product to order"),
                 })
               ),
             }),
@@ -36,12 +43,38 @@ export class AddOrder extends OpenAPIRoute {
         ...contentJson(
           z.object({
             success: z.boolean(),
-            results: z.array(
-              z.object({
-                placeOrder: z.any(),
-                payOrder: z.any(),
-              })
-            ),
+            orderId: z.number().optional(),
+            results: z
+              .array(
+                z.object({
+                  placeOrder: z
+                    .object({
+                      id: z.number(),
+                      status: z.string(),
+                    })
+                    .optional(),
+                  payOrder: z
+                    .object({
+                      id: z.number(),
+                      status: z.string(),
+                    })
+                    .optional(),
+                })
+              )
+              .optional(),
+          })
+        ),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
+      },
+      400: {
+        description: "Bad Request",
+        ...contentJson(
+          z.object({
+            error: z.string(),
+            details: z.string().optional(),
           })
         ),
       },

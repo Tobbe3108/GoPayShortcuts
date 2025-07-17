@@ -17,7 +17,9 @@ export class Login extends OpenAPIRoute {
       body: {
         ...contentJson(
           z.object({
-            otp: z.string().describe("One-time password (OTP)"),
+            otp: z
+              .string()
+              .describe("One-time password (OTP) received via email"),
           })
         ),
       },
@@ -27,21 +29,16 @@ export class Login extends OpenAPIRoute {
         description: "Returns token on successful login",
         ...contentJson(
           z.object({
-            token: Str(),
+            token: Str({
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            }).describe("JWT authentication token"),
           })
         ),
       },
       ...InputValidationException.schema(),
       "401": {
         description: "Unauthorized",
-        ...contentJson(
-          z.object({
-            status: Str(),
-            details: Str(),
-            displayMessage: Str(),
-            isUserMessage: Bool(),
-          })
-        ),
+        ...Schemas.GoPayErrorResponse(),
       },
       ...Schemas.InternalServerError(),
     },

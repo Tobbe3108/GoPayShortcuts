@@ -12,12 +12,16 @@ import { Schemas } from "../Shared/Schemas";
 export class RequestOTP extends OpenAPIRoute {
   schema = {
     tags: ["Auth"],
-    summary: "Request a one-time password (OTP)",
+    summary: "Request a one-time password (OTP) via email",
     request: {
       body: {
         ...contentJson(
           z.object({
-            email: Str({ example: "user@example.com", required: true }),
+            email: Str({
+              example: "user@example.com",
+              required: true,
+              description: "Email address to receive the OTP",
+            }),
           })
         ),
       },

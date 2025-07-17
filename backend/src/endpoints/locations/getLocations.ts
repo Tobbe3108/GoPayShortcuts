@@ -11,12 +11,11 @@ export class GetLocations extends OpenAPIRoute {
     responses: {
       200: {
         description: "List of locations",
-        ...contentJson(
-          z.object({
-            kitchenId: z.number(),
-            name: z.string(),
-          })
-        ),
+        ...contentJson(z.array(Schemas.LocationSchema())),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...Schemas.InternalServerError(),
     },

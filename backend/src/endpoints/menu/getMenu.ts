@@ -11,16 +11,12 @@ export class GetMenu extends OpenAPIRoute {
       200: {
         description: "Simplified menu data from Meyers",
         ...contentJson(
-          z.object({
-            date: z.string(),
-            items: z.array(
-              z.object({
-                name: z.string(),
-                category: z.string(),
-                allergens: z.array(z.string()),
-              })
-            ),
-          })
+          z.array(
+            z.object({
+              date: z.string().describe("Date in YYYY-MM-DD format"),
+              items: z.array(Schemas.MenuItemSchema()),
+            })
+          )
         ),
       },
       ...Schemas.InternalServerError(),

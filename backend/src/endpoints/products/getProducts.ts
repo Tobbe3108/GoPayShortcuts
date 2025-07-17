@@ -14,10 +14,23 @@ export class GetProducts extends OpenAPIRoute {
         description: "Products for the given kitchen (today)",
         ...contentJson(
           z.object({
-            menues: z.array(z.any()),
-            kitchen: z.any(),
+            menues: z.array(
+              z.object({
+                id: z.number(),
+                name: z.string(),
+                products: z.array(Schemas.ProductSchema()),
+              })
+            ),
+            kitchen: z.object({
+              id: z.number(),
+              name: z.string(),
+            }),
           })
         ),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...Schemas.InternalServerError(),
     },

@@ -19,8 +19,14 @@ export class CancelOrders extends OpenAPIRoute {
       body: {
         ...contentJson(
           z.object({
-            date: Str({ example: "2024-07-01", required: true }),
-            kitchenId: z.number({ required_error: "kitchenId is required" }),
+            date: Str({
+              example: "2024-07-01",
+              required: true,
+              description: "Date in YYYY-MM-DD format",
+            }),
+            kitchenId: z
+              .number({ required_error: "kitchenId is required" })
+              .describe("ID of the kitchen where orders will be cancelled"),
           })
         ),
       },
@@ -29,11 +35,17 @@ export class CancelOrders extends OpenAPIRoute {
       "204": {
         description: "Orders cancelled successfully",
       },
+      "401": {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
+      },
       "424": {
         description: "Failed to cancel orders",
         ...contentJson(
           z.object({
-            errors: z.array(z.string()),
+            errors: z.array(
+              z.string().describe("Error messages for failed cancellations")
+            ),
           })
         ),
       },

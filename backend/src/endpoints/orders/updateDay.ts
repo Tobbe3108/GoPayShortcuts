@@ -21,12 +21,17 @@ export class UpdateDay extends OpenAPIRoute {
       body: {
         ...contentJson(
           z.object({
-            kitchenId: z.number(),
-            date: z.string(),
+            kitchenId: z
+              .number()
+              .describe("ID of the kitchen where orders will be updated"),
+            date: z.string().describe("Date in YYYY-MM-DD format"),
             desiredOrders: z.array(
               z.object({
-                productId: z.number(),
-                quantity: z.number().min(0),
+                productId: z.number().describe("ID of the product"),
+                quantity: z
+                  .number()
+                  .min(0)
+                  .describe("Desired quantity (0 to remove)"),
               })
             ),
           })
@@ -38,10 +43,38 @@ export class UpdateDay extends OpenAPIRoute {
         description: "Summary of canceled and created orders",
         ...contentJson(
           z.object({
-            canceled: z.array(z.any()),
-            created: z.array(z.any()),
+            canceled: z.array(
+              z.object({
+                orderId: z.number(),
+                status: z.string(),
+                products: z.array(
+                  z.object({
+                    productId: z.number(),
+                    name: z.string(),
+                    quantity: z.number(),
+                  })
+                ),
+              })
+            ),
+            created: z.array(
+              z.object({
+                orderId: z.number(),
+                status: z.string(),
+                products: z.array(
+                  z.object({
+                    productId: z.number(),
+                    name: z.string(),
+                    quantity: z.number(),
+                  })
+                ),
+              })
+            ),
           })
         ),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...InputValidationException.schema(),
       ...Schemas.InternalServerError(),
