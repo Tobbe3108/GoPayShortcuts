@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+
+	let { children } = $props();
 </script>
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
@@ -8,6 +10,6 @@
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-75 w-auto" />
 		</div>
 
-		<slot />
+		{@render children?.()}
 	</div>
 </div>

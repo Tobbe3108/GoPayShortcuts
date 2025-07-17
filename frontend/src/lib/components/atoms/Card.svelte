@@ -1,10 +1,9 @@
 <script lang="ts">
-	export let padding = 'p-6';
-	export let className = '';
+	let { padding = 'p-6', className = '', children } = $props();
 
 	const cardClasses = ['bg-white rounded-lg shadow-md', padding, className].join(' ');
 </script>
 
 <div class={cardClasses}>
-	<slot />
+	{@render children?.()}
 </div>

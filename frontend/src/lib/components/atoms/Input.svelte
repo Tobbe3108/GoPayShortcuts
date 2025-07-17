@@ -1,20 +1,22 @@
 <script lang="ts">
-	export let type = 'text';
-	export let id: string;
-	export let name = id;
-	export let placeholder = '';
-	export let value = '';
-	export let required = false;
-	export let disabled = false;
-	export let autocomplete: 'on' | 'off' = 'off';
-	export let className = '';
+	type AutoCompleteAttribute = 'on' | 'off';
 
-	export let transform: ((value: string) => string) | undefined = undefined;
-	export let validate: ((value: string) => boolean) | undefined = undefined;
-
-	export let onInput: ((value: string) => void) | undefined = undefined;
-	export let onBlur: (() => void) | undefined = undefined;
-	export let onFocus: (() => void) | undefined = undefined;
+	let {
+		type = 'text',
+		id,
+		name = id,
+		placeholder = '',
+		value = $bindable(''),
+		required = false,
+		disabled = false,
+		autocomplete = 'off' as AutoCompleteAttribute,
+		className = '',
+		transform,
+		validate,
+		onInput,
+		onBlur,
+		onFocus
+	} = $props();
 
 	const inputClasses = [
 		'w-full p-3 border border-gray-300 rounded-md',
@@ -60,6 +62,6 @@
 	{autocomplete}
 	class={inputClasses}
 	bind:value={getValue, setValue}
-	on:blur={handleBlur}
-	on:focus={handleFocus}
+	onblur={handleBlur}
+	onfocus={handleFocus}
 />

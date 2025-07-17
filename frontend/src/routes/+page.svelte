@@ -12,7 +12,11 @@
 </script>
 
 <MainLayout isAuthenticated={$authStore.isAuthenticated} onLogout={handleLogout}>
-	<Card>
-		<h1 class="text-2xl font-bold text-slate-800 mb-4">GoPay Shortcuts</h1>
-	</Card>
+	{#snippet children()}
+		<Card>
+			{#snippet children()}
+				<h1 class="text-2xl font-bold text-slate-800 mb-4">GoPay Shortcuts</h1>
+			{/snippet}
+		</Card>
+	{/snippet}
 </MainLayout>

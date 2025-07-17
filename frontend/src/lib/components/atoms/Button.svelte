@@ -3,12 +3,16 @@
 	type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
 	type ButtonSize = 'sm' | 'md' | 'lg';
 
-	export let variant: ButtonVariant = 'primary';
-	export let size: ButtonSize = 'md';
-	export let disabled = false;
-	export let type: 'button' | 'submit' | 'reset' = 'button';
-	export let fullWidth = false;
-	export let className = '';
+	let {
+		variant = 'primary' as ButtonVariant,
+		size = 'md' as ButtonSize,
+		disabled = false,
+		type = 'button' as 'button' | 'submit' | 'reset',
+		fullWidth = false,
+		className = '',
+		onclick,
+		children
+	} = $props();
 
 	// Classes for each variant
 	const variantClasses = {
@@ -38,6 +42,6 @@
 	].join(' ');
 </script>
 
-<button {type} {disabled} class={buttonClasses} on:click>
-	<slot />
+<button {type} {disabled} class={buttonClasses} {onclick}>
+	{@render children?.()}
 </button>
