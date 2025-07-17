@@ -5,11 +5,11 @@ import { Login } from "./endpoints/auth/login";
 import { RequestOTP } from "./endpoints/auth/requestOTP";
 import { GetLocations } from "./endpoints/locations/getLocations";
 import { ListOrders } from "./endpoints/orders/listOrders";
-import { CancelOrders } from "./endpoints/orders/cancelOrders";
-import { AddOrder } from "./endpoints/orders/addOrder";
+import { PatchOrdersState } from "./endpoints/orders/updateDay";
+// import { CancelOrders } from "./endpoints/orders/cancelOrders";
+// import { AddOrder } from "./endpoints/orders/addOrder";
 import { GetProducts } from "./endpoints/products/getProducts";
 import { GetMenu } from "./endpoints/menu/getMenu";
-import { UpdateDay } from "./endpoints/orders/updateDay";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -79,9 +79,9 @@ openapi.get("/api/products", GetProducts);
 openapi.get("/api/menu", GetMenu);
 
 openapi.get("/api/orders", ListOrders);
-openapi.post("/api/orders", AddOrder);
-openapi.patch("/api/orders", UpdateDay);
-openapi.delete("/api/orders", CancelOrders);
+// openapi.post("/api/orders", AddOrder);
+openapi.patch("/api/orders", PatchOrdersState);
+// openapi.delete("/api/orders", CancelOrders);
 
 // Export the Hono app
 export default app;
