@@ -1,4 +1,3 @@
-import { browser } from '$app/environment';
 import type {
 	ApiError,
 	RequestOTPResponse,
@@ -6,9 +5,7 @@ import type {
 	Location,
 	RequestOptions
 } from '$lib/types/api';
-
-// API Base URL - environment aware
-export const API_BASE_URL = browser ? '/api' : 'http://localhost:8787/api';
+import { API_BASE_URL } from '$lib/config/environment';
 
 /**
  * API client that directly maps to our backend endpoints
