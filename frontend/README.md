@@ -27,6 +27,30 @@ bun install
 bun run dev
 ```
 
+## Environment Variables
+
+The application uses environment variables for configuration. These are set up in the `.env` files:
+
+- `.env` - Default environment variables for development
+- `.env.production` - Production environment variables
+
+Available environment variables:
+
+| Variable | Description | Default (Development) |
+|----------|-------------|----------------------|
+| PUBLIC_API_BASE_URL | Base URL for the API | `http://localhost:8787/api` |
+
+To add new environment variables:
+
+1. Add the variable to the appropriate `.env` file(s)
+2. Import in code using:
+
+   ```typescript
+   import { API_VARIABLE } from '$lib/config/environment';
+   ```
+
+3. Use the variable in your code
+
 ## Build for Production
 
 ```sh
