@@ -16,6 +16,7 @@
     Only write custom code when no suitable package exists or when packages are significantly oversized
     Minimize indenting, prefer extracting things into more classes, methods, components and so on
     Rarely use hardcoded values - only when absolutely necessary
+    Run "bun run check" after major changes to ensure there are no TypeScript errors
   </generalGuidelines>
   
   <technicalRequirements>
