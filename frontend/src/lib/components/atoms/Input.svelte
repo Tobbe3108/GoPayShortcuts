@@ -9,12 +9,13 @@
 	export let autocomplete: 'on' | 'off' = 'off';
 	export let className = '';
 
-	// Callback props instead of event dispatching
+	export let transform: ((value: string) => string) | undefined = undefined;
+	export let validate: ((value: string) => boolean) | undefined = undefined;
+
 	export let onInput: ((value: string) => void) | undefined = undefined;
 	export let onBlur: (() => void) | undefined = undefined;
 	export let onFocus: (() => void) | undefined = undefined;
 
-	// Base styling with ability to extend via props
 	const inputClasses = [
 		'w-full p-3 border border-gray-300 rounded-md',
 		'focus:outline-none focus:ring-2 focus:ring-slate-600',
@@ -23,17 +24,29 @@
 		className
 	].join(' ');
 
-	function handleInput(e: Event): void {
-		const target = e.target as HTMLInputElement;
-		if (onInput) onInput(target.value);
-	}
-
 	function handleBlur(): void {
 		if (onBlur) onBlur();
 	}
 
 	function handleFocus(): void {
 		if (onFocus) onFocus();
+	}
+
+	function getValue() {
+		return value;
+	}
+
+	function setValue(newValue: string) {
+		if (transform) {
+			newValue = transform(newValue);
+		}
+
+		if (validate && !validate(newValue)) {
+			// Could trigger validation UI here if needed
+		}
+
+		value = newValue;
+		if (onInput) onInput(newValue);
 	}
 </script>
 
@@ -46,8 +59,7 @@
 	{disabled}
 	{autocomplete}
 	class={inputClasses}
-	bind:value
-	on:input={handleInput}
+	bind:value={getValue, setValue}
 	on:blur={handleBlur}
 	on:focus={handleFocus}
 />

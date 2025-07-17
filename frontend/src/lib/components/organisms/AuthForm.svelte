@@ -13,32 +13,47 @@
 	export let onOtpSubmit: (otp: string) => void = () => {};
 	export let onBackToEmail: () => void = () => {};
 
-	function handleEmailSubmit() {
+	function handleEmailSubmit(e: SubmitEvent) {
+		e.preventDefault();
 		onEmailSubmit(email);
 	}
 
-	function handleOTPSubmit() {
+	function handleOTPSubmit(e: SubmitEvent) {
+		e.preventDefault();
 		onOtpSubmit(otp);
 	}
 
 	function goBackToEmail() {
 		onBackToEmail();
 	}
+
+	function validateEmail(value: string): boolean {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+	}
+
+	function transformEmail(value: string): string {
+		return value.trim();
+	}
+
+	function transformOTP(value: string): string {
+		return value.replace(/[^0-9]/g, '');
+	}
 </script>
 
 {#if isEmailStep}
-	<form on:submit|preventDefault={handleEmailSubmit}>
+	<form on:submit={handleEmailSubmit}>
 		<FormField
 			id="email"
 			label="Email adresse"
 			type="email"
 			placeholder="Indtast din email"
-			value={email}
+			bind:value={email}
+			transform={transformEmail}
+			validate={validateEmail}
 			required={true}
-			on:input={(e) => (email = e.detail)}
 		/>
 
-		<Button type="submit" disabled={isLoading} fullWidth={true}>
+		<Button type="submit" disabled={isLoading || !validateEmail(email)} fullWidth={true}>
 			{#if isLoading}
 				<div class="flex justify-center items-center">
 					<LoadingSpinner size="w-5 h-5" />
@@ -50,15 +65,15 @@
 		</Button>
 	</form>
 {:else}
-	<form on:submit|preventDefault={handleOTPSubmit}>
+	<form on:submit={handleOTPSubmit}>
 		<FormField
 			id="otp"
 			label="Verifikationskode"
 			type="text"
 			placeholder="Indtast verifikationskode"
-			value={otp}
+			bind:value={otp}
+			transform={transformOTP}
 			required={true}
-			on:input={(e) => (otp = e.detail)}
 		/>
 
 		<div class="mb-4">
@@ -71,7 +86,7 @@
 			</button>
 		</div>
 
-		<Button type="submit" disabled={isLoading} fullWidth={true}>
+		<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
 			{#if isLoading}
 				<div class="flex justify-center items-center">
 					<LoadingSpinner size="w-5 h-5" />
