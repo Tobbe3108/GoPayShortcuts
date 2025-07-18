@@ -1,5 +1,6 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 import { Login } from "./endpoints/auth/login";
 import { RequestOTP } from "./endpoints/auth/requestOTP";
@@ -13,6 +14,19 @@ import { GetMenu } from "./endpoints/menu/getMenu";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
+
+// Add CORS middleware
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:5173"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 86400,
+    credentials: true,
+  })
+);
 
 // Global auth middleware for all /api routes
 app.use("/api/*", async (c, next) => {
