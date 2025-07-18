@@ -27,6 +27,18 @@ export interface Product {
 	price: number;
 }
 
+// Menu types
+export interface MenuItem {
+	name: string;
+	category: string;
+	allergens: string[];
+}
+
+export interface MenuDay {
+	date: string;
+	items: MenuItem[];
+}
+
 // Common request options
 export interface RequestOptions {
 	signal?: AbortSignal;

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { authStore } from '$lib/stores/auth';
-	import { LocationsService } from '$lib/services/locationsService';
-	import { ProductsService } from '$lib/services/productsService';
+	import { locationsService } from '$lib/services/locationsService';
+	import { productsService } from '$lib/services/productsService';
+	import { menuService } from '$lib/services/menuService';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';
 	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
@@ -9,13 +10,14 @@
 	// Data holders
 	let locations: any[] = [];
 	let products: any[] = [];
-	let loadingStatus = { locations: false, products: false };
+	let menu: any[] = [];
+	let loadingStatus = { locations: false, products: false, menu: false };
 
 	// Fetch locations
 	async function fetchLocations() {
 		loadingStatus.locations = true;
 		try {
-			locations = await LocationsService.getLocations();
+			locations = await locationsService.getLocations();
 		} catch (error) {
 			console.error('Error fetching locations:', error);
 		} finally {
@@ -27,7 +29,7 @@
 	async function fetchProducts() {
 		loadingStatus.products = true;
 		try {
-			products = await ProductsService.getProducts();
+			products = await productsService.getProducts();
 		} catch (error) {
 			console.error('Error fetching products:', error);
 		} finally {
@@ -35,10 +37,23 @@
 		}
 	}
 
+	// Fetch menu
+	async function fetchMenu() {
+		loadingStatus.menu = true;
+		try {
+			menu = await menuService.getMenu();
+		} catch (error) {
+			console.error('Error fetching menu:', error);
+		} finally {
+			loadingStatus.menu = false;
+		}
+	}
+
 	// Initialize
 	onMount(() => {
 		fetchLocations();
 		fetchProducts();
+		fetchMenu();
 	});
 </script>
 
@@ -105,6 +120,32 @@
 						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
 							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
 									products,
+									null,
+									2
+								)}</pre>
+						</div>
+					{/snippet}
+				</Card>
+			</div>
+
+			<!-- Menu Service -->
+			<div class="mt-6">
+				<Card>
+					{#snippet children()}
+						<h2 class="text-xl font-semibold mb-3">Menu Service</h2>
+						<div class="mb-4 flex flex-wrap gap-2">
+							<button
+								class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+								on:click={fetchMenu}
+								disabled={loadingStatus.menu}
+							>
+								{loadingStatus.menu ? 'Loading...' : 'Fetch Menu'}
+							</button>
+						</div>
+
+						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
+							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
+									menu,
 									null,
 									2
 								)}</pre>
