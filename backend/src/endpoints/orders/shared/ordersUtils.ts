@@ -18,7 +18,7 @@ export type DeliveryLocation = {
   webshopUid: string;
 };
 
-export async function fetchOrderDetails(
+export async function fetchValidOrderDetails(
   orders: Order[],
   client: GoPayClient
 ): Promise<DetailedOrder[]> {

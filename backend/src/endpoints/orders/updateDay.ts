@@ -2,7 +2,7 @@ import { OpenAPIRoute, contentJson, InputValidationException } from "chanfana";
 import { z } from "zod";
 import { createGoPayClient, AppContext } from "../../types";
 import {
-  fetchOrderDetails,
+  fetchValidOrderDetails,
   buildSimplifiedOrderFromDetailed,
   buildSimplifiedOrderFromProducts,
   createAndPayOrder,
@@ -90,7 +90,7 @@ export class PatchOrdersState extends OpenAPIRoute {
     const ordersResp = await client.listOrders(date, date);
     if (ordersResp instanceof Response) return ordersResp;
 
-    const validOrders = await fetchOrderDetails(ordersResp.orders, client);
+    const validOrders = await fetchValidOrderDetails(ordersResp.orders, client);
     const filteredOrders = validOrders.filter(
       (order) => order.kitchen?.id === kitchenId
     );

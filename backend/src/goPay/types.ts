@@ -119,6 +119,11 @@ export interface Order {
 
 export interface ListOrdersResponse {
   orders: Order[];
+  pagination?: {
+    nextLink?: {
+      href: string;
+    };
+  };
 }
 
 export interface OrderLine {

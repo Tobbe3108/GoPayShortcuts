@@ -39,6 +39,29 @@ export interface MenuDay {
 	items: MenuItem[];
 }
 
+// Order types
+export interface OrderLine {
+	productId: number;
+	quantity: number;
+	price: number;
+}
+
+export interface Order {
+	date: string;
+	kitchenId: number;
+	orderlines: OrderLine[];
+	cancelEnabled: boolean;
+	// These fields might be added by the backend later
+	id?: number;
+	kitchenName?: string;
+	status?: string;
+	totalPrice?: number;
+}
+
+export interface OrdersResponse {
+	orders: Order[];
+}
+
 // Common request options
 export interface RequestOptions {
 	signal?: AbortSignal;
