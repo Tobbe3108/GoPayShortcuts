@@ -22,7 +22,6 @@ export interface Location {
 
 // Common request options
 export interface RequestOptions {
-	token?: string;
 	signal?: AbortSignal;
 }
 

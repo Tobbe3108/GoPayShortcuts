@@ -6,6 +6,9 @@ import type {
 	RequestOptions
 } from '$lib/types/api';
 import { API_BASE_URL } from '$lib/config/environment';
+import { authStore } from '$lib/stores/auth';
+import { get } from 'svelte/store';
+import { el } from 'date-fns/locale';
 
 /**
  * API client that directly maps to our backend endpoints
@@ -15,6 +18,11 @@ export class ApiClient {
 
 	constructor(baseUrl = API_BASE_URL) {
 		this.baseUrl = baseUrl;
+	}
+
+	// Get the current auth token from the store
+	private getAuthToken(): string | null {
+		return get(authStore).token;
 	}
 
 	// Public request method for legacy compatibility
@@ -29,8 +37,9 @@ export class ApiClient {
 			Accept: 'application/json'
 		};
 
-		if (options.token) {
-			headers['Authorization'] = `Bearer ${options.token}`;
+		const token = this.getAuthToken();
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
 		}
 
 		const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -64,12 +73,10 @@ export class ApiClient {
 		return this.request<LoginResponse>('/login', 'POST', { otp });
 	}
 
-	// Protected endpoints
-	async getLocations(token: string): Promise<Location[]> {
-		return this.request<Location[]>('/locations', 'GET', undefined, { token });
+	// Protected endpoints that no longer require token to be passed
+	async getLocations(): Promise<Location[]> {
+		return this.request<Location[]>('/locations', 'GET');
 	}
-
-	// Additional endpoints can be added here
 }
 
 // Export a singleton instance
