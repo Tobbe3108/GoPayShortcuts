@@ -7,13 +7,7 @@
 
 	// Data holders
 	let locations: any[] = [];
-	let loadingStatus = {
-		locations: false,
-		orders: false,
-		apiTest: false
-	};
-	let startDate = new Date();
-	let selectedLocationId: number | null = null;
+	let loadingStatus = { locations: false };
 
 	// Fetch locations
 	async function fetchLocations() {
@@ -66,24 +60,6 @@
 								{loadingStatus.locations ? 'Loading...' : 'Fetch Locations'}
 							</button>
 						</div>
-
-						{#if locations.length > 0}
-							<div class="mb-4">
-								<label for="location-select" class="block text-sm font-medium text-gray-700 mb-1"
-									>Select Location for Default Order</label
-								>
-								<select
-									id="location-select"
-									class="w-full p-2 border border-gray-300 rounded"
-									bind:value={selectedLocationId}
-								>
-									<option value={null}>None (Clear Selection)</option>
-									{#each locations as location}
-										<option value={location.id}>{location.name}</option>
-									{/each}
-								</select>
-							</div>
-						{/if}
 
 						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
 							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
