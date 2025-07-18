@@ -5,7 +5,8 @@ import type {
 	Location,
 	RequestOptions,
 	Product,
-	MenuDay
+	MenuDay,
+	OrdersResponse
 } from '$lib/types/api';
 import { API_BASE_URL } from '$lib/config/environment';
 import { authStore } from '$lib/stores/auth';
@@ -85,6 +86,10 @@ export class ApiClient {
 
 	async getMenu(): Promise<MenuDay[]> {
 		return this.request<MenuDay[]>('/menu', 'GET');
+	}
+
+	async listOrders(startDate: string, endDate: string): Promise<OrdersResponse> {
+		return this.request<OrdersResponse>(`/orders?start=${startDate}&end=${endDate}`, 'GET');
 	}
 }
 

@@ -3,6 +3,7 @@
 	import { locationsService } from '$lib/services/locationsService';
 	import { productsService } from '$lib/services/productsService';
 	import { menuService } from '$lib/services/menuService';
+	import { ordersService } from '$lib/services/ordersService';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';
 	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
@@ -11,7 +12,10 @@
 	let locations: any[] = [];
 	let products: any[] = [];
 	let menu: any[] = [];
-	let loadingStatus = { locations: false, products: false, menu: false };
+	let orders: any[] = [];
+	let loadingStatus = { locations: false, products: false, menu: false, orders: false };
+	let startDateStr = '';
+	let endDateStr = '';
 
 	// Fetch locations
 	async function fetchLocations() {
@@ -49,8 +53,32 @@
 		}
 	}
 
+	// Fetch orders
+	async function fetchOrders() {
+		loadingStatus.orders = true;
+		try {
+			orders = await ordersService.listOrders(startDateStr, endDateStr);
+		} catch (error) {
+			console.error('Error fetching orders:', error);
+		} finally {
+			loadingStatus.orders = false;
+		}
+	}
+
+	async function fetchCurrentWeekOrders() {
+		loadingStatus.orders = true;
+		try {
+			orders = await ordersService.getOrdersForCurrentWeek();
+		} catch (error) {
+			console.error('Error fetching current week orders:', error);
+		} finally {
+			loadingStatus.orders = false;
+		}
+	}
+
 	// Initialize
 	onMount(() => {
+		fetchCurrentWeekOrders();
 		fetchLocations();
 		fetchProducts();
 		fetchMenu();
@@ -146,6 +174,63 @@
 						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
 							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
 									menu,
+									null,
+									2
+								)}</pre>
+						</div>
+					{/snippet}
+				</Card>
+			</div>
+
+			<!-- Orders Service -->
+			<div class="mt-6">
+				<Card>
+					{#snippet children()}
+						<h2 class="text-xl font-semibold mb-3">Orders Service</h2>
+						<div class="mb-4">
+							<div class="flex flex-wrap gap-4 mb-4 items-end">
+								<div>
+									<label for="startDate" class="block text-sm font-medium text-gray-700"
+										>Start Date</label
+									>
+									<input
+										id="startDate"
+										type="date"
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+										bind:value={startDateStr}
+									/>
+								</div>
+								<div>
+									<label for="endDate" class="block text-sm font-medium text-gray-700"
+										>End Date</label
+									>
+									<input
+										id="endDate"
+										type="date"
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+										bind:value={endDateStr}
+									/>
+								</div>
+								<button
+									class="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
+									on:click={fetchOrders}
+									disabled={loadingStatus.orders}
+								>
+									{loadingStatus.orders ? 'Loading...' : 'Fetch Orders'}
+								</button>
+								<button
+									class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
+									on:click={fetchCurrentWeekOrders}
+									disabled={loadingStatus.orders}
+								>
+									{loadingStatus.orders ? 'Loading...' : 'Current Week Orders'}
+								</button>
+							</div>
+						</div>
+
+						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
+							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
+									orders,
 									null,
 									2
 								)}</pre>

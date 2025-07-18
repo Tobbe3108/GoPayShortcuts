@@ -8,7 +8,7 @@ import { z } from "zod";
 import { type AppContext, createGoPayClient } from "../../types";
 import { Schemas } from "../Shared/Schemas";
 import {
-  fetchOrderDetails,
+  fetchValidOrderDetails,
   buildSimplifiedOrderFromDetailed,
 } from "./shared/ordersUtils";
 
@@ -78,22 +78,24 @@ export class ListOrders extends OpenAPIRoute {
     const ordersResp = await client.listOrders(start, end);
     if (ordersResp instanceof Response) return ordersResp; // Error responses
 
-    const validOrders = await fetchOrderDetails(ordersResp.orders, client);
+    const validOrders = await fetchValidOrderDetails(ordersResp.orders, client);
 
-    const simplifiedOrders = validOrders.map((order) => {
-      const delivery = order.deliveries?.[0];
-      const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
-      const kitchenId = order.kitchen?.id || NaN;
-      const cancelEnabled = order.deliveries.every(
-        (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
-      );
-      return buildSimplifiedOrderFromDetailed(
-        date,
-        kitchenId,
-        order,
-        cancelEnabled
-      );
-    });
+    const simplifiedOrders = validOrders
+      .map((order) => {
+        const delivery = order.deliveries?.[0];
+        const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
+        const kitchenId = order.kitchen?.id || NaN;
+        const cancelEnabled = order.deliveries.every(
+          (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
+        );
+        return buildSimplifiedOrderFromDetailed(
+          date,
+          kitchenId,
+          order,
+          cancelEnabled
+        );
+      })
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
     return { orders: simplifiedOrders };
