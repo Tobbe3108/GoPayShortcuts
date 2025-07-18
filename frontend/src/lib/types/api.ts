@@ -20,6 +20,13 @@ export interface Location {
 	address: string;
 }
 
+// Product types
+export interface Product {
+	id: number;
+	name: string;
+	price: number;
+}
+
 // Common request options
 export interface RequestOptions {
 	signal?: AbortSignal;

@@ -3,7 +3,8 @@ import type {
 	RequestOTPResponse,
 	LoginResponse,
 	Location,
-	RequestOptions
+	RequestOptions,
+	Product
 } from '$lib/types/api';
 import { API_BASE_URL } from '$lib/config/environment';
 import { authStore } from '$lib/stores/auth';
@@ -75,6 +76,10 @@ export class ApiClient {
 	// Protected endpoints that no longer require token to be passed
 	async getLocations(): Promise<Location[]> {
 		return this.request<Location[]>('/locations', 'GET');
+	}
+
+	async getProducts(): Promise<Product[]> {
+		return this.request<Product[]>('/products', 'GET');
 	}
 }
 
