@@ -1,19 +1,21 @@
 <script lang="ts">
 	import { authStore } from '$lib/stores/auth';
-	import { locationsService } from '$lib/services/locationsService';
+	import { LocationsService } from '$lib/services/locationsService';
+	import { ProductsService } from '$lib/services/productsService';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';
 	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
 
 	// Data holders
 	let locations: any[] = [];
-	let loadingStatus = { locations: false };
+	let products: any[] = [];
+	let loadingStatus = { locations: false, products: false };
 
 	// Fetch locations
 	async function fetchLocations() {
 		loadingStatus.locations = true;
 		try {
-			locations = await locationsService.getLocations();
+			locations = await LocationsService.getLocations();
 		} catch (error) {
 			console.error('Error fetching locations:', error);
 		} finally {
@@ -21,9 +23,22 @@
 		}
 	}
 
+	// Fetch products
+	async function fetchProducts() {
+		loadingStatus.products = true;
+		try {
+			products = await ProductsService.getProducts();
+		} catch (error) {
+			console.error('Error fetching products:', error);
+		} finally {
+			loadingStatus.products = false;
+		}
+	}
+
 	// Initialize
 	onMount(() => {
 		fetchLocations();
+		fetchProducts();
 	});
 </script>
 
@@ -64,6 +79,32 @@
 						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
 							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
 									locations,
+									null,
+									2
+								)}</pre>
+						</div>
+					{/snippet}
+				</Card>
+			</div>
+
+			<!-- Products Service -->
+			<div class="mt-6">
+				<Card>
+					{#snippet children()}
+						<h2 class="text-xl font-semibold mb-3">Products Service</h2>
+						<div class="mb-4 flex flex-wrap gap-2">
+							<button
+								class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+								on:click={fetchProducts}
+								disabled={loadingStatus.products}
+							>
+								{loadingStatus.products ? 'Loading...' : 'Fetch Products'}
+							</button>
+						</div>
+
+						<div class="bg-gray-100 p-4 rounded overflow-auto max-h-64">
+							<pre class="whitespace-pre-wrap break-words text-sm">{JSON.stringify(
+									products,
 									null,
 									2
 								)}</pre>
