@@ -19,14 +19,6 @@ export class LocationsService {
 			throw error;
 		}
 	}
-
-	/**
-	 * Get a location by ID
-	 */
-	static async getLocationById(id: number): Promise<Location | undefined> {
-		const locations = await this.getLocations();
-		return locations.find((location) => location.id === id);
-	}
 }
 
 // Create a singleton instance
