@@ -8,7 +8,6 @@ import type {
 import { API_BASE_URL } from '$lib/config/environment';
 import { authStore } from '$lib/stores/auth';
 import { get } from 'svelte/store';
-import { el } from 'date-fns/locale';
 
 /**
  * API client that directly maps to our backend endpoints
