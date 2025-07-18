@@ -4,7 +4,8 @@ import type {
 	LoginResponse,
 	Location,
 	RequestOptions,
-	Product
+	Product,
+	MenuDay
 } from '$lib/types/api';
 import { API_BASE_URL } from '$lib/config/environment';
 import { authStore } from '$lib/stores/auth';
@@ -80,6 +81,10 @@ export class ApiClient {
 
 	async getProducts(): Promise<Product[]> {
 		return this.request<Product[]>('/products', 'GET');
+	}
+
+	async getMenu(): Promise<MenuDay[]> {
+		return this.request<MenuDay[]>('/menu', 'GET');
 	}
 }
 
