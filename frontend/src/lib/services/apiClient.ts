@@ -6,8 +6,11 @@ import type {
 	RequestOptions,
 	Product,
 	MenuDay,
-	OrdersResponse
+	OrdersResponse,
+	UpdateDayRequest,
+	UpdateDayResponse
 } from '$lib/types/api';
+
 import { API_BASE_URL } from '$lib/config/environment';
 import { authStore } from '$lib/stores/auth';
 import { get } from 'svelte/store';
@@ -75,7 +78,6 @@ export class ApiClient {
 		return this.request<LoginResponse>('/login', 'POST', { otp });
 	}
 
-	// Protected endpoints that no longer require token to be passed
 	async getLocations(): Promise<Location[]> {
 		return this.request<Location[]>('/locations', 'GET');
 	}
@@ -90,6 +92,10 @@ export class ApiClient {
 
 	async listOrders(startDate: string, endDate: string): Promise<OrdersResponse> {
 		return this.request<OrdersResponse>(`/orders?start=${startDate}&end=${endDate}`, 'GET');
+	}
+
+	async updateDay(req: UpdateDayRequest): Promise<UpdateDayResponse> {
+		return this.request<UpdateDayResponse>('/orders', 'PATCH', req);
 	}
 }
 

@@ -75,3 +75,30 @@ export interface InputEvent {
 export interface FormSubmitEvent<T = Record<string, unknown>> {
 	detail: T;
 }
+
+// Types for updateDay endpoint
+export interface UpdateDayRequest {
+	kitchenId: number;
+	date: string; // YYYY-MM-DD
+	desiredOrders: Array<{
+		productId: number;
+		quantity: number;
+	}>;
+}
+
+export interface UpdateDayOrderProduct {
+	productId: number;
+	name: string;
+	quantity: number;
+}
+
+export interface UpdateDayOrder {
+	orderId: number;
+	status: string;
+	products: UpdateDayOrderProduct[];
+}
+
+export interface UpdateDayResponse {
+	canceled: UpdateDayOrder[];
+	created: UpdateDayOrder[];
+}

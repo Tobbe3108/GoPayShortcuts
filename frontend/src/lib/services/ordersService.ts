@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { Order } from '$lib/types/api';
+import type { Order, UpdateDayRequest, UpdateDayResponse } from '$lib/types/api';
 
 /**
  * Orders service for accessing order data from the backend
@@ -17,6 +17,18 @@ export class OrdersService {
 			return response.orders;
 		} catch (error) {
 			console.error('Failed to fetch orders:', error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Update orders for a kitchen and day to match desired state
+	 */
+	static async updateDay(req: UpdateDayRequest): Promise<UpdateDayResponse> {
+		try {
+			return await apiClient.updateDay(req);
+		} catch (error) {
+			console.error('Failed to update day orders:', error);
 			throw error;
 		}
 	}
