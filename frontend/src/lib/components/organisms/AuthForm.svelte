@@ -40,7 +40,6 @@
 			placeholder="Indtast din email"
 			bind:value={email}
 			transform={(v) => v.trim()}
-			validate={validateEmail}
 			required={true}
 		/>
 		<Button type="submit" disabled={isLoading || !validateEmail(email)} fullWidth={true}>
