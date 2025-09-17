@@ -1,9 +1,20 @@
 <script lang="ts">
-	export let forId: string | undefined = undefined;
-	export let className: string = '';
-	export let variant: 'default' | 'error' | 'success' | 'muted' = 'default';
+	type Variant = 'default' | 'error' | 'success' | 'muted';
+	type LabelProps = {
+		forId?: string;
+		className?: string;
+		variant?: Variant;
+		children?: any;
+	};
 
-	const variantClasses: Record<typeof variant, string> = {
+	let {
+		forId = undefined,
+		className = '',
+		variant = 'default',
+		children = $bindable(undefined)
+	}: LabelProps = $props();
+
+	const variantClasses: Record<Variant, string> = {
 		default: 'text-gray-700',
 		error: 'text-red-600',
 		success: 'text-green-600',
@@ -11,8 +22,6 @@
 	};
 </script>
 
-TODO: Convert to runes mode
-
 <label for={forId} class={`block text-sm font-medium mb-2 ${variantClasses[variant]} ${className}`}>
-	<slot />
+	{@render children?.()}
 </label>

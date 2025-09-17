@@ -1,42 +1,70 @@
 <script lang="ts">
 	import Label from './Label.svelte';
 
-	export let type: string = 'text';
-	export let id: string | undefined = undefined;
-	export let name: string | undefined = undefined;
-	export let placeholder: string = '';
-	export let value: string | number = '';
-	export let required: boolean = false;
-	export let disabled: boolean = false;
-	export let autocomplete: 'on' | 'off' = 'off';
-	export let className: string = '';
-	export let transform: ((v: string) => string) | undefined = undefined;
-	export let validate: ((v: string) => boolean) | undefined = undefined;
-	export let onInput: ((v: string) => void) | undefined = undefined;
-	export let onBlur: (() => void) | undefined = undefined;
-	export let onFocus: (() => void) | undefined = undefined;
-	export let min: number | undefined = undefined;
-	export let max: number | undefined = undefined;
-	export let step: number | undefined = undefined;
-	export let ariaLabel: string = '';
-	export let error: string = '';
+	type InputProps = {
+		type?: string;
+		id?: string;
+		name?: string;
+		placeholder?: string;
+		value?: string | number;
+		required?: boolean;
+		disabled?: boolean;
+		autocomplete?: 'on' | 'off';
+		className?: string;
+		transform?: (v: string) => string;
+		validate?: (v: string) => boolean;
+		onInput?: (v: string) => void;
+		onBlur?: () => void;
+		onFocus?: () => void;
+		min?: number;
+		max?: number;
+		step?: number;
+		ariaLabel?: string;
+		error?: string;
+	};
 
-	let internalValue = value?.toString() ?? '';
-	$: if (type !== 'number' && value?.toString() !== internalValue)
-		internalValue = value?.toString() ?? '';
+	let {
+		type = 'text',
+		id = undefined,
+		name = undefined,
+		placeholder = '',
+		value = $bindable(''),
+		required = false,
+		disabled = false,
+		autocomplete = 'off',
+		className = '',
+		transform = undefined,
+		validate = undefined,
+		onInput = undefined,
+		onBlur = undefined,
+		onFocus = undefined,
+		min = undefined,
+		max = undefined,
+		step = undefined,
+		ariaLabel = '',
+		error = ''
+	}: InputProps = $props();
 
-	// For type='number', bind directly to value, else use internalValue
-	let bindTarget: any;
-	$: bindTarget = type === 'number' ? value : internalValue;
+	let internalValue = $state(value?.toString() ?? '');
 
-	const inputClasses = [
-		'w-full p-3 border rounded-md',
-		error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-slate-600',
-		'focus:outline-none focus:ring-2',
-		'disabled:opacity-50 disabled:cursor-not-allowed',
-		'transition duration-150 ease-in-out',
-		className
-	].join(' ');
+	$effect(() => {
+		if (type !== 'number' && value?.toString() !== internalValue) {
+			internalValue = value?.toString() ?? '';
+		}
+	});
+
+	let bindTarget = $derived(type === 'number' ? value : internalValue);
+
+	const inputClasses = $derived(
+		[
+			'w-full p-3 border rounded-md',
+			error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-slate-600',
+			'focus:outline-none focus:ring-2',
+			'disabled:opacity-50 disabled:cursor-not-allowed',
+			'transition duration-150 ease-in-out',
+			className
+		].join(' ')
+	);
 
 	function handleInput(e: Event) {
 		let newValue = (e.target as HTMLInputElement).value;
@@ -50,8 +78,6 @@
 		}
 	}
 </script>
-
-TODO: Convert to runes mode
 
 <input
 	{type}
@@ -68,9 +94,9 @@ TODO: Convert to runes mode
 	aria-invalid={!!error}
 	class={inputClasses}
 	bind:value={bindTarget}
-	on:input={handleInput}
-	on:blur={onBlur}
-	on:focus={onFocus}
+	oninput={handleInput}
+	onblur={onBlur}
+	onfocus={onFocus}
 />
 
 {#if error}

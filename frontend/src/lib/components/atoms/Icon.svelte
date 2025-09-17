@@ -2,15 +2,16 @@
 	import { Pencil, Trash2, Lock, Plus, Minus, Check, X } from 'lucide-svelte';
 
 	type IconName = 'edit' | 'delete' | 'lock' | 'plus' | 'minus' | 'check' | 'close';
+	type IconProps = {
+		role?: string;
+		ariaLabel?: string;
+		className?: string;
+		size?: number;
+		name: IconName;
+	};
 
-	export let role: string = 'img';
-	export let ariaLabel: string = '';
-	export let className: string = '';
-	export let size: number = 20;
-	export let name: IconName;
+	let { role = 'img', ariaLabel = '', className = '', size = 20, name }: IconProps = $props();
 </script>
-
-TODO: Convert to runes mode
 
 <span
 	{role}

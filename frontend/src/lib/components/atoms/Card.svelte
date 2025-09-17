@@ -1,16 +1,28 @@
 <script lang="ts">
-	export let padding: string = 'p-6';
-	export let className: string = '';
-	export let muted: boolean = false;
+	type CardProps = {
+		padding?: string;
+		className?: string;
+		muted?: boolean;
+		children?: any;
+	};
+
+	let {
+		padding = 'p-6',
+		className = '',
+		muted = false,
+		children = $bindable(undefined)
+	}: CardProps = $props();
+
+	let cardClass = $derived(
+		[
+			'rounded-lg shadow-lg border',
+			muted ? 'opacity-70 bg-slate-50 border-slate-200' : 'bg-white border-slate-200',
+			padding,
+			className
+		].join(' ')
+	);
 </script>
 
-TODO: Convert to runes mode
-
-<div
-	class="rounded-lg shadow-lg border {muted
-		? 'opacity-70 bg-slate-50 border-slate-200'
-		: 'bg-white border-slate-200'} {padding} {className}"
-	aria-disabled={muted}
->
-	<slot />
+<div class={cardClass} aria-disabled={muted}>
+	{@render children?.()}
 </div>
