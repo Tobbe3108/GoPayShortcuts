@@ -3,6 +3,16 @@
 	import Button from '../atoms/Button.svelte';
 	import LoadingSpinner from '../LoadingSpinner.svelte';
 
+	type AuthFormProps = {
+		isEmailStep?: boolean;
+		email?: string;
+		otp?: string;
+		isLoading?: boolean;
+		onEmailSubmit?: (email: string) => void;
+		onOtpSubmit?: (otp: string) => void;
+		onBackToEmail?: () => void;
+	};
+
 	let {
 		isEmailStep = true,
 		email = $bindable(''),
@@ -11,59 +21,29 @@
 		onEmailSubmit = (email: string) => {},
 		onOtpSubmit = (otp: string) => {},
 		onBackToEmail = () => {}
-	} = $props();
+	}: AuthFormProps = $props();
 
-	function handleEmailSubmit(e: SubmitEvent) {
-		e.preventDefault();
-		onEmailSubmit(email);
-	}
-
-	function handleOTPSubmit(e: SubmitEvent) {
-		e.preventDefault();
-		onOtpSubmit(otp);
-	}
-
-	function goBackToEmail() {
-		onBackToEmail();
-	}
-
-	function validateEmail(value: string): boolean {
-		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-	}
-
-	function transformEmail(value: string): string {
-		return value.trim();
-	}
-
-	function transformOTP(value: string): string {
-		return value.replace(/[^0-9]/g, '');
-	}
+	const validateEmail = (v: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 </script>
 
-TODO: fix errors / refactor / Add page and test
-
 {#if isEmailStep}
-	<form onsubmit={handleEmailSubmit}>
+	<form
+		onsubmit={(e) => {
+			e.preventDefault();
+			onEmailSubmit(email);
+		}}
+	>
 		<FormField
 			id="email"
 			label="Email adresse"
 			type="email"
 			placeholder="Indtast din email"
 			bind:value={email}
-			transform={transformEmail}
+			transform={(v) => v.trim()}
 			validate={validateEmail}
 			required={true}
-			onInput={() => {}}
-			onBlur={() => {}}
-			onFocus={() => {}}
 		/>
-
-		<Button
-			type="submit"
-			disabled={isLoading || !validateEmail(email)}
-			fullWidth={true}
-			onclick={() => {}}
-		>
+		<Button type="submit" disabled={isLoading || !validateEmail(email)} fullWidth={true}>
 			{#snippet children()}
 				{#if isLoading}
 					<div class="flex justify-center items-center">
@@ -77,27 +57,23 @@ TODO: fix errors / refactor / Add page and test
 		</Button>
 	</form>
 {:else}
-	<form onsubmit={handleOTPSubmit}>
+	<form
+		onsubmit={(e) => {
+			e.preventDefault();
+			onOtpSubmit(otp);
+		}}
+	>
 		<FormField
 			id="otp"
 			label="Verifikationskode"
 			type="text"
 			placeholder="Indtast verifikationskode"
 			bind:value={otp}
-			transform={transformOTP}
-			validate={(val: string) => val.length > 0}
+			transform={(v) => v.replace(/[^0-9]/g, '')}
+			validate={(v) => v.length > 0}
 			required={true}
-			onInput={() => {}}
-			onBlur={() => {}}
-			onFocus={() => {}}
 		/>
-
-		<Button
-			type="submit"
-			disabled={isLoading || otp.length === 0}
-			fullWidth={true}
-			onclick={() => {}}
-		>
+		<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
 			{#snippet children()}
 				{#if isLoading}
 					<div class="flex justify-center items-center">
@@ -109,12 +85,11 @@ TODO: fix errors / refactor / Add page and test
 				{/if}
 			{/snippet}
 		</Button>
-
 		<div class="mt-4 text-center">
 			<button
 				type="button"
 				class="inline-flex items-center justify-center text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline transition-colors cursor-pointer"
-				onclick={goBackToEmail}
+				onclick={() => onBackToEmail()}
 			>
 				Tilbage
 			</button>

@@ -1,10 +1,10 @@
 <script lang="ts">
-	const { size = 'w-8 h-8' } = $props<{
+	type LoadingSpinnerProps = {
 		size?: string;
-	}>();
-</script>
+	};
 
-TODO: fix errors / refactor / Add page and test
+	const { size = 'w-8 h-8' }: LoadingSpinnerProps = $props();
+</script>
 
 <div class="flex justify-center items-center">
 	<div
