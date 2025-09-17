@@ -6,6 +6,8 @@
 	let { onLogout = () => {}, isAuthenticated = false, children } = $props();
 </script>
 
+TODO: fix errors / refactor / Add page and test
+
 <div class="min-h-screen bg-slate-50">
 	<div class="container p-4 mx-auto">
 		<div class="container mx-auto flex items-center justify-between mb-8">

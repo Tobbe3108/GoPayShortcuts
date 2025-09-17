@@ -4,6 +4,8 @@
 	let { children } = $props();
 </script>
 
+TODO: fix errors / refactor / Add page and test
+
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
 	<div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
 		<div class="flex justify-center mb-6">

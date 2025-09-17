@@ -11,6 +11,8 @@
 	};
 </script>
 
+TODO: Convert to runes mode
+
 <label for={forId} class={`block text-sm font-medium mb-2 ${variantClasses[variant]} ${className}`}>
 	<slot />
 </label>

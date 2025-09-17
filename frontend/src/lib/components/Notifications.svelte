@@ -3,6 +3,8 @@
 	import { fly } from 'svelte/transition';
 </script>
 
+TODO: fix errors / refactor / Add page and test
+
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md w-full">
 	{#each $notifications as notification (notification.id)}
 		<div

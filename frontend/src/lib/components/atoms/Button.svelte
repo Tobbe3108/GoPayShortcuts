@@ -28,6 +28,8 @@
 	].join(' ');
 </script>
 
+TODO: Convert to runes mode
+
 <button
 	{type}
 	{disabled}

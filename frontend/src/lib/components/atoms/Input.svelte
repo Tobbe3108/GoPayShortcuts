@@ -51,6 +51,8 @@
 	}
 </script>
 
+TODO: Convert to runes mode
+
 <input
 	{type}
 	{id}

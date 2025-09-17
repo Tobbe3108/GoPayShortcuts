@@ -40,6 +40,8 @@
 	}
 </script>
 
+TODO: fix errors / refactor / Add page and test
+
 {#if isEmailStep}
 	<form onsubmit={handleEmailSubmit}>
 		<FormField

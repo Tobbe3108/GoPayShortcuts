@@ -10,6 +10,8 @@
 	export let name: IconName;
 </script>
 
+TODO: Convert to runes mode
+
 <span
 	{role}
 	aria-label={ariaLabel}

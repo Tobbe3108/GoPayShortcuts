@@ -4,6 +4,8 @@
 	export let muted: boolean = false;
 </script>
 
+TODO: Convert to runes mode
+
 <div
 	class="rounded-lg shadow-lg border {muted
 		? 'opacity-70 bg-slate-50 border-slate-200'
