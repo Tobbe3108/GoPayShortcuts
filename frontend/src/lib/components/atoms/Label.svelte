@@ -1,9 +1,16 @@
 <script lang="ts">
-	let { forId, className = '', children } = $props();
+	export let forId: string | undefined = undefined;
+	export let className: string = '';
+	export let variant: 'default' | 'error' | 'success' | 'muted' = 'default';
 
-	const labelClasses = ['block text-gray-700 text-sm font-medium mb-2', className].join(' ');
+	const variantClasses: Record<typeof variant, string> = {
+		default: 'text-gray-700',
+		error: 'text-red-600',
+		success: 'text-green-600',
+		muted: 'text-gray-400'
+	};
 </script>
 
-<label for={forId} class={labelClasses}>
-	{@render children?.()}
+<label for={forId} class={`block text-sm font-medium mb-2 ${variantClasses[variant]} ${className}`}>
+	<slot />
 </label>

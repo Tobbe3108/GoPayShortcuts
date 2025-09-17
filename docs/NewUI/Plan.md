@@ -4,7 +4,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ## Implementation Steps
 
-### 1. Set up base atomic components
+### 1. Set up base atomic components - DONE
 **Where to find information:**
 - Check the current design instructions in `docs/NewUI/CurrentDesign.md`
 - Review existing atomic components in `frontend/src/lib/components/atoms/`
