@@ -5,40 +5,26 @@
 	type AutoCompleteAttribute = 'on' | 'off';
 
 	let {
-		id,
-		label,
-		type = 'text',
-		name = id,
-		placeholder = '',
+		id = undefined as string | undefined,
+		label = undefined as string | undefined,
+		type = 'text' as string,
+		name = id as string | undefined,
+		placeholder = '' as string,
 		value = $bindable(''),
-		required = false,
-		disabled = false,
+		required = false as boolean,
+		disabled = false as boolean,
 		autocomplete = 'off' as AutoCompleteAttribute,
-		className = '',
-		transform,
-		validate,
-		onInput = (value: string) => {},
-		onBlur = () => {},
-		onFocus = () => {}
+		className = '' as string,
+		transform = ((v: string) => v) as (v: string) => string,
+		validate = ((v: string) => true) as (v: string) => boolean,
+		onInput = ((v: string) => v) as (v: string) => string,
+		onBlur = (() => {}) as () => void,
+		onFocus = (() => {}) as () => void
 	} = $props();
-
-	function getValue() {
-		return value;
-	}
-
-	function setValue(newValue: string) {
-		value = newValue;
-		if (onInput) onInput(newValue);
-	}
 </script>
 
 <div class="mb-4 {className}">
-	<Label forId={id}>
-		{#snippet children()}
-			{label}
-		{/snippet}
-	</Label>
-
+	<Label forId={id}>{label}</Label>
 	<Input
 		{id}
 		{name}
@@ -49,9 +35,9 @@
 		{autocomplete}
 		{transform}
 		{validate}
-		bind:value={getValue, setValue}
+		bind:value
+		{onInput}
 		{onBlur}
 		{onFocus}
-		{onInput}
 	/>
 </div>
