@@ -1,4 +1,4 @@
-import { protectRoute } from '$lib/core/auth/protectedRoute';
+import { protectRoute } from '$lib/features/auth/protectedRoute';
 
 export function load() {
 	protectRoute();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { authStore } from '$lib/core/auth/store';
+	import { authStore } from '$lib/features/auth/store';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';

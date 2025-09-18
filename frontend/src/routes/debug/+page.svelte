@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { authStore } from '$lib/core/auth/store';
+	import { authStore } from '$lib/features/auth/store';
 	import { locationsService } from '$lib/features/locations/locationsService';
 	import { productsService } from '$lib/features/products/productsService';
 	import { menuService } from '$lib/features/menu/menuService';
