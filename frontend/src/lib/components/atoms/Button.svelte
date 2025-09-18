@@ -1,5 +1,5 @@
 <script lang="ts">
-	type Variant = 'primary' | 'secondary' | 'danger';
+	type Variant = 'primary' | 'secondary' | 'danger' | 'transparent';
 	type Size = 'sm' | 'md' | 'lg';
 	type BtnType = 'button' | 'submit' | 'reset';
 	type ButtonProps = {
@@ -31,22 +31,26 @@
 	}: ButtonProps = $props();
 
 	const variantClasses: Record<Variant, string> = {
-		primary: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary',
-		secondary: 'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary',
-		danger: 'bg-danger text-white hover:bg-danger-hover focus:ring-danger'
+		primary:
+			'bg-primary text-white hover:bg-primary-hover focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2',
+		secondary:
+			'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary focus:outline-none focus:ring-2 focus:ring-offset-2',
+		danger:
+			'bg-danger text-white hover:bg-danger-hover focus:ring-danger focus:outline-none focus:ring-2 focus:ring-offset-2',
+		transparent: 'bg-transparent text-primary'
 	};
 
 	const sizeClasses: Record<Size, string> = {
 		sm: 'py-1 px-2 text-sm',
-		md: 'py-2 px-4',
-		lg: 'py-3 px-6 text-lg'
+		md: 'py-2 px-3 text-md',
+		lg: 'py-2 px-4 text-lg'
 	};
 
 	let buttonClasses = $derived(
 		[
 			variantClasses[variant as Variant],
 			sizeClasses[size as Size],
-			'font-bold rounded transition-opacity duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
+			'font-bold rounded transition-opacity duration-150 ease-in-out disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
 			!disabled ? 'cursor-pointer' : '',
 			fullWidth ? 'w-full' : '',
 			className

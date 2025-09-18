@@ -1,6 +1,5 @@
-<!-- TODO: Use Atoms -->
-
 <script lang="ts">
+	import Button from '$lib/components/atoms/Button.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 
 	type Direction = 'row' | 'column';
@@ -33,48 +32,52 @@
 		reveal = false;
 		action?.();
 	}
+
+	const iconSize = 17;
 </script>
 
 <div class={`flex gap-2 ${direction === 'column' ? 'flex-col' : 'flex-row'}`}>
 	{#if !reveal}
-		<button
-			class="p-2 rounded text-slate-700 hover:text-slate-800 disabled:opacity-50 flex items-center justify-center"
-			onclick={handleReveal}
-			{disabled}
-			aria-label="Edit"
-			type="button"
-		>
-			<Icon name="edit" size={22} ariaLabel="Edit" />
-		</button>
+		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="sm">
+			{#snippet children()}
+				<Icon name="edit" size={iconSize} ariaLabel="Edit" />
+			{/snippet}
+		</Button>
 	{:else}
-		<button
-			class="p-2 rounded text-slate-800 hover:text-slate-700 disabled:opacity-50 flex items-center justify-center"
+		<Button
+			variant="transparent"
+			ariaLabel="Save"
+			{disabled}
 			onclick={() => handleAction(onSave)}
-			{disabled}
-			aria-label="Save"
-			type="button"
+			size="sm"
 		>
-			<Icon name="check" size={22} ariaLabel="Save" />
-		</button>
-		<button
-			class="p-2 rounded text-slate-600 hover:text-slate-500 disabled:opacity-50 flex items-center justify-center"
+			{#snippet children()}
+				<Icon name="check" size={iconSize} ariaLabel="Save" className="text-success" />
+			{/snippet}
+		</Button>
+		<Button
+			variant="transparent"
+			ariaLabel="Cancel"
+			{disabled}
 			onclick={() => handleAction(onCancel)}
-			{disabled}
-			aria-label="Cancel"
-			type="button"
+			size="sm"
 		>
-			<Icon name="close" size={22} ariaLabel="Cancel" />
-		</button>
+			{#snippet children()}
+				<Icon name="close" size={iconSize} ariaLabel="Cancel" />
+			{/snippet}
+		</Button>
 		{#if showDelete}
-			<button
-				class="p-2 rounded text-red-600 hover:text-red-700 disabled:opacity-50 flex items-center justify-center"
-				onclick={() => handleAction(onDelete)}
+			<Button
+				variant="transparent"
+				ariaLabel="Delete"
 				{disabled}
-				aria-label="Delete"
-				type="button"
+				onclick={() => handleAction(onDelete)}
+				size="sm"
 			>
-				<Icon name="delete" size={22} ariaLabel="Delete" />
-			</button>
+				{#snippet children()}
+					<Icon name="delete" size={iconSize} ariaLabel="Delete" className="text-danger" />
+				{/snippet}
+			</Button>
 		{/if}
 	{/if}
 </div>

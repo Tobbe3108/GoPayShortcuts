@@ -33,8 +33,8 @@
 		<div class="flex flex-wrap gap-4 items-center">
 			<Button>Default Button</Button>
 			<Button variant="secondary">Secondary</Button>
-			<Button variant="danger">Danger</Button>
-			<Button disabled={true}>Disabled</Button>
+			<Button variant="danger" size="sm">Danger</Button>
+			<Button disabled={true} size="lg">Disabled</Button>
 			<Button fullWidth={true}>Full Width</Button>
 		</div>
 
