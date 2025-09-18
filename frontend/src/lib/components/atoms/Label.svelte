@@ -15,10 +15,10 @@
 	}: LabelProps = $props();
 
 	const variantClasses: Record<Variant, string> = {
-		default: 'text-gray-700',
-		error: 'text-red-600',
-		success: 'text-green-600',
-		muted: 'text-gray-400'
+		default: 'text-primary',
+		success: 'text-success',
+		error: 'text-danger',
+		muted: 'text-muted-dark'
 	};
 </script>
 

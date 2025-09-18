@@ -55,11 +55,11 @@
 		<!-- Icon Variants -->
 		<div class="flex flex-wrap gap-4 items-center">
 			<Icon name="edit" ariaLabel="Edit" />
-			<Icon name="delete" ariaLabel="Delete" />
-			<Icon name="lock" ariaLabel="Lock" />
+			<Icon name="delete" ariaLabel="Delete" className="text-danger" />
+			<Icon name="lock" ariaLabel="Lock" className="text-muted-dark" />
 			<Icon name="plus" ariaLabel="Plus" />
 			<Icon name="minus" ariaLabel="Minus" />
-			<Icon name="check" ariaLabel="Check" />
+			<Icon name="check" ariaLabel="Check" className="text-success" />
 			<Icon name="close" ariaLabel="Close" />
 		</div>
 	</div>

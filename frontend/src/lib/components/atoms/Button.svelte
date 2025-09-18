@@ -31,9 +31,9 @@
 	}: ButtonProps = $props();
 
 	const variantClasses: Record<Variant, string> = {
-		primary: 'bg-slate-800 text-white hover:bg-slate-700 focus:ring-slate-600',
-		secondary: 'bg-slate-600 text-white hover:bg-slate-500 focus:ring-slate-400',
-		danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
+		primary: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary',
+		secondary: 'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary',
+		danger: 'bg-danger text-white hover:bg-danger-hover focus:ring-danger'
 	};
 
 	const sizeClasses: Record<Size, string> = {
@@ -47,6 +47,7 @@
 			variantClasses[variant as Variant],
 			sizeClasses[size as Size],
 			'font-bold rounded transition-opacity duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
+			!disabled ? 'cursor-pointer' : '',
 			fullWidth ? 'w-full' : '',
 			className
 		].join(' ')

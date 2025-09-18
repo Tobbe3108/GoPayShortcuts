@@ -15,8 +15,8 @@
 
 	let cardClass = $derived(
 		[
-			'rounded-lg shadow-lg border',
-			muted ? 'opacity-70 bg-slate-50 border-slate-200' : 'bg-white border-slate-200',
+			'rounded-lg shadow-lg border border-slate-200',
+			muted ? 'bg-muted opacity-70' : 'bg-white',
 			padding,
 			className
 		].join(' ')

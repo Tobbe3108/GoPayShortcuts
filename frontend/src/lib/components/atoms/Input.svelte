@@ -58,7 +58,7 @@
 	const inputClasses = $derived(
 		[
 			'w-full p-3 border rounded-md',
-			error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-slate-600',
+			error ? 'border-danger focus:ring-danger' : 'border-secondary focus:ring-primary',
 			'focus:outline-none focus:ring-2',
 			'disabled:opacity-50 disabled:cursor-not-allowed',
 			'transition duration-150 ease-in-out',
