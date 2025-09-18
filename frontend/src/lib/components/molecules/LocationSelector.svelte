@@ -1,3 +1,5 @@
+<!-- TODO: Use Atoms -->
+
 <script lang="ts">
 	interface LocationOption {
 		id: string | number;

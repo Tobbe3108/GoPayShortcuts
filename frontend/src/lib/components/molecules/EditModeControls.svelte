@@ -1,3 +1,5 @@
+<!-- TODO: Use Atoms -->
+
 <script lang="ts">
 	import Icon from '$lib/components/atoms/Icon.svelte';
 
