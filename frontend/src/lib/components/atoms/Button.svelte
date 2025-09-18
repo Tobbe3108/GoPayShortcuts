@@ -1,6 +1,6 @@
 <script lang="ts">
 	type Variant = 'primary' | 'secondary' | 'danger' | 'transparent';
-	type Size = 'sm' | 'md' | 'lg';
+	type Size = 'sm' | 'md' | 'lg' | '';
 	type BtnType = 'button' | 'submit' | 'reset';
 	type ButtonProps = {
 		variant?: Variant;
@@ -37,13 +37,14 @@
 			'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary focus:outline-none focus:ring-2 focus:ring-offset-2',
 		danger:
 			'bg-danger text-white hover:bg-danger-hover focus:ring-danger focus:outline-none focus:ring-2 focus:ring-offset-2',
-		transparent: 'bg-transparent text-primary'
+		transparent: 'bg-transparent text-primary disabled:bg-transparent'
 	};
 
 	const sizeClasses: Record<Size, string> = {
 		sm: 'py-1 px-2 text-sm',
 		md: 'py-2 px-3 text-md',
-		lg: 'py-2 px-4 text-lg'
+		lg: 'py-2 px-4 text-lg',
+		'': 'p-0'
 	};
 
 	let buttonClasses = $derived(

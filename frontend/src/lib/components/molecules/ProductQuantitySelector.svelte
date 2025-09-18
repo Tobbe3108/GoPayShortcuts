@@ -1,6 +1,7 @@
-<!-- TODO: Use Atoms -->
-
 <script lang="ts">
+	import Button from '../atoms/Button.svelte';
+	import Label from '../atoms/Label.svelte';
+
 	interface Props {
 		label?: string;
 		value?: number;
@@ -19,6 +20,8 @@
 		onChange = undefined
 	}: Props = $props();
 
+	import Icon from '../atoms/Icon.svelte';
+
 	function increment() {
 		if (disabled || value >= max) return;
 		const newValue = value + 1;
@@ -30,31 +33,37 @@
 		const newValue = value - 1;
 		onChange?.(newValue);
 	}
+
+	const iconSize = 15;
 </script>
 
-<div class="flex items-center space-x-2">
+<div class="flex justify-between items-center space-x-2">
 	{#if label}
-		<span class="text-slate-700 select-none">{label}</span>
+		<Label className="text-primary select-none">{label}</Label>
 	{/if}
-	<div class="flex items-center">
-		<button
-			class="px-2 py-1 font-bold text-slate-700 bg-slate-200 rounded-l hover:bg-slate-300 disabled:opacity-50 focus:outline-none"
-			aria-label="Decrement"
+	<div class="flex flex-row items-center gap-x-2">
+		<Button
+			variant="transparent"
+			ariaLabel="Decrement"
 			onclick={decrement}
+			size=""
 			disabled={disabled || value <= min}
-			type="button"
+			className="flex items-center justify-center"
 		>
-			-
-		</button>
-		<span class="w-8 text-center text-slate-700 select-none" aria-live="polite">{value}</span>
-		<button
-			class="px-2 py-1 font-bold text-slate-700 bg-slate-200 rounded-r hover:bg-slate-300 disabled:opacity-50 focus:outline-none"
-			aria-label="Increment"
+			<Icon name="minus" size={iconSize} ariaLabel="Decrement" />
+		</Button>
+		<Label className="text-primary text-center select-none flex items-center justify-center"
+			>{value}</Label
+		>
+		<Button
+			variant="transparent"
+			ariaLabel="Increment"
 			onclick={increment}
+			size=""
 			disabled={disabled || value >= max}
-			type="button"
+			className="flex items-center justify-center"
 		>
-			+
-		</button>
+			<Icon name="plus" size={iconSize} ariaLabel="Increment" />
+		</Button>
 	</div>
 </div>

@@ -1,6 +1,5 @@
-<!-- TODO: Use Atoms -->
-
 <script lang="ts">
+	import Label from './Label.svelte';
 	interface LocationOption {
 		id: string | number;
 		name: string;
@@ -30,11 +29,11 @@
 
 <div class="flex flex-col space-y-1">
 	{#if label}
-		<label class="text-slate-700 text-sm font-medium" for="location-select">{label}</label>
+		<Label forId={label}>{label}</Label>
 	{/if}
 	<select
-		id="location-select"
-		class="px-3 py-2 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-slate-100 disabled:text-slate-400"
+		id={label}
+		class="p-3 border rounded-md border-secondary focus:ring-primary focus:outline-none focus:ring-2 disabled:bg-slate-100 disabled:text-slate-400"
 		bind:value={selectedId}
 		{disabled}
 		onchange={handleChange}

@@ -38,7 +38,7 @@
 
 <div class={`flex gap-2 ${direction === 'column' ? 'flex-col' : 'flex-row'}`}>
 	{#if !reveal}
-		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="sm">
+		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="">
 			{#snippet children()}
 				<Icon name="edit" size={iconSize} ariaLabel="Edit" />
 			{/snippet}
@@ -49,7 +49,7 @@
 			ariaLabel="Save"
 			{disabled}
 			onclick={() => handleAction(onSave)}
-			size="sm"
+			size=""
 		>
 			{#snippet children()}
 				<Icon name="check" size={iconSize} ariaLabel="Save" className="text-success" />
@@ -60,7 +60,7 @@
 			ariaLabel="Cancel"
 			{disabled}
 			onclick={() => handleAction(onCancel)}
-			size="sm"
+			size=""
 		>
 			{#snippet children()}
 				<Icon name="close" size={iconSize} ariaLabel="Cancel" />
@@ -72,7 +72,7 @@
 				ariaLabel="Delete"
 				{disabled}
 				onclick={() => handleAction(onDelete)}
-				size="sm"
+				size=""
 			>
 				{#snippet children()}
 					<Icon name="delete" size={iconSize} ariaLabel="Delete" className="text-danger" />

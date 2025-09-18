@@ -22,6 +22,6 @@
 	};
 </script>
 
-<label for={forId} class={`block text-sm font-medium mb-2 ${variantClasses[variant]} ${className}`}>
+<label for={forId} class={`block text-sm font-medium ${variantClasses[variant]} ${className}`}>
 	{@render children?.()}
 </label>

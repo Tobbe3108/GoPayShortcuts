@@ -4,6 +4,15 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Input from '$lib/components/atoms/Input.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
+	import Selector from '$lib/components/atoms/Select.svelte';
+
+	const locations = [
+		{ id: 'canteen1', name: 'Canteen 1' },
+		{ id: 'canteen2', name: 'Canteen 2' },
+		{ id: 'canteen3', name: 'Canteen 3' }
+	];
+
+	let selectedLocation: string | number | undefined = undefined;
 </script>
 
 <div class="p-8 space-y-8">
@@ -62,5 +71,15 @@
 			<Icon name="check" ariaLabel="Check" className="text-success" />
 			<Icon name="close" ariaLabel="Close" />
 		</div>
+
+		<section>
+			<Selector
+				label="LocationSelector Demo"
+				{locations}
+				selectedId={selectedLocation}
+				onChange={(id: string | number) => (selectedLocation = id)}
+			/>
+			<Label variant="muted">Location: {selectedLocation}</Label>
+		</section>
 	</div>
 </div>

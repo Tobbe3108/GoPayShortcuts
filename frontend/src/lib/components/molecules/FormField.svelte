@@ -1,5 +1,3 @@
-<!-- TODO: Use Atoms -->
-
 <script lang="ts">
 	import Label from '../atoms/Label.svelte';
 	import Input from '../atoms/Input.svelte';
@@ -25,7 +23,7 @@
 	} = $props();
 </script>
 
-<div class={className}>
+<div class="flex flex-col space-y-1 {className}">
 	<Label forId={id}>{label}</Label>
 	<Input
 		{id}

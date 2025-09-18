@@ -79,26 +79,27 @@
 	}
 </script>
 
-<input
-	{type}
-	{id}
-	{name}
-	{placeholder}
-	{required}
-	{disabled}
-	{autocomplete}
-	{min}
-	{max}
-	{step}
-	aria-label={ariaLabel}
-	aria-invalid={!!error}
-	class={inputClasses}
-	bind:value={bindTarget}
-	oninput={handleInput}
-	onblur={onBlur}
-	onfocus={onFocus}
-/>
-
-{#if error}
-	<Label forId={id} variant="error">{error}</Label>
-{/if}
+<div class="flex flex-col space-y-1">
+	<input
+		{type}
+		{id}
+		{name}
+		{placeholder}
+		{required}
+		{disabled}
+		{autocomplete}
+		{min}
+		{max}
+		{step}
+		aria-label={ariaLabel}
+		aria-invalid={!!error}
+		class={inputClasses}
+		bind:value={bindTarget}
+		oninput={handleInput}
+		onblur={onBlur}
+		onfocus={onFocus}
+	/>
+	{#if error}
+		<Label forId={id} variant="error">{error}</Label>
+	{/if}
+</div>

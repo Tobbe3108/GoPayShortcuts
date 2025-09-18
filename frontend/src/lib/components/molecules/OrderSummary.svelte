@@ -1,5 +1,3 @@
-<!-- TODO: Use Atoms -->
-
 <script lang="ts">
 	interface OrderItem {
 		id: string | number;
