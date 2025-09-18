@@ -36,7 +36,9 @@
 	const iconSize = 17;
 </script>
 
-<div class={`flex gap-2 ${direction === 'column' ? 'flex-col' : 'flex-row'}`}>
+<div
+	class={`flex ${direction === 'column' ? 'flex-col items-start' : 'flex-row items-center gap-x-2'}`}
+>
 	{#if !reveal}
 		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="">
 			{#snippet children()}
