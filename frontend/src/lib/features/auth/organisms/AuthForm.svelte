@@ -28,6 +28,7 @@
 
 {#if isEmailStep}
 	<form
+		class="space-y-4"
 		onsubmit={(e) => {
 			e.preventDefault();
 			onEmailSubmit(email);
@@ -57,6 +58,7 @@
 	</form>
 {:else}
 	<form
+		class="space-y-4"
 		onsubmit={(e) => {
 			e.preventDefault();
 			onOtpSubmit(otp);
@@ -72,25 +74,25 @@
 			validate={(v) => v.length > 0}
 			required={true}
 		/>
-		<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
-			{#snippet children()}
-				{#if isLoading}
-					<div class="flex justify-center items-center">
-						<LoadingSpinner size="w-5 h-5" />
-						<span class="ml-2">Verificerer...</span>
-					</div>
-				{:else}
-					Log ind
-				{/if}
-			{/snippet}
-		</Button>
-		<div class="mt-4 text-center">
+		<div class="space-y-2">
+			<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
+				{#snippet children()}
+					{#if isLoading}
+						<div class="flex justify-center items-center">
+							<LoadingSpinner size="w-5 h-5" />
+							<span class="ml-2">Verificerer...</span>
+						</div>
+					{:else}
+						Log ind
+					{/if}
+				{/snippet}
+			</Button>
 			<Button
 				type="button"
 				variant="secondary"
 				size="sm"
-				className="inline-flex items-center justify-center font-medium text-primary hover:text-primary-hover hover:underline transition-colors cursor-pointer bg-transparent border-0 shadow-none"
 				onclick={() => onBackToEmail()}
+				fullWidth={true}
 			>
 				Tilbage
 			</Button>
