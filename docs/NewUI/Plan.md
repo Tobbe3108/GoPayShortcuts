@@ -24,10 +24,11 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - Card (normal and muted variants for locked orders)
 - Input (numeric input with validation)
 - Icons (edit, delete, lock, etc.)
+- Selector: Dropdown for selecting cantina locations  
 
 ---
 
-### 2. Create molecule components
+### 2. Create molecule components - DONE
 
 **Where to find information:**
 
@@ -43,10 +44,8 @@ This document outlines a step-by-step implementation plan for the new UI based o
 **Components needed:**
 
 - ProductQuantitySelector: Component with +/- buttons and quantity display  
-- LocationSelector: Dropdown for selecting cantina locations  
 - OrderSummary: Display order details (items, quantities, prices)  
 - EditModeControls: Save/cancel/delete action buttons for edit mode  
-- LockIndicator: Visual indicator for locked orders  
 
 ---
 
