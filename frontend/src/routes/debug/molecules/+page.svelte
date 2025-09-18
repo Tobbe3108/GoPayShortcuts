@@ -3,6 +3,7 @@
 	import ProductQuantitySelector from '$lib/components/molecules/ProductQuantitySelector.svelte';
 	import LocationSelector from '$lib/components/molecules/LocationSelector.svelte';
 	import OrderSummary from '$lib/components/molecules/OrderSummary.svelte';
+	import EditModeControls from '$lib/components/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 
 	let inputValue = '';
@@ -21,6 +22,8 @@
 		{ id: 'lunch', name: 'Lunch', quantity: 1, price: 15 },
 		{ id: 'soda', name: 'Soda', quantity: 3, price: 5 }
 	];
+
+	let lastAction = '';
 </script>
 
 <main class="p-6 space-y-6">
@@ -59,5 +62,16 @@
 	<section>
 		<Label variant="default">OrderSummary Demo</Label>
 		<OrderSummary items={orderItems} />
+	</section>
+
+	<section>
+		<Label variant="default">EditModeControls Demo</Label>
+		<EditModeControls
+			direction="row"
+			onSave={() => (lastAction = 'Save')}
+			onCancel={() => (lastAction = 'Cancel')}
+			onDelete={() => (lastAction = 'Delete')}
+		/>
+		<Label variant="muted">Last action: {lastAction}</Label>
 	</section>
 </main>
