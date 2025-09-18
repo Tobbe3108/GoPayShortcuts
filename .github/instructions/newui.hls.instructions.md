@@ -1,3 +1,7 @@
+---
+applyTo: "docs/NewUI/Plan.md"
+---
+
 # 📘 Cantina Ordering App – High-Level Specification
 
 ---

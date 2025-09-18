@@ -1,8 +1,12 @@
+---
+applyTo: "docs/NewUI/Plan.md"
+---
+
 # GoPay Bad Edition – UI Design Spec
 
 ## Overview
 
-This document describes the user interface and user experience as depicted in the provided screenshot (`OldUI.png`). The design is focused on weekly food ordering, using a card-based layout for each weekday and clear controls for managing orders per day. The interface supports efficient navigation, order placement, and order management.
+This document describes the user interface and user experience as depicted in the provided screenshot (`docs/NewUI/OldUI.png`). The design is focused on weekly food ordering, using a card-based layout for each weekday and clear controls for managing orders per day. The interface supports efficient navigation, order placement, and order management.
 
 ## Layout
 
