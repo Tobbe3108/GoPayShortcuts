@@ -23,7 +23,7 @@
 	} = $props();
 </script>
 
-<div class="mb-4 {className}">
+<div class={className}>
 	<Label forId={id}>{label}</Label>
 	<Input
 		{id}
