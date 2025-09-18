@@ -1,7 +1,7 @@
 <script lang="ts">
-	import FormField from '../molecules/FormField.svelte';
-	import Button from '../atoms/Button.svelte';
-	import LoadingSpinner from '../LoadingSpinner.svelte';
+	import FormField from '../components/molecules/FormField.svelte';
+	import Button from '../components/atoms/Button.svelte';
+	import LoadingSpinner from '../loading/LoadingSpinner.svelte';
 
 	type AuthFormProps = {
 		isEmailStep?: boolean;

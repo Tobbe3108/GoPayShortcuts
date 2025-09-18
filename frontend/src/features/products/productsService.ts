@@ -1,5 +1,5 @@
-import { apiClient } from './apiClient';
-import type { Product } from '$lib/types/api';
+import { apiClient } from '../../core/api/apiClient';
+import type { Product } from './product';
 
 /**
  * Products service for accessing product data from the backend

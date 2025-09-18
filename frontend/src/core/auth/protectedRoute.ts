@@ -1,4 +1,4 @@
-import { authStore } from '$lib/stores/auth';
+import { authStore } from './store';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { get } from 'svelte/store';

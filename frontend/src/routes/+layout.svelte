@@ -1,8 +1,8 @@
 <script lang="ts">
 	import '../app.css';
-	import { authStore } from '$lib/stores/auth';
-	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import Notifications from '$lib/components/Notifications.svelte';
+	import { authStore } from '../core/auth/store';
+	import LoadingSpinner from '../core/loading/LoadingSpinner.svelte';
+	import Notifications from '../features/notefications/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	interface Props {

@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { browser } from '$app/environment';
 import { base } from '$app/paths';
-import { protectRoute } from '$lib/utils/protectedRoute';
+import { protectRoute } from '../../core/auth/protectedRoute';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ parent }) => {

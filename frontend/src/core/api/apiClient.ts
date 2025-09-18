@@ -1,18 +1,14 @@
-import type {
-	ApiError,
-	RequestOTPResponse,
-	LoginResponse,
-	Location,
-	RequestOptions,
-	Product,
-	MenuDay,
-	OrdersResponse,
-	UpdateDayRequest,
-	UpdateDayResponse
-} from '$lib/types/api';
+import type { ApiError, RequestOptions } from './api';
+import type { UpdateDayRequest } from '../../features/orders/models/update/updateDayRequest';
+import type { UpdateDayResponse } from '../../features/orders/models/update/updateDayResponse';
+import type { RequestOTPResponse } from '../auth/models/requestOTPResponse';
+import type { LoginResponse } from '../auth/models/loginResponse';
+import type { Product } from '../../features/products/product';
+import type { MenuDay } from '../../features/menu/models/menuDay';
+import type { OrdersResponse } from '../../features/orders/models/ordersResponse';
 
-import { API_BASE_URL } from '$lib/config/environment';
-import { authStore } from '$lib/stores/auth';
+import { API_BASE_URL } from '../config/environment';
+import { authStore } from '../auth/store';
 import { get } from 'svelte/store';
 
 /**

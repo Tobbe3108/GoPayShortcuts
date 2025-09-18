@@ -1,5 +1,5 @@
-import { apiClient } from './apiClient';
-import type { MenuDay } from '$lib/types/api';
+import { apiClient } from '../../core/api/apiClient';
+import type { MenuDay } from './models/menuDay';
 
 /**
  * Menu service for accessing menu data from the backend

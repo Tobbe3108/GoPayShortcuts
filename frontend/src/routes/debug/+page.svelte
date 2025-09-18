@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { authStore } from '$lib/stores/auth';
-	import { locationsService } from '$lib/services/locationsService';
-	import { productsService } from '$lib/services/productsService';
-	import { menuService } from '$lib/services/menuService';
-	import { ordersService } from '$lib/services/ordersService';
-	import type { UpdateDayRequest, UpdateDayResponse } from '$lib/types/api';
-	import MainLayout from '$lib/components/templates/MainLayout.svelte';
-	import Card from '$lib/components/atoms/Card.svelte';
+	import { authStore } from '../../core/auth/store';
+	import { locationsService } from '../../features/locations/locationsService';
+	import { productsService } from '../../features/products/productsService';
+	import { menuService } from '../../features/menu/menuService';
+	import { ordersService } from '../../features/orders/ordersService';
+	import MainLayout from '../../core/components/templates/MainLayout.svelte';
+	import type { UpdateDayRequest } from '../../features/orders/models/update/updateDayRequest';
+	import type { UpdateDayResponse } from '../../features/orders/models/update/updateDayResponse';
+
+	import Card from '../../core/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
 
 	// Data holders

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FormField from '$lib/components/molecules/FormField.svelte';
+	import FormField from '../../../core/components/molecules/FormField.svelte';
 </script>
 
 <main class="p-6 space-y-6">

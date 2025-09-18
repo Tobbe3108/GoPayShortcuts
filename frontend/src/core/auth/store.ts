@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { apiClient } from '../services/apiClient';
+import { apiClient } from '../api/apiClient';
 import { writable, type Writable } from 'svelte/store';
 
 // Keys for local storage

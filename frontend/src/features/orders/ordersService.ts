@@ -1,5 +1,7 @@
-import { apiClient } from './apiClient';
-import type { Order, UpdateDayRequest, UpdateDayResponse } from '$lib/types/api';
+import { apiClient } from '../../core/api/apiClient';
+import type { Order } from './models/order';
+import type { UpdateDayRequest } from './models/update/updateDayRequest';
+import type { UpdateDayResponse } from './models/update/updateDayResponse';
 
 /**
  * Orders service for accessing order data from the backend

@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '../../core/auth/store';
 import { base } from '$app/paths';
 import { get } from 'svelte/store';
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { authStore } from '$lib/stores/auth';
-	import { notifications } from '$lib/stores/notificationStore';
-	import LoginLayout from '$lib/components/templates/LoginLayout.svelte';
-	import AuthForm from '$lib/components/organisms/AuthForm.svelte';
+	import { authStore } from '../../core/auth/store';
+	import { notifications } from '../../features/notefications/notificationStore';
+	import LoginLayout from '../../core/auth/LoginLayout.svelte';
+	import AuthForm from '../../core/auth/AuthForm.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
