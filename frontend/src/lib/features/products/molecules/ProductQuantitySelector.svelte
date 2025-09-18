@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Button from '../atoms/Button.svelte';
-	import Label from '../atoms/Label.svelte';
+	import Button from '../../../components/atoms/Button.svelte';
+	import Label from '../../../components/atoms/Label.svelte';
 
 	interface Props {
 		label?: string;
@@ -20,7 +20,7 @@
 		onChange = undefined
 	}: Props = $props();
 
-	import Icon from '../atoms/Icon.svelte';
+	import Icon from '../../../components/atoms/Icon.svelte';
 
 	function increment() {
 		if (disabled || value >= max) return;

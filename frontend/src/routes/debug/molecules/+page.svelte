@@ -1,8 +1,8 @@
 <script lang="ts">
 	import FormField from '$lib/components/molecules/FormField.svelte';
-	import ProductQuantitySelector from '$lib/components/molecules/ProductQuantitySelector.svelte';
-	import OrderSummary from '$lib/components/molecules/OrderSummary.svelte';
-	import EditModeControls from '$lib/components/molecules/EditModeControls.svelte';
+	import ProductQuantitySelector from '$lib/features/products/molecules/ProductQuantitySelector.svelte';
+	import OrderSummary from '$lib/features/orders/molecules/OrderSummary.svelte';
+	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 
 	let inputValue = '';
@@ -22,6 +22,7 @@
 	<div class="mb-4 flex gap-4">
 		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-900 font-bold underline">Molecules Debug</a>
+		<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
 	<h1 class="text-2xl font-bold">Molecules Debug Page</h1>

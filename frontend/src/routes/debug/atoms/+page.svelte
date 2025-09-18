@@ -5,6 +5,7 @@
 	import Input from '$lib/components/atoms/Input.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import Selector from '$lib/components/atoms/Select.svelte';
+	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 
 	const locations = [
 		{ id: 'canteen1', name: 'Canteen 1' },
@@ -19,6 +20,7 @@
 	<div class="mb-4 flex gap-4">
 		<a href="/debug/atoms" class="text-blue-900 font-bold underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
+		<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
 	<h1 class="text-2xl font-bold mb-4">Atoms Debug Page</h1>
@@ -80,6 +82,10 @@
 				onChange={(id: string | number) => (selectedLocation = id)}
 			/>
 			<Label variant="muted">Location: {selectedLocation}</Label>
+		</section>
+
+		<section>
+			<LoadingSpinner />
 		</section>
 	</div>
 </div>

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { authStore } from '$lib/auth/store';
-	import { locationsService } from '../../features/locations/locationsService';
-	import { productsService } from '../../features/products/productsService';
-	import { menuService } from '../../features/menu/menuService';
-	import { ordersService } from '../../features/orders/ordersService';
+	import { authStore } from '$lib/core/auth/store';
+	import { locationsService } from '$lib/features/locations/locationsService';
+	import { productsService } from '$lib/features/products/productsService';
+	import { menuService } from '$lib/features/menu/menuService';
+	import { ordersService } from '$lib/features/orders/ordersService';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';
-	import type { UpdateDayRequest } from '../../features/orders/models/update/updateDayRequest';
-	import type { UpdateDayResponse } from '../../features/orders/models/update/updateDayResponse';
+	import type { UpdateDayRequest } from '$lib/features/orders/models/update/updateDayRequest';
+	import type { UpdateDayResponse } from '$lib/features/orders/models/update/updateDayResponse';
 
 	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
@@ -150,6 +150,7 @@
 			<div class="mb-6 flex gap-4">
 				<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 				<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
+				<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
 				<a href="/debug" class="text-blue-900 font-bold underline">Main Debug</a>
 			</div>
 			<h1 class="text-3xl font-bold text-slate-800 mb-6">Debug Console</h1>

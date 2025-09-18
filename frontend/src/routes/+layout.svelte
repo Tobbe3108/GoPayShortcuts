@@ -1,8 +1,8 @@
 <script lang="ts">
 	import '../app.css';
-	import { authStore } from '$lib/auth/store';
-	import LoadingSpinner from '$lib/loading/LoadingSpinner.svelte';
-	import Notifications from '../features/notefications/Notifications.svelte';
+	import { authStore } from '$lib/core/auth/store';
+	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	interface Props {
@@ -12,7 +12,7 @@
 	let { children }: Props = $props();
 </script>
 
-<div class="min-h-screen bg-slate-50">
+<div class="min-h-screen bg-muted">
 	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}
 		<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
 			<div class="text-center">

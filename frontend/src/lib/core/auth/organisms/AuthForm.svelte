@@ -1,7 +1,7 @@
 <script lang="ts">
-	import FormField from '../components/molecules/FormField.svelte';
-	import Button from '../components/atoms/Button.svelte';
-	import LoadingSpinner from '../loading/LoadingSpinner.svelte';
+	import FormField from '$lib/components/molecules/FormField.svelte';
+	import Button from '$lib/components/atoms/Button.svelte';
+	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 
 	type AuthFormProps = {
 		isEmailStep?: boolean;
@@ -85,13 +85,15 @@
 			{/snippet}
 		</Button>
 		<div class="mt-4 text-center">
-			<button
+			<Button
 				type="button"
-				class="inline-flex items-center justify-center text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline transition-colors cursor-pointer"
+				variant="secondary"
+				size="sm"
+				className="inline-flex items-center justify-center font-medium text-primary hover:text-primary-hover hover:underline transition-colors cursor-pointer bg-transparent border-0 shadow-none"
 				onclick={() => onBackToEmail()}
 			>
 				Tilbage
-			</button>
+			</Button>
 		</div>
 	</form>
 {/if}
