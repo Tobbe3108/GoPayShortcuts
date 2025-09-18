@@ -2,6 +2,7 @@
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import ProductQuantitySelector from '$lib/components/molecules/ProductQuantitySelector.svelte';
 	import LocationSelector from '$lib/components/molecules/LocationSelector.svelte';
+	import OrderSummary from '$lib/components/molecules/OrderSummary.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 
 	let inputValue = '';
@@ -14,6 +15,12 @@
 	];
 
 	let selectedLocation: string | number | undefined = undefined;
+
+	const orderItems = [
+		{ id: 'breakfast', name: 'Breakfast', quantity: 2, price: 17 },
+		{ id: 'lunch', name: 'Lunch', quantity: 1, price: 15 },
+		{ id: 'soda', name: 'Soda', quantity: 3, price: 5 }
+	];
 </script>
 
 <main class="p-6 space-y-6">
@@ -29,8 +36,8 @@
 	</section>
 
 	<section>
-		<Label variant="default">ProductQuantitySelector Demo</Label>
 		<ProductQuantitySelector
+			label="ProductQuantitySelector Demo"
 			value={quantity}
 			min={0}
 			max={10}
@@ -47,5 +54,10 @@
 			onChange={(id: string | number) => (selectedLocation = id)}
 		/>
 		<Label variant="muted">Location: {selectedLocation}</Label>
+	</section>
+
+	<section>
+		<Label variant="default">OrderSummary Demo</Label>
+		<OrderSummary items={orderItems} />
 	</section>
 </main>
