@@ -27,6 +27,11 @@
 </script>
 
 <main class="p-6 space-y-6">
+	<div class="mb-4 flex gap-4">
+		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
+		<a href="/debug/molecules" class="text-blue-900 font-bold underline">Molecules Debug</a>
+		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
+	</div>
 	<h1 class="text-2xl font-bold">Molecules Debug Page</h1>
 
 	<section>

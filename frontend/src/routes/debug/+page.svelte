@@ -147,6 +147,11 @@
 <MainLayout isAuthenticated={$authStore.isAuthenticated}>
 	{#snippet children()}
 		<div class="container mx-auto px-4 py-8">
+			<div class="mb-6 flex gap-4">
+				<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
+				<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
+				<a href="/debug" class="text-blue-900 font-bold underline">Main Debug</a>
+			</div>
 			<h1 class="text-3xl font-bold text-slate-800 mb-6">Debug Console</h1>
 
 			<!-- Auth Information -->
