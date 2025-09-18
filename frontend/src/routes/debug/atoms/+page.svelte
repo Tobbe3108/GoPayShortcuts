@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Button from '../../../core/components/atoms/Button.svelte';
-	import Card from '../../../core/components/atoms/Card.svelte';
-	import Label from '../../../core/components/atoms/Label.svelte';
-	import Input from '../../../core/components/atoms/Input.svelte';
-	import Icon from '../../../core/components/atoms/Icon.svelte';
+	import Button from '$lib/components/atoms/Button.svelte';
+	import Card from '$lib/components/atoms/Card.svelte';
+	import Label from '$lib/components/atoms/Label.svelte';
+	import Input from '$lib/components/atoms/Input.svelte';
+	import Icon from '$lib/components/atoms/Icon.svelte';
 </script>
 
 <div class="p-8 space-y-8">

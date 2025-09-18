@@ -1,4 +1,4 @@
-import { apiClient } from '../../core/api/apiClient';
+import { apiClient } from '$lib/api/apiClient';
 import type { MenuDay } from './models/menuDay';
 
 /**

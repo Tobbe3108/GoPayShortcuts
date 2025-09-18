@@ -1,4 +1,4 @@
-import { apiClient } from '../../core/api/apiClient';
+import { apiClient } from '$lib/api/apiClient';
 import type { Order } from './models/order';
 import type { UpdateDayRequest } from './models/update/updateDayRequest';
 import type { UpdateDayResponse } from './models/update/updateDayResponse';

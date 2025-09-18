@@ -1,4 +1,4 @@
-import { apiClient } from '../../core/api/apiClient';
+import { apiClient } from '$lib/api/apiClient';
 import type { Product } from './product';
 
 /**

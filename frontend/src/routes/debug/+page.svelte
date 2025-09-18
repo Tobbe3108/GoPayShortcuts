@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { authStore } from '../../core/auth/store';
+	import { authStore } from '$lib/auth/store';
 	import { locationsService } from '../../features/locations/locationsService';
 	import { productsService } from '../../features/products/productsService';
 	import { menuService } from '../../features/menu/menuService';
 	import { ordersService } from '../../features/orders/ordersService';
-	import MainLayout from '../../core/components/templates/MainLayout.svelte';
+	import MainLayout from '$lib/components/templates/MainLayout.svelte';
 	import type { UpdateDayRequest } from '../../features/orders/models/update/updateDayRequest';
 	import type { UpdateDayResponse } from '../../features/orders/models/update/updateDayResponse';
 
-	import Card from '../../core/components/atoms/Card.svelte';
+	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';
 
 	// Data holders

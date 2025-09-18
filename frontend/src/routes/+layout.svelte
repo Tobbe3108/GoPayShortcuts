@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
-	import { authStore } from '../core/auth/store';
-	import LoadingSpinner from '../core/loading/LoadingSpinner.svelte';
+	import { authStore } from '$lib/auth/store';
+	import LoadingSpinner from '$lib/loading/LoadingSpinner.svelte';
 	import Notifications from '../features/notefications/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
