@@ -3,7 +3,7 @@
 	import Label from '../../../components/atoms/Label.svelte';
 
 	interface Props {
-		label?: string;
+		product: Product;
 		value?: number;
 		min?: number;
 		max?: number;
@@ -12,7 +12,7 @@
 	}
 
 	let {
-		label = '',
+		product,
 		value = 0,
 		min = 0,
 		max = 99,
@@ -21,6 +21,7 @@
 	}: Props = $props();
 
 	import Icon from '../../../components/atoms/Icon.svelte';
+	import type { Product } from '../product';
 
 	function increment() {
 		if (disabled || value >= max) return;
@@ -38,9 +39,7 @@
 </script>
 
 <div class="flex justify-between items-center space-x-2">
-	{#if label}
-		<Label className="text-primary select-none">{label}</Label>
-	{/if}
+	<Label className="text-primary select-none">{product.name}</Label>
 	<div class="flex flex-row items-center gap-x-2">
 		<Button
 			variant="transparent"
