@@ -2,6 +2,29 @@
 	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import Button from '$lib/components/atoms/Button.svelte';
+	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
+	import type { Order } from '$lib/features/orders/models/order';
+	import type { Product } from '$lib/features/products/product';
+
+	const mockProducts: Product[] = [
+		{ id: 1, name: 'Pizza', price: 80 },
+		{ id: 2, name: 'Burger', price: 60 },
+		{ id: 3, name: 'Salat', price: 40 }
+	];
+
+	const mockOrder: Order = {
+		date: '2025-09-22',
+		kitchenId: 1,
+		orderlines: [
+			{ productId: 1, quantity: 2, price: 80 },
+			{ productId: 2, quantity: 1, price: 60 }
+		],
+		cancelEnabled: true,
+		id: 123,
+		kitchenName: 'Test Kitchen',
+		status: 'open',
+		totalPrice: 220
+	};
 
 	function addTestNotification() {
 		notifications.success('This is a test notification');
@@ -19,5 +42,24 @@
 	<section>
 		<Button onclick={addTestNotification}>Add Test Notification</Button>
 		<Notifications />
+	</section>
+
+	<section>
+		<h2 class="text-lg font-bold mb-2">OrderCard Demo</h2>
+		<div class="max-w-md">
+			<OrderCard
+				order={mockOrder}
+				products={mockProducts}
+				locked={false}
+				editable={true}
+				isEditMode={false}
+				locationName="Test Kitchen"
+				date="2025-09-22"
+				on:edit={() => {}}
+				on:save={() => {}}
+				on:cancel={() => {}}
+				on:delete={() => {}}
+			/>
+		</div>
 	</section>
 </main>
