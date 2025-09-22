@@ -5,7 +5,6 @@
 	import OrderSummary from '$lib/features/orders/molecules/OrderSummary.svelte';
 	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
-	import type { Product } from '$lib/features/products/product';
 
 	let inputValue = '';
 
@@ -25,7 +24,7 @@
 		totalPrice: 200
 	};
 
-	const product: Product = { id: 1, name: 'Sample Product', price: 100 };
+	const productId = 1;
 
 	let lastAction = '';
 </script>
@@ -50,7 +49,7 @@
 
 	<section>
 		<ProductQuantitySelector
-			{product}
+			{productId}
 			value={quantity}
 			min={0}
 			max={10}
