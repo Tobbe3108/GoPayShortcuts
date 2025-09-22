@@ -78,6 +78,7 @@
 			onCancel={() => (lastAction = 'Cancel')}
 			onDelete={() => (lastAction = 'Delete')}
 		/>
+		<EditModeControls direction="row" locked={true} />
 		<Label variant="muted">Last action: {lastAction}</Label>
 	</div>
 </main>

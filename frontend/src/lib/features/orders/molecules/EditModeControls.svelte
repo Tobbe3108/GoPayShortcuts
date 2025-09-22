@@ -6,6 +6,7 @@
 
 	interface Props {
 		disabled?: boolean;
+		locked?: boolean;
 		showDelete?: boolean;
 		direction?: Direction;
 		onSave?: () => void;
@@ -15,6 +16,7 @@
 
 	let {
 		disabled = false,
+		locked = false,
 		showDelete = true,
 		direction = 'row',
 		onSave = undefined,
@@ -39,7 +41,11 @@
 <div
 	class={`flex ${direction === 'column' ? 'flex-col items-start' : 'flex-row items-center gap-x-2'}`}
 >
-	{#if !reveal}
+	{#if locked}
+		<Button variant="transparent" ariaLabel="Locked" disabled size="">
+			<Icon name="lock" size={iconSize} ariaLabel="Locked" />
+		</Button>
+	{:else if !reveal}
 		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="">
 			{#snippet children()}
 				<Icon name="edit" size={iconSize} ariaLabel="Edit" />
