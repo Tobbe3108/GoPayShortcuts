@@ -9,6 +9,7 @@
 		locked?: boolean;
 		showDelete?: boolean;
 		direction?: Direction;
+		onEdit?: () => void;
 		onSave?: () => void;
 		onCancel?: () => void;
 		onDelete?: () => void;
@@ -19,19 +20,21 @@
 		locked = false,
 		showDelete = true,
 		direction = 'row',
+		onEdit = undefined,
 		onSave = undefined,
 		onCancel = undefined,
 		onDelete = undefined
 	}: Props = $props();
 
-	let reveal = $state(false);
+	let editMode = $state(false);
 
-	function handleReveal() {
-		reveal = true;
+	function handleEdit() {
+		editMode = true;
+		onEdit?.();
 	}
 
-	function handleAction(action?: () => void) {
-		reveal = false;
+	function handleAction(action?: () => void, mode: boolean = false) {
+		editMode = mode;
 		action?.();
 	}
 
@@ -42,11 +45,9 @@
 	class={`flex ${direction === 'column' ? 'flex-col items-start' : 'flex-row items-center gap-x-2'}`}
 >
 	{#if locked}
-		<Button variant="transparent" ariaLabel="Locked" disabled size="">
-			<Icon name="lock" size={iconSize} ariaLabel="Locked" />
-		</Button>
-	{:else if !reveal}
-		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleReveal} size="">
+		<Icon name="lock" size={iconSize} ariaLabel="Locked" className="text-muted-dark" />
+	{:else if !editMode}
+		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleEdit} size="">
 			{#snippet children()}
 				<Icon name="edit" size={iconSize} ariaLabel="Edit" />
 			{/snippet}

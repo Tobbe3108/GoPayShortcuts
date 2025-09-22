@@ -13,10 +13,11 @@
 	let { order, currency = 'kr', showTotal = true }: Props = $props();
 
 	let products = $state<Product[]>([]);
-
+	let loading = $state(true);
 	$effect(() => {
 		(async () => {
 			products = await productsService.getProducts();
+			loading = false;
 		})();
 	});
 
@@ -26,7 +27,7 @@
 			const product = products.find((p) => p.id === line.productId);
 			return {
 				id: line.productId,
-				name: product?.name ?? `Unknown Product ${line.productId}`,
+				name: product?.name ?? (loading ? `Loading...` : `Unknown Product ${line.productId}`),
 				quantity: line.quantity,
 				price: line.price
 			};
