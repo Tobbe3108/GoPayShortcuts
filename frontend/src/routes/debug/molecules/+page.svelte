@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Order } from '$lib/features/orders/models/order';
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import ProductQuantitySelector from '$lib/features/products/molecules/ProductQuantitySelector.svelte';
 	import OrderSummary from '$lib/features/orders/molecules/OrderSummary.svelte';
@@ -9,11 +10,19 @@
 
 	let quantity = 1;
 
-	const orderItems = [
-		{ id: 'breakfast', name: 'Breakfast', quantity: 2, price: 17 },
-		{ id: 'lunch', name: 'Lunch', quantity: 1, price: 15 },
-		{ id: 'soda', name: 'Soda', quantity: 3, price: 5 }
-	];
+	const order: Order = {
+		date: new Date().toISOString(),
+		kitchenId: 123,
+		orderlines: [
+			{ productId: 1, quantity: 2, price: 50 },
+			{ productId: 2, quantity: 1, price: 100 }
+		],
+		cancelEnabled: true,
+		id: 123,
+		kitchenName: 'Test Kitchen',
+		status: 'pending',
+		totalPrice: 200
+	};
 
 	let lastAction = '';
 </script>
@@ -49,7 +58,7 @@
 
 	<section>
 		<Label variant="default">OrderSummary Demo</Label>
-		<OrderSummary items={orderItems} />
+		<OrderSummary {order} />
 	</section>
 
 	<div>

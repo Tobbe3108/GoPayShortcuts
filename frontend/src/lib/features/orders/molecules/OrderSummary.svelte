@@ -1,24 +1,41 @@
 <script lang="ts">
-	interface OrderItem {
-		id: string | number;
-		name: string;
-		quantity: number;
-		price: number; // per item
-	}
+	import type { Order } from '../models/order';
+	import type { OrderLine } from '../models/orderLine';
+	import type { Product } from '$lib/features/products/product';
+	import { productsService } from '$lib/features/products/productsService';
 
 	interface Props {
-		items: OrderItem[];
+		order: Order;
 		currency?: string;
 		showTotal?: boolean;
 	}
 
-	let { items = [], currency = 'kr', showTotal = true }: Props = $props();
+	let { order, currency = 'kr', showTotal = true }: Props = $props();
+
+	let products = $state<Product[]>([]);
+
+	$effect(() => {
+		(async () => {
+			products = await productsService.getProducts();
+		})();
+	});
+
+	// Map orderlines to items for display
+	const items = $derived(
+		order?.orderlines?.map((line: OrderLine) => {
+			const product = products.find((p) => p.id === line.productId);
+			return {
+				id: line.productId,
+				name: product?.name ?? `Unknown Product ${line.productId}`,
+				quantity: line.quantity,
+				price: line.price
+			};
+		}) ?? []
+	);
 
 	function formatPrice(amount: number) {
 		return `${amount} ${currency}`;
 	}
-
-	const total = $derived(items.reduce((sum, item) => sum + item.price * item.quantity, 0));
 </script>
 
 <div class="w-full">
@@ -36,7 +53,7 @@
 			<tfoot>
 				<tr class="font-semibold border-t border-slate-200">
 					<td class="py-1" colspan="2">Total</td>
-					<td class="py-1 text-right">{formatPrice(total)}</td>
+					<td class="py-1 text-right">{formatPrice(order.totalPrice ?? 0)}</td>
 				</tr>
 			</tfoot>
 		{/if}
