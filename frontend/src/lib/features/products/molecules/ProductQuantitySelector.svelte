@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Button from '../../../components/atoms/Button.svelte';
 	import Label from '../../../components/atoms/Label.svelte';
+	import Icon from '../../../components/atoms/Icon.svelte';
 
 	interface Props {
-		productId: number;
 		value?: number;
 		min?: number;
 		max?: number;
@@ -11,28 +11,7 @@
 		onChange?: (value: number) => void;
 	}
 
-	let {
-		productId,
-		value = 0,
-		min = 0,
-		max = 99,
-		disabled = false,
-		onChange = undefined
-	}: Props = $props();
-
-	import Icon from '../../../components/atoms/Icon.svelte';
-	import { productsService } from '../productsService';
-	import type { Product } from '../product';
-
-	let product = $state<Product | undefined>(undefined);
-	let loading = $state(true);
-	$effect(() => {
-		(async () => {
-			let products = await productsService.getProducts();
-			product = products.find((p) => p.id === productId);
-			loading = false;
-		})();
-	});
+	let { value = 0, min = 0, max = 99, disabled = false, onChange = undefined }: Props = $props();
 
 	function increment() {
 		if (disabled || value >= max) return;
@@ -50,15 +29,6 @@
 </script>
 
 <div class="flex justify-between items-center space-x-2">
-	<Label className="text-primary select-none">
-		{#if loading}
-			Loading...
-		{:else if product}
-			{product.name}
-		{:else}
-			Unknown Product
-		{/if}
-	</Label>
 	<div class="flex flex-row items-center gap-x-2">
 		<Button
 			variant="transparent"

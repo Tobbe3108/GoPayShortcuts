@@ -24,8 +24,6 @@
 		totalPrice: 200
 	};
 
-	const productId = 1;
-
 	let lastAction = '';
 </script>
 
@@ -49,7 +47,6 @@
 
 	<section>
 		<ProductQuantitySelector
-			{productId}
 			value={quantity}
 			min={0}
 			max={10}
