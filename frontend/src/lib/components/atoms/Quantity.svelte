@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '../../../components/atoms/Button.svelte';
-	import Label from '../../../components/atoms/Label.svelte';
-	import Icon from '../../../components/atoms/Icon.svelte';
+	import Button from './Button.svelte';
+	import Label from './Label.svelte';
+	import Icon from './Icon.svelte';
 
 	interface Props {
 		value?: number;

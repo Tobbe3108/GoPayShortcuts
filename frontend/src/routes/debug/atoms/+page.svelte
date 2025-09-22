@@ -6,6 +6,7 @@
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import Selector from '$lib/components/atoms/Select.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import Quantity from '$lib/components/atoms/Quantity.svelte';
 
 	const locations = [
 		{ id: 'canteen1', name: 'Canteen 1' },
@@ -14,6 +15,8 @@
 	];
 
 	let selectedLocation: string | number | undefined = undefined;
+
+	let quantity = 1;
 </script>
 
 <div class="p-8 space-y-8">
@@ -86,6 +89,11 @@
 
 		<section>
 			<LoadingSpinner />
+		</section>
+
+		<section>
+			<Quantity value={quantity} min={0} max={10} onChange={(v: number) => (quantity = v)} />
+			<Label variant="muted">Quantity: {quantity}</Label>
 		</section>
 	</div>
 </div>
