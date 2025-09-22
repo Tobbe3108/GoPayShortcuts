@@ -1,16 +1,13 @@
 <script lang="ts">
 	import type { Order } from '$lib/features/orders/models/order';
 	import FormField from '$lib/components/molecules/FormField.svelte';
-	import ProductQuantitySelector from '$lib/features/products/molecules/ProductQuantitySelector.svelte';
-	import OrderSummary from '$lib/features/orders/molecules/OrderSummary.svelte';
+	import OrderEditor from '$lib/features/orders/molecules/OrderEditor.svelte';
 	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 
-	let inputValue = '';
+	let inputValue = $state('');
 
-	let quantity = 1;
-
-	const order: Order = {
+	let order: Order = $state({
 		date: new Date().toISOString(),
 		kitchenId: 123,
 		orderlines: [
@@ -22,9 +19,9 @@
 		kitchenName: 'Test Kitchen',
 		status: 'pending',
 		totalPrice: 200
-	};
+	});
 
-	let lastAction = '';
+	let lastAction = $state('');
 </script>
 
 <main class="p-6 space-y-6">
@@ -46,18 +43,11 @@
 	</section>
 
 	<section>
-		<ProductQuantitySelector
-			value={quantity}
-			min={0}
-			max={10}
-			onChange={(v: number) => (quantity = v)}
-		/>
-		<Label variant="muted">Quantity: {quantity}</Label>
-	</section>
-
-	<section>
-		<Label variant="default">OrderSummary Demo</Label>
-		<OrderSummary {order} />
+		<Label variant="default">OrderEditor Demo</Label>
+		<div class="flex space-x-4">
+			<OrderEditor {order} />
+			<OrderEditor {order} editMode={true} />
+		</div>
 	</section>
 
 	<div>
