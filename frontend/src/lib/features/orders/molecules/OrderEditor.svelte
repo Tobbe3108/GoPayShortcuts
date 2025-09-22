@@ -3,6 +3,8 @@
 	import type { OrderLine } from '../models/orderLine';
 	import type { Product } from '$lib/features/products/product';
 	import { productsService } from '$lib/features/products/productsService';
+
+	import { onMount } from 'svelte';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
 
 	interface Props {
@@ -14,9 +16,8 @@
 
 	let { order, editMode = false, currency = 'kr', showTotal = true }: Props = $props();
 
-	$effect(() => {
+	onMount(() => {
 		loadProducts();
-		UpdateOrderWhenEditableOrderlinesChange();
 	});
 
 	let products = $state<Product[]>([]);
@@ -28,9 +29,10 @@
 		})();
 	}
 
-	let editableOrderlines = $state<OrderLine[]>(
-		order?.orderlines ? order.orderlines.map((l) => ({ ...l })) : []
-	);
+	let editableOrderlines = $state<OrderLine[]>([]);
+	$effect(() => {
+		editableOrderlines = order?.orderlines ? order.orderlines.map((l) => ({ ...l })) : [];
+	});
 
 	const items = $derived(
 		editableOrderlines.map((line: OrderLine) => {
@@ -44,19 +46,14 @@
 		})
 	);
 
-	function UpdateOrderWhenEditableOrderlinesChange() {
-		if (!order && !editableOrderlines) return;
-
+	function handleQuantityChange(idx: number, newValue: number) {
+		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
 		order.orderlines = editableOrderlines;
 		order.totalPrice = editableOrderlines.reduce((sum, l) => sum + l.price * l.quantity, 0);
 	}
 
 	function formatPrice(amount: number) {
 		return `${amount} ${currency}`;
-	}
-
-	function handleQuantityChange(idx: number, newValue: number) {
-		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
 	}
 </script>
 
