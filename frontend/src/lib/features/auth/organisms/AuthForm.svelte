@@ -89,8 +89,9 @@
 			</Button>
 			<Button
 				type="button"
-				variant="secondary"
+				variant="transparent"
 				size="sm"
+				className="text-secondary!"
 				onclick={() => onBackToEmail()}
 				fullWidth={true}
 			>
