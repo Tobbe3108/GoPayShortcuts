@@ -1,6 +1,7 @@
 # GoPay Shortcuts UI Implementation Plan
 
 **Related Documents:**
+
 - [Wireframe (PNG)](./wireframe.png)
 - [Product Requirements Document (PRD)](./PRD.md)
 - [Old UI Screenshot](./OldUI.png)
