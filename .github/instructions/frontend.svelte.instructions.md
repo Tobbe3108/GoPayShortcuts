@@ -1,7 +1,3 @@
----
-applyTo: "frontend/**"
----
-
 ## docs/svelte/01-introduction/01-overview.md
 
 # Svelte 5 Reference
