@@ -1,114 +1,71 @@
-# GoPayShortcuts - AI Agent Instructions
+## GoPayShortcuts – AI Agent Quick Context
 
-## Project Overview
+Purpose: Faster weekly meal ordering vs original GoPay app. Two parts: Svelte static frontend + Cloudflare Worker backend (TypeScript) that normalizes upstream GoPay + Meyers APIs.
 
-GoPayShortcuts is a system that provides streamlined alternatives to the official GoPay food ordering application. The project consists of:
+### Architecture Snapshot
 
-- **Frontend**: A responsive Svelte app with TypeScript, Tailwind CSS, atomic design components
-- **Backend**: A Cloudflare Worker API that wraps and enhances the GoPay API
+- Frontend (`frontend/`): Svelte + TypeScript + Tailwind, atomic structure (`lib/components/{atoms,molecules,organisms,templates}`), feature folders under `lib/features` & `routes/` for pages.
+- Backend (`backend/`): Cloudflare Worker using Hono + Chanfana OpenAPI routes. Feature directories: `endpoints/{auth,locations,menu,orders,products}` plus shared utils under `endpoints/Shared` and `orders/shared`.
+- Integration: Backend wraps external APIs; frontend never talks to GoPay directly. Token-based auth (Bearer) passed via `Authorization` header.
 
-The system helps users interact with food ordering functionality (menus, products, orders) more efficiently than the original app.
+### Key Patterns
 
-## Architecture
+- Mock mode: If `env.USE_LOCAL_MOCK_CLIENTS === true` (see `backend/src/types.ts`) backend swaps real GoPay client with `client.mock.ts`.
+- Order enrichment: Example in `listOrders.ts`—fetch list then hydrate details (`fetchValidOrderDetails`) -> simplified shape -> sorted.
+- Price normalization: Always divide raw amounts using `formatAmount(amount, scale)` before exposing.
+- Response contracts: Each endpoint declares a `schema` with zod + OpenAPI metadata; follow that for new endpoints.
+- Frontend API access centralized in `lib/services/apiClient.ts`; add one method per backend route + shared error translation.
 
-### Frontend (Svelte)
+### Dev Workflow
 
-- Single-page application using Svelte with TypeScript
-- Atomic design component structure (atoms, molecules, organisms, templates, pages)
-- Client-side state management with Svelte stores
-- Protected routes requiring authentication
-- Built to be hosted as a static site on Azure Static Web Apps
+Frontend:
 
-### Backend (Cloudflare Worker)
+```
+cd frontend
+bun install
+bun run dev
+```
 
-- API endpoints exposed via a Hono app with OpenAPI documentation
-- Integration with both the GoPay API and Meyers API
-- Bearer token authentication with middleware for protected routes
-- Organized in a feature-based structure (auth, locations, orders, products)
+Backend:
 
-## Key Integration Points
+```
+cd backend
+npm install
+npx wrangler dev
+```
 
-1. **Authentication Flow**:
+Build: `bun run build` (frontend) / `npx wrangler publish` (backend).
 
-   - Frontend requests OTP via `authStore.requestOTP(email)`
-   - Backend forwards to GoPay API, returning JWT token
-   - Token stored in localStorage and included in all subsequent API calls
+### Conventions
 
-2. **API Service Pattern**:
+- Tailwind only (avoid custom CSS unless impossible with utilities).
+- Store first: shared state (auth, notifications, future planner) lives in `lib/stores` or `lib/features/<feature>/store.ts`.
+- Dates: Always ISO `YYYY-MM-DD` between layers (see `listOrders` query params).
+- Keep transformation logic backend-side; frontend assumes already simplified domain objects.
 
-   - Frontend uses typed API client (`apiClient.ts`) with method-per-endpoint pattern
-   - Backend endpoints use standardized response formats with proper error handling
-   - Custom API error handling with user-friendly messages
+### Adding a Backend Endpoint (Recipe)
 
-3. **Data Flow**:
-   - API types defined in both frontend and backend for type safety
-   - Backend processes and transforms external API responses for frontend consumption
-   - Common data models shared between frontend components via stores
+1. Create file in appropriate `endpoints/<feature>/` dir extending `OpenAPIRoute`.
+2. Define `schema` with tags, request (query/body), responses (zod). Reuse helpers in `Schemas`.
+3. Acquire client via `createGoPayClient(c)` / `createMeyersClient`.
+4. Normalize raw upstream -> minimal DTO. Set short cache header where safe.
+5. Export and wire route in `index.ts` (Hono app).
 
-## Development Workflow
+### Common Pitfalls
 
-1. **Frontend Development**:
+- Missing Bearer prefix causes 401 (auth store sets header—reuse).
+- Forgetting mock mode guard -> tests/future local offline flows break.
+- Not stripping scale from monetary fields => inconsistent UI pricing.
+- Divergent date boundaries (ensure inclusive week range).
 
-   ```sh
-   cd frontend
-   bun install
-   bun run dev
-   ```
+### Key Reference Files
 
-2. **Backend Development**:
+`frontend/src/lib/services/apiClient.ts`, `frontend/src/lib/stores/auth.ts`, `backend/src/index.ts`, `backend/src/types.ts`, `backend/src/endpoints/orders/listOrders.ts`, `backend/src/endpoints/Shared/productUtils.ts`.
 
-   ```sh
-   cd backend
-   npm install
-   npx wrangler dev
-   ```
+### Agent Guidance
 
-3. **Build & Deploy**:
-   - Frontend: `cd frontend && bun run build`
-   - Backend: `cd backend && npx wrangler publish`
-
-## Coding Conventions
-
-### Frontend
-
-- Self-documenting code with minimal comments
-- Tailwind for all styling (no custom CSS unless necessary)
-- Component props for configuration instead of multiple similar components
-- Svelte stores for shared state (auth, notifications)
-- All API types defined in `lib/types/api.ts`
-- Follow atomic design methodology for UI components:
-  - Atoms: Basic building blocks (buttons, inputs, icons)
-  - Molecules: Simple groups of UI elements functioning together (form fields with labels, search bars)
-  - Organisms: Complex UI components composed of molecules and atoms (navigation bars, product cards)
-  - Templates: Page layouts without specific content
-  - Pages: Specific instances of templates with real content
-
-### Backend
-
-- Structured error handling with consistent response formats
-- Feature-based organization of endpoints
-- Shared utilities in dedicated folders (priceUtils, productUtils)
-- OpenAPI documentation for all endpoints
-- Caching strategies for appropriate endpoints (e.g., locations, products)
-
-## Common Pitfalls
-
-1. Authentication token handling (ensure proper Bearer format)
-2. Date formatting consistency between frontend and backend (YYYY-MM-DD)
-3. Error handling across API boundaries requires careful attention
-4. Local development requires `USE_LOCAL_MOCK_CLIENTS` flag for working without live API access
-
-## Key Files to Know
-
-- `frontend/src/lib/services/apiClient.ts`: Core frontend-backend integration
-- `backend/src/index.ts`: API routes and middleware configuration
-- `backend/src/goPay/client.ts`: External GoPay API integration
-- `frontend/src/lib/stores/auth.ts`: Authentication state management
-- `backend/src/endpoints/orders/listOrders.ts`: Example of complex endpoint logic
-
-## AI Tool Usage Guidelines
-
-When working with this codebase, use the following tools and approaches:
-
-- **Use TODO Tool**: Break down larger tasks into smaller, manageable steps using the TODO tool to keep track of progress
-- **Type Checking**: Run `bun run check` after major changes to verify TypeScript types are correct
+- Before refactoring, scan for feature folder analogs to mirror style.
+- Prefer adding pure helpers in `Shared` or `orders/shared` vs embedding in handlers.
+- Run `bun run check` (frontend) after TS-heavy changes; rely on Wrangler’s type context for backend.
+- For new UI feature: scaffold atomic components; defer styling until logic stable.
+- Keep instructions concise in PR diffs; avoid speculative patterns not used elsewhere.
