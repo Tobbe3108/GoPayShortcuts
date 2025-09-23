@@ -53,28 +53,6 @@
 			{/snippet}
 		</Button>
 	{:else}
-		<Button
-			variant="transparent"
-			ariaLabel="Save"
-			{disabled}
-			onclick={() => handleAction(onSave)}
-			size=""
-		>
-			{#snippet children()}
-				<Icon name="check" size={iconSize} ariaLabel="Save" className="text-success" />
-			{/snippet}
-		</Button>
-		<Button
-			variant="transparent"
-			ariaLabel="Cancel"
-			{disabled}
-			onclick={() => handleAction(onCancel)}
-			size=""
-		>
-			{#snippet children()}
-				<Icon name="close" size={iconSize} ariaLabel="Cancel" />
-			{/snippet}
-		</Button>
 		{#if showDelete}
 			<Button
 				variant="transparent"
@@ -88,5 +66,27 @@
 				{/snippet}
 			</Button>
 		{/if}
+		<Button
+			variant="transparent"
+			ariaLabel="Cancel"
+			{disabled}
+			onclick={() => handleAction(onCancel)}
+			size=""
+		>
+			{#snippet children()}
+				<Icon name="close" size={iconSize} ariaLabel="Cancel" />
+			{/snippet}
+		</Button>
+		<Button
+			variant="transparent"
+			ariaLabel="Save"
+			{disabled}
+			onclick={() => handleAction(onSave)}
+			size=""
+		>
+			{#snippet children()}
+				<Icon name="check" size={iconSize} ariaLabel="Save" className="text-success" />
+			{/snippet}
+		</Button>
 	{/if}
 </div>
