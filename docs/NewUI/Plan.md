@@ -1,5 +1,10 @@
 # GoPay Shortcuts UI Implementation Plan
 
+**Related Documents:**
+- [Wireframe (PNG)](./wireframe.png)
+- [Product Requirements Document (PRD)](./PRD.md)
+- [Old UI Screenshot](./OldUI.png)
+
 This document outlines a step-by-step implementation plan for the new UI based on the designs in the wireframes, high-level specifications, and product requirements.
 
 ## Implementation Steps
@@ -11,6 +16,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - Check the current design instructions in `docs/NewUI/CurrentDesign.md`
 - Review existing atomic components in `frontend/src/lib/components/atoms/`
 - Look at the Tailwind CSS classes used in current components
+- See [Wireframe](./wireframe.png) and [PRD](./PRD.md) for visual and product requirements
 
 **Key considerations:**
 
@@ -32,8 +38,9 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Where to find information:**
 
-- Look at the wireframes in `docs/NewUI/wireframe.png`
+- Look at the [wireframes](./wireframe.png)
 - Check the high-level spec in HLS (sections 5 and 8)
+- Reference [PRD](./PRD.md) for user flows and requirements
 
 **Key considerations:**
 
@@ -53,8 +60,9 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Where to find information:**
 
-- Review PRD.md for Order Card specifications
+- Review [PRD](./PRD.md) for Order Card specifications
 - Check the HLS.md document for detailed interaction patterns
+- See [Wireframe](./wireframe.png) for layout
 
 **Key considerations:**
 
@@ -77,7 +85,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - Review the layout specs in HLS.md (section 7)
 - Look at the current MainLayout.svelte implementation
-- Check Wireframe.md for the grid layout specifications
+- Check [Wireframe](./wireframe.png) and [PRD](./PRD.md) for grid layout specifications
 
 **Key considerations:**
 
@@ -100,6 +108,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - Look at the existing API in `frontend/src/lib/services/apiClient.ts`
 - Check `frontend/src/lib/services/ordersService.ts` for current implementation
 - Review the data model in HLS.md (section 6)
+- Reference [PRD](./PRD.md) for order state rules
 
 **Key considerations:**
 
@@ -120,8 +129,8 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Where to find information:**
 
-- See PRD.md for edit mode specifications
-- Review user flows in docs/NewUI/PRD.md (section 8)
+- See [PRD](./PRD.md) for edit mode specifications
+- Review user flows in [PRD](./PRD.md) (section 8)
 - Check HLS.md for interaction principles
 
 **Key considerations:**
@@ -144,7 +153,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 **Where to find information:**
 
 - Look at the current implementation in `frontend/src/routes/+page.svelte`
-- Check the wireframe for week navigation UI
+- Check the [wireframe](./wireframe.png) for week navigation UI
 - Review the temporal scope in docs/NewUI/HLS.md (section 2)
 
 **Key considerations:**
@@ -168,7 +177,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - See device considerations in docs/NewUI/HLS.md (section 7)
 - Review the current responsive implementation
-- Check Wireframe.md for desktop and mobile layouts
+- Check [Wireframe](./wireframe.png) for desktop and mobile layouts
 
 **Key considerations:**
 
@@ -192,6 +201,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - Review the spatial scope in docs/NewUI/HLS.md (section 3)
 - Look at the existing LocationSelector.svelte component
 - Check how locations are handled in the current implementation
+- See [PRD](./PRD.md) for multi-location requirements
 
 **Key considerations:**
 
@@ -214,6 +224,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - Check the animation specs in docs/NewUI/HLS.md (section 9)
 - Look at current animation implementations (if any)
+- Reference [PRD](./PRD.md) for animation guidelines
 
 **Key considerations:**
 
@@ -238,6 +249,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - Review current error handling in the apiClient.ts
 - Check the notifications component for displaying messages
 - See how validation is currently implemented
+- Reference [PRD](./PRD.md) for error handling requirements
 
 **Key considerations:**
 
@@ -260,6 +272,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - Review accessibility requirements in HLS.md (section 10)
 - Check current accessibility implementations
+- See [PRD](./PRD.md) for accessibility goals
 
 **Key considerations:**
 
@@ -283,6 +296,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - Look for existing tests in the project
 - Check Svelte testing documentation
+- Reference [PRD](./PRD.md) for testable user flows
 
 **Key considerations:**
 

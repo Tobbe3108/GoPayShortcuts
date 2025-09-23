@@ -4,6 +4,12 @@ applyTo: "docs/NewUI/Plan.md"
 
 # 📄 Product Requirements Document (PRD)
 
+**Related Documents:**
+
+- `docs/NewUI/wireframe.png`
+- `docs/NewUI/OldUI.png`
+- `docs/NewUI/Plan.md`
+
 ---
 
 ## 1. One-liner
