@@ -60,7 +60,31 @@ The application allows users to manage **weekly meal orders** across multiple **
 
 ---
 
-## 7. 📱 Device Considerations
+## 7. � Example PATCH Payload
+
+```json
+{
+  "date": "2025-09-23",
+  "kitchenId": "cantina-1",
+  "orderLines": [
+    { "productId": "breakfast-1", "quantity": 1 },
+    { "productId": "lunch-2", "quantity": 2 },
+    { "productId": "soda-3", "quantity": 0 }
+  ]
+}
+```
+
+---
+
+## 8. 📖 Glossary
+
+- **Locked Order**: An order that cannot be edited after the cutoff time, but allows additional new orders for the same day/location.
+- **Additional Order**: A new order placed for a day/location after the original order is locked.
+- **OrderLines**: Array of objects, each specifying a product and its quantity for a given order.
+
+---
+
+## 9. 📱 Device Considerations
 
 ### Desktop
 
@@ -75,7 +99,7 @@ The application allows users to manage **weekly meal orders** across multiple **
 
 ---
 
-## 8. 🎨 Visual & Interaction Design
+## 10. 🎨 Visual & Interaction Design
 
 - **Card-based interface**: Each order is a card showing location, status, and quantities.
 - **Edit mode**: Triggered by pen icon; reveals save/delete controls.
@@ -85,7 +109,7 @@ The application allows users to manage **weekly meal orders** across multiple **
 
 ---
 
-## 9. 🌀 Animation & Feedback
+## 11. 🌀 Animation & Feedback
 
 - **Edit mode entry**: Smooth expansion and fade-in of controls.
 - **Save confirmation**: Subtle green highlight or checkmark animation.
@@ -97,7 +121,7 @@ Animations must be **subtle, fast (150–300ms), and consistent**, reinforcing c
 
 ---
 
-## 10. ♿ Accessibility & Usability
+## 12. ♿ Accessibility & Usability
 
 - **Touch-friendly controls**: Min 44px tap areas for mobile.
 - **Keyboard support**: Tab navigation, Enter to save, Escape to cancel edits.
@@ -106,7 +130,7 @@ Animations must be **subtle, fast (150–300ms), and consistent**, reinforcing c
 
 ---
 
-## 11. 🔐 Constraints & System Rules
+## 13. 🔐 Constraints & System Rules
 
 - Always one shared week across all users (not user-specific weeks).
 - Users can view and manage orders for **all locations they have access to**, no global location selector.
@@ -116,7 +140,7 @@ Animations must be **subtle, fast (150–300ms), and consistent**, reinforcing c
 
 ---
 
-## 12. ⚖️ Key Design Tradeoffs
+## 14. ⚖️ Key Design Tradeoffs
 
 - **Simplicity vs. flexibility**: Keeping only 3 product rows (Breakfast, Lunch, Soda) simplifies UX but reduces menu complexity.
 - **Local vs. immediate save**: Choosing explicit save prevents accidental errors but adds a small extra step.
@@ -125,7 +149,7 @@ Animations must be **subtle, fast (150–300ms), and consistent**, reinforcing c
 
 ---
 
-## 13. 🚀 Success Criteria
+## 15. 🚀 Success Criteria
 
 - A user can place or update an order in **under 10 seconds**.
 - The app must clearly communicate when orders are **editable, saved, or locked**.
