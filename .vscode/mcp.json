@@ -1,8 +1,3 @@
 {
-  "servers": {
-    "svelte-llm": {
-      "command": "npx",
-      "args": ["mcp-remote", "https://svelte-llm.khromov.se/mcp/mcp"]
-    }
-  }
+	"servers": {}
 }
