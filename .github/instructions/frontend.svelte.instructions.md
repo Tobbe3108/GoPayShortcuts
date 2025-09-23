@@ -1,3 +1,7 @@
+---
+applyTo: "frontend/**"
+---
+
 <SYSTEM>This is the abridged developer documentation for Svelte and SvelteKit.</SYSTEM>
 
 # Svelte documentation

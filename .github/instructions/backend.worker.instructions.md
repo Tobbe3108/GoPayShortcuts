@@ -1,3 +1,7 @@
+---
+applyTo: "backend/**"
+---
+
 <BackendInstructions>
 
     <system_context>
