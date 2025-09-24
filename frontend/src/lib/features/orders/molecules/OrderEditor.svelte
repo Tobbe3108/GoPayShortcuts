@@ -5,6 +5,7 @@
 	import type { OrderLine } from '../models/orderLine';
 	import { onMount } from 'svelte';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
+	import Label from '$lib/components/atoms/Label.svelte';
 
 	interface Props {
 		order: Order;
@@ -84,7 +85,9 @@
 		<tbody>
 			{#each items as item, idx}
 				<tr>
-					<td class="py-1 w-4/6">{item.name}</td>
+					<td class="py-1 w-4/6">
+						<Label>{item.name}</Label>
+					</td>
 					<td class="py-1 w-1/6">
 						<div class="flex justify-center">
 							{#if editMode}
@@ -95,19 +98,25 @@
 									onChange={(v) => handleQuantityChange(idx, v)}
 								/>
 							{:else}
-								{item.quantity}
+								<Label>{item.quantity}</Label>
 							{/if}
 						</div>
 					</td>
-					<td class="py-1 text-right w-1/6">{formatPrice(item.price * item.quantity)}</td>
+					<td class="py-1 text-right w-1/6">
+						<Label>{formatPrice(item.price * item.quantity)}</Label>
+					</td>
 				</tr>
 			{/each}
 		</tbody>
 		{#if showTotal}
 			<tfoot>
-				<tr class="font-semibold border-t border-slate-200">
-					<td class="py-1" colspan="2">Total</td>
-					<td class="py-1 text-right w-1/4">{formatPrice(totalPrice)}</td>
+				<tr class="border-t border-slate-200">
+					<td class="py-1" colspan="2">
+						<Label className="font-semibold">Total</Label>
+					</td>
+					<td class="py-1 text-right w-1/4">
+						<Label className="font-semibold">{formatPrice(totalPrice)}</Label>
+					</td>
 				</tr>
 			</tfoot>
 		{/if}

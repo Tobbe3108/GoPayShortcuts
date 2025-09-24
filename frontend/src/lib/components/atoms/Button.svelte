@@ -41,8 +41,8 @@
 	};
 
 	const sizeClasses: Record<Size, string> = {
-		sm: 'py-1 px-2 text-sm',
-		md: 'py-2 px-3 text-md',
+		sm: 'py-1 px-2 text-xs',
+		md: 'py-2 px-3 text-sm',
 		lg: 'py-2 px-4 text-lg',
 		'': 'p-0'
 	};

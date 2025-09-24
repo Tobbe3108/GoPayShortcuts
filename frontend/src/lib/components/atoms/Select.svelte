@@ -29,11 +29,11 @@
 
 <div class="flex flex-col space-y-1">
 	{#if label}
-		<Label forId={label}>{label}</Label>
+		<Label forId={label} size="md">{label}</Label>
 	{/if}
 	<select
 		id={label}
-		class="p-3 border rounded-md border-secondary focus:ring-primary focus:outline-none focus:ring-2 disabled:bg-slate-100 disabled:text-slate-400"
+		class="p-3 border rounded-md border-secondary focus:ring-primary focus:outline-none focus:ring-2 disabled:bg-slate-100 disabled:text-slate-400 text-sm"
 		bind:value={selectedId}
 		{disabled}
 		onchange={handleChange}

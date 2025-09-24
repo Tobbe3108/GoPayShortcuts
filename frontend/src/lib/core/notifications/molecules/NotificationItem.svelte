@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
+	import Label from '$lib/components/atoms/Label.svelte';
 
 	let {
 		notification,
@@ -24,7 +25,7 @@
 	class:text-blue-800={notification.type === 'info'}
 	transition:fly={{ y: 20, duration: 300 }}
 >
-	<span>{notification.message}</span>
+	<Label size="sm">{notification.message}</Label>
 	<Button
 		variant="transparent"
 		className="ml-4 p-1 text-current opacity-70 hover:opacity-100"

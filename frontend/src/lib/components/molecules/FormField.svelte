@@ -24,7 +24,7 @@
 </script>
 
 <div class="flex flex-col space-y-1 {className}">
-	<Label forId={id}>{label}</Label>
+	<Label forId={id} size="md">{label}</Label>
 	<Input
 		{id}
 		{name}

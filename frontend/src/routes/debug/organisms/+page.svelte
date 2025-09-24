@@ -4,6 +4,7 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import type { Order } from '$lib/features/orders/models/order';
+	import Label from '$lib/components/atoms/Label.svelte';
 
 	let mockOrder: Order | undefined = $state({
 		date: '2025-09-22',
@@ -21,7 +22,7 @@
 	}
 </script>
 
-<main class="p-6 space-y-6">
+<div class="p-6 space-y-6">
 	<div class="mb-6 flex gap-4">
 		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
@@ -29,13 +30,16 @@
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
 
+	<Label size="xxl">Organisms Debug Page</Label>
+
 	<section>
+		<Label size="xl" className="mb-2">Notifications Demo</Label>
 		<Button onclick={addTestNotification}>Add Test Notification</Button>
 		<Notifications />
 	</section>
 
 	<section>
-		<h2 class="text-lg font-bold mb-2">OrderCard Demo</h2>
+		<Label size="xl" className="mb-2">OrderCard Demo</Label>
 		<div class="max-w-md">
 			{#if mockOrder}
 				<OrderCard order={mockOrder} onOrderChange={(order) => (mockOrder = order)} />
@@ -44,4 +48,4 @@
 			{/if}
 		</div>
 	</section>
-</main>
+</div>

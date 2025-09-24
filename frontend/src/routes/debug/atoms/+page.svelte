@@ -19,16 +19,18 @@
 	let quantity = 1;
 </script>
 
-<div class="p-8 space-y-8">
+<div class="p-6 space-y-6">
 	<div class="mb-4 flex gap-4">
 		<a href="/debug/atoms" class="text-blue-900 font-bold underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
 		<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
-	<h1 class="text-2xl font-bold mb-4">Atoms Debug Page</h1>
-	<div class="space-y-8">
-		<!--  Input -->
+
+	<Label size="xxl">Atoms Debug Page</Label>
+
+	<section>
+		<Label size="xl" className="mb-2">Input Demo</Label>
 		<div class="space-y-2">
 			<Input id="debug-input" placeholder="Input Atom" />
 			<Input id="debug-input-err" placeholder="Input with error" error="This is an error" />
@@ -42,8 +44,10 @@
 			/>
 			<Input id="debug-input-dis" placeholder="Disabled Input" disabled={true} />
 		</div>
+	</section>
 
-		<!-- Button Variants -->
+	<section>
+		<Label size="xl" className="mb-2">Button Demo</Label>
 		<div class="flex flex-wrap gap-4 items-center">
 			<Button>Default Button</Button>
 			<Button variant="secondary">Secondary</Button>
@@ -51,22 +55,28 @@
 			<Button disabled={true} size="lg">Disabled</Button>
 			<Button fullWidth={true}>Full Width</Button>
 		</div>
+	</section>
 
-		<!-- Card Variants -->
+	<section>
+		<Label size="xl" className="mb-2">Card Demo</Label>
 		<div class="flex flex-wrap gap-4">
 			<Card><div class="p-4">Card Atom (normal)</div></Card>
 			<Card muted={true}><div class="p-4">Card Atom (muted)</div></Card>
 		</div>
+	</section>
 
-		<!-- Label Variants -->
+	<section>
+		<Label size="xl" className="mb-2">Label Demo</Label>
 		<div class="space-y-2">
 			<Label forId="label-default">Default Label</Label>
-			<Label forId="label-success" variant="success">Success Label</Label>
-			<Label forId="label-error" variant="error">Error Label</Label>
-			<Label forId="label-muted" variant="muted">Muted Label</Label>
+			<Label forId="label-success" variant="success" size="xxl">Success Label</Label>
+			<Label forId="label-error" variant="error" size="lg">Error Label</Label>
+			<Label forId="label-muted" variant="muted" size="xs">Muted Label</Label>
 		</div>
+	</section>
 
-		<!-- Icon Variants -->
+	<section>
+		<Label size="xl" className="mb-2">Icon Demo</Label>
 		<div class="flex flex-wrap gap-4 items-center">
 			<Icon name="edit" ariaLabel="Edit" />
 			<Icon name="delete" ariaLabel="Delete" className="text-danger" />
@@ -76,24 +86,27 @@
 			<Icon name="check" ariaLabel="Check" className="text-success" />
 			<Icon name="close" ariaLabel="Close" />
 		</div>
+	</section>
 
-		<section>
-			<Selector
-				label="LocationSelector Demo"
-				{locations}
-				selectedId={selectedLocation}
-				onChange={(id: string | number) => (selectedLocation = id)}
-			/>
-			<Label variant="muted">Location: {selectedLocation}</Label>
-		</section>
+	<section>
+		<Label size="xl" className="mb-2">LocationSelector Demo</Label>
+		<Selector
+			label="Some lable"
+			{locations}
+			selectedId={selectedLocation}
+			onChange={(id: string | number) => (selectedLocation = id)}
+		/>
+		<Label variant="muted">Location: {selectedLocation}</Label>
+	</section>
 
-		<section>
-			<LoadingSpinner />
-		</section>
+	<section>
+		<Label size="xl" className="mb-2">LoadingSpinner Demo</Label>
+		<LoadingSpinner />
+	</section>
 
-		<section>
-			<Quantity value={quantity} min={0} max={10} onChange={(v: number) => (quantity = v)} />
-			<Label variant="muted">Quantity: {quantity}</Label>
-		</section>
-	</div>
+	<section>
+		<Label size="xl" className="mb-2">Quantity Demo</Label>
+		<Quantity value={quantity} min={0} max={10} onChange={(v: number) => (quantity = v)} />
+		<Label variant="muted">Quantity: {quantity}</Label>
+	</section>
 </div>

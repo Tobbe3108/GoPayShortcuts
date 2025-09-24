@@ -5,6 +5,7 @@
 	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
+	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 
 	let inputValue = $state('');
 
@@ -22,16 +23,18 @@
 	let lastAction = $state('');
 </script>
 
-<main class="p-6 space-y-6">
+<div class="p-6 space-y-6">
 	<div class="mb-4 flex gap-4">
 		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-900 font-bold underline">Molecules Debug</a>
 		<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
-	<h1 class="text-2xl font-bold">Molecules Debug Page</h1>
+
+	<Label size="xxl">Molecules Debug Page</Label>
 
 	<section>
+		<Label size="xl" className="mb-2">FormField Demo</Label>
 		<FormField
 			label="FormField Test"
 			placeholder="Type here..."
@@ -41,7 +44,7 @@
 	</section>
 
 	<section>
-		<Label variant="default">OrderEditor Demo</Label>
+		<Label size="xl" className="mb-2">OrderEditor Demo</Label>
 		<div class="flex space-x-4">
 			<OrderEditor {order} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
 			<OrderEditor
@@ -53,7 +56,7 @@
 	</section>
 
 	<section>
-		<Label variant="default">EditModeControls Demo</Label>
+		<Label size="xl" className="mb-2">EditModeControls Demo</Label>
 		<EditModeControls
 			direction="row"
 			onSave={() => (lastAction = 'Save')}
@@ -71,6 +74,12 @@
 	</section>
 
 	<section>
+		<Label size="xl" className="mb-2">DayHeader Demo</Label>
 		<DayHeader date={new Date()} />
 	</section>
-</main>
+
+	<section>
+		<Label size="xl" className="mb-2">TodaysMenu Demo</Label>
+		<TodaysMenu date={new Date()} />
+	</section>
+</div>

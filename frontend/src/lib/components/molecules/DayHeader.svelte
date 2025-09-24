@@ -15,6 +15,6 @@
 </script>
 
 <div class="flex flex-col items-center py-2">
-	<Label className="text-xl font-semibold text-slate-800" variant="default">{dayName}</Label>
-	<Label className="text-sm text-slate-500" variant="muted">{dateStr}</Label>
+	<Label size="xxl" variant="default">{dayName}</Label>
+	<Label size="xs" variant="muted">{dateStr}</Label>
 </div>
