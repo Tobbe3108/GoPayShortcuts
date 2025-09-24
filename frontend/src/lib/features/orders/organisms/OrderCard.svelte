@@ -22,16 +22,19 @@
 	function handleSave() {
 		// TODO:
 		editMode = false;
+		originalOrder = undefined;
 	}
 
 	function handleCancel() {
 		editMode = false;
 		if (originalOrder) order = originalOrder;
+		originalOrder = undefined;
 	}
 
 	function handleDelete() {
 		// TODO:
 		editMode = false;
+		originalOrder = undefined;
 	}
 </script>
 
