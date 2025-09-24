@@ -30,6 +30,11 @@
 	}
 
 	async function handleSave() {
+		if (order.orderlines.every((line) => line.quantity === 0)) {
+			handleDelete();
+			return;
+		}
+
 		await handleUpdate({
 			kitchenId: order.kitchenId,
 			date: order.date,
