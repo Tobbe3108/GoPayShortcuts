@@ -47,5 +47,5 @@
 			onDelete={handleDelete}
 		/>
 	</div>
-	<OrderEditor {order} {editMode} />
+	<OrderEditor {order} {editMode} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
 </Card>

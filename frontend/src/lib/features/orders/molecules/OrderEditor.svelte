@@ -12,9 +12,16 @@
 		editMode?: boolean;
 		currency?: string;
 		showTotal?: boolean;
+		onOrderChange?: (order: Order) => void;
 	}
 
-	let { order, editMode = false, currency = 'kr', showTotal = true }: Props = $props();
+	let {
+		order,
+		editMode = false,
+		currency = 'kr',
+		showTotal = true,
+		onOrderChange
+	}: Props = $props();
 
 	onMount(() => {
 		loadProducts();
@@ -50,8 +57,15 @@
 
 	function handleQuantityChange(idx: number, newValue: number) {
 		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
-		order.orderlines = editableOrderlines;
-		order.totalPrice = totalPrice;
+		// Create a new order object to avoid mutating the prop
+		const updatedOrder: Order = {
+			...order,
+			orderlines: editableOrderlines,
+			totalPrice: totalPrice
+		};
+		if (onOrderChange) {
+			onOrderChange(updatedOrder);
+		}
 	}
 
 	function formatPrice(amount: number) {

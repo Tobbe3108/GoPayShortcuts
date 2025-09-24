@@ -45,8 +45,12 @@
 	<section>
 		<Label variant="default">OrderEditor Demo</Label>
 		<div class="flex space-x-4">
-			<OrderEditor {order} />
-			<OrderEditor {order} editMode={true} />
+			<OrderEditor {order} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
+			<OrderEditor
+				{order}
+				editMode={true}
+				onOrderChange={(updatedOrder) => (order = updatedOrder)}
+			/>
 		</div>
 	</section>
 
