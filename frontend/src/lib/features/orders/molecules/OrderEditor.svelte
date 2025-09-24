@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Order } from '../models/order';
-	import type { OrderLine } from '../models/orderLine';
 	import type { Product } from '$lib/features/products/product';
 	import { productsService } from '$lib/features/products/productsService';
 
@@ -36,17 +35,17 @@
 		})();
 	}
 
-	let editableOrderlines = $state<OrderLine[]>([]);
+	let editableOrderlines = $state(order?.orderlines ? [...order.orderlines] : []);
 	$effect(() => {
-		editableOrderlines = order?.orderlines ? order.orderlines.map((l) => ({ ...l })) : [];
+		if (!editMode) editableOrderlines = order?.orderlines ? [...order.orderlines] : [];
 	});
 
 	const items = $derived(
-		editableOrderlines.map((line: OrderLine) => {
+		editableOrderlines.map((line) => {
 			const product = products.find((p) => p.id === line.productId);
 			return {
 				id: line.productId,
-				name: product?.name ?? (loading ? `Loading...` : `Unknown Product ${line.productId}`),
+				name: product?.name ?? (loading ? 'Loading...' : `Unknown Product ${line.productId}`),
 				quantity: line.quantity,
 				price: line.price
 			};
@@ -57,14 +56,12 @@
 
 	function handleQuantityChange(idx: number, newValue: number) {
 		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
-		// Create a new order object to avoid mutating the prop
-		const updatedOrder: Order = {
-			...order,
-			orderlines: editableOrderlines,
-			totalPrice: totalPrice
-		};
 		if (onOrderChange) {
-			onOrderChange(updatedOrder);
+			onOrderChange({
+				...order,
+				orderlines: [...editableOrderlines],
+				totalPrice
+			});
 		}
 	}
 
