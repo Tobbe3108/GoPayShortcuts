@@ -4,6 +4,7 @@
 	import OrderEditor from '$lib/features/orders/molecules/OrderEditor.svelte';
 	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
+	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
 
 	let inputValue = $state('');
 
@@ -51,7 +52,7 @@
 		</div>
 	</section>
 
-	<div>
+	<section>
 		<Label variant="default">EditModeControls Demo</Label>
 		<EditModeControls
 			direction="row"
@@ -67,5 +68,9 @@
 		/>
 		<EditModeControls direction="row" locked={true} />
 		<Label variant="muted">Last action: {lastAction}</Label>
-	</div>
+	</section>
+
+	<section>
+		<DayHeader date={new Date()} />
+	</section>
 </main>
