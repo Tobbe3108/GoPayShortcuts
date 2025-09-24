@@ -1,3 +1,23 @@
+## Agent Tool Usage Policy
+
+Agents MUST aggressively use the following MCP servers and builtin tools for all relevant tasks:
+
+- **GitButler MCP Server**: All Git management (diffs, branch updates, merges, reviews) must be performed via tool calls to the GitButler MCP server. Direct code or shell output is not permitted for Git operations.
+- **Sequential Thinking MCP Server**: For any high-level implementation prompt, agents must break down the task using the Sequential Thinking MCP server before proceeding. This ensures structured, stepwise reasoning.
+- **context7 MCP Server**: Agents must use the context7 MCP server to fetch up-to-date, relevant documentation for any library, framework, or API referenced in the task. Direct code generation without documentation retrieval is discouraged.
+- **Builtin Tools**: Agents should use all available builtin tools for file edits, searches, error checks, and other actionable steps. Tool calls are preferred over direct output or reasoning.
+
+### Tool Usage Recipes
+
+1. **Git Operations**: Always call the GitButler MCP server for diffs, branch management, merges, and reviews. Example: `mcp_gitbutler_gitbutler_update_branches` for branch updates.
+2. **Task Breakdown**: For complex or ambiguous prompts, invoke the Sequential Thinking MCP server to generate a stepwise plan before any code or context action.
+3. **Documentation Retrieval**: Use context7 MCP server to fetch documentation before implementing or refactoring code involving external libraries.
+4. **File and Workspace Actions**: Use builtin tools for file edits, searches, error checks, and other workspace actions. Avoid direct code output unless tool calls are exhausted or unavailable.
+
+### Enforcement
+
+Agents must justify any deviation from tool/MCP usage. Preference is always given to tool calls for reliability, traceability, and context alignment.
+
 ## GoPayShortcuts – AI Agent Quick Context
 
 Purpose: Faster weekly meal ordering vs original GoPay app. Two parts: Svelte static frontend + Cloudflare Worker backend (TypeScript) that normalizes upstream GoPay + Meyers APIs.
