@@ -2,7 +2,7 @@
 	import type { Order } from '../models/order';
 	import type { Product } from '$lib/features/products/product';
 	import { productsService } from '$lib/features/products/productsService';
-
+	import type { OrderLine } from '../models/orderLine';
 	import { onMount } from 'svelte';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
 
@@ -35,19 +35,30 @@
 		})();
 	}
 
-	let editableOrderlines = $state(order?.orderlines ? [...order.orderlines] : []);
+	let editableOrderlines = $state<OrderLine[]>([]);
 	$effect(() => {
-		if (!editMode) editableOrderlines = order?.orderlines ? [...order.orderlines] : [];
+		editableOrderlines = products.map((product) => {
+			const existing = order?.orderlines?.find((l) => l.productId === product.id);
+			return {
+				productId: product.id,
+				quantity: existing ? existing.quantity : 0,
+				price: product.price
+			};
+		});
 	});
 
 	const items = $derived(
-		editableOrderlines.map((line) => {
-			const product = products.find((p) => p.id === line.productId);
+		products.map((product, idx) => {
+			const line = editableOrderlines[idx] ?? {
+				productId: product.id,
+				quantity: 0,
+				price: product.price
+			};
 			return {
-				id: line.productId,
-				name: product?.name ?? (loading ? 'Loading...' : `Unknown Product ${line.productId}`),
+				id: product.id,
+				name: product.name,
 				quantity: line.quantity,
-				price: line.price
+				price: product.price
 			};
 		})
 	);

@@ -8,10 +8,7 @@
 	let mockOrder: Order | undefined = $state({
 		date: '2025-09-22',
 		kitchenId: 1,
-		orderlines: [
-			{ productId: 1, quantity: 2, price: 80 },
-			{ productId: 2, quantity: 1, price: 60 }
-		],
+		orderlines: [{ productId: 1, quantity: 2, price: 80 }],
 		cancelEnabled: true,
 		id: 123,
 		kitchenName: 'Test Kitchen',

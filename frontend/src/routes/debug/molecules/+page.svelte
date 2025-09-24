@@ -10,10 +10,7 @@
 	let order: Order = $state({
 		date: new Date().toISOString(),
 		kitchenId: 123,
-		orderlines: [
-			{ productId: 1, quantity: 2, price: 50 },
-			{ productId: 2, quantity: 1, price: 100 }
-		],
+		orderlines: [{ productId: 1, quantity: 2, price: 50 }],
 		cancelEnabled: true,
 		id: 123,
 		kitchenName: 'Test Kitchen',
