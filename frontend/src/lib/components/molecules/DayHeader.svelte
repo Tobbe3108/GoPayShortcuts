@@ -2,12 +2,10 @@
 	import { format } from 'date-fns';
 	import { da } from 'date-fns/locale';
 	import Label from '$lib/components/atoms/Label.svelte';
+	import { capitalize } from '$lib/core/utils/stringUtils';
 
 	let { date }: { date: Date } = $props();
 
-	function capitalize(str: string) {
-		return str.charAt(0).toUpperCase() + str.slice(1);
-	}
 	const dayName = $derived(capitalize(format(date, 'EEEE', { locale: da })));
 	const dateStr = $derived(
 		`${format(date, 'd', { locale: da })}. ${capitalize(format(date, 'MMMM', { locale: da }))}`
