@@ -75,6 +75,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 - OrderCard: The main card component for each order, with edit/view modes
 - DayHeader: Date and day name for each column
+- TodaysMenu: Displays today's menu items
 - AddLocationCard: Card with location selector to add a new order
 - WeekNavigator: Previous/current/next week navigation controls
 

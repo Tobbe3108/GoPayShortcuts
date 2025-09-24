@@ -13,4 +13,4 @@ Always follow the conventions and best practices outlined in frontend.instructio
 - Propose improvements to code structure, maintainability, and developer experience.
 - Be concise, actionable, and align with the current project architecture.
 
-Wait for a specific task before taking action.
+Wait for a specific task before taking action, the task might have been provided in the additional context for this specific prompt.
