@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import type { Order } from '../models/order';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
@@ -10,26 +11,41 @@
 
 	let { order }: OrderCardProps = $props();
 
+	let originalOrder = $state<Order | undefined>(undefined);
+
 	let editMode = $state(false);
 	function handleEdit() {
 		editMode = true;
+		originalOrder = order;
 	}
 
-	function handleAction() {
+	function handleSave() {
+		// TODO:
+		editMode = false;
+	}
+
+	function handleCancel() {
+		editMode = false;
+		if (originalOrder) order = originalOrder;
+	}
+
+	function handleDelete() {
+		// TODO:
 		editMode = false;
 	}
 </script>
 
 <Card>
-	<EditModeControls
-		direction="row"
-		locked={order.cancelEnabled === false}
-		onEdit={handleEdit}
-		onSave={handleAction}
-		onCancel={handleAction}
-		onDelete={handleAction}
-	/>
-	<div class="flex justify-between items-center mb-4">
-		<OrderEditor {order} {editMode} />
+	<div class="flex flex-row items-center justify-between">
+		<Label className="font-semibold">{order.kitchenName}</Label>
+		<EditModeControls
+			direction="row"
+			locked={order.cancelEnabled === false}
+			onEdit={handleEdit}
+			onSave={handleSave}
+			onCancel={handleCancel}
+			onDelete={handleDelete}
+		/>
 	</div>
+	<OrderEditor {order} {editMode} />
 </Card>
