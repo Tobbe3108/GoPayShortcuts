@@ -5,7 +5,7 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import type { Order } from '$lib/features/orders/models/order';
 
-	const mockOrder: Order = {
+	let mockOrder: Order | undefined = $state({
 		date: '2025-09-22',
 		kitchenId: 1,
 		orderlines: [
@@ -17,7 +17,7 @@
 		kitchenName: 'Test Kitchen',
 		status: 'open',
 		totalPrice: 220
-	};
+	});
 
 	function addTestNotification() {
 		notifications.success('This is a test notification');
@@ -40,7 +40,11 @@
 	<section>
 		<h2 class="text-lg font-bold mb-2">OrderCard Demo</h2>
 		<div class="max-w-md">
-			<OrderCard order={mockOrder} />
+			{#if mockOrder}
+				<OrderCard order={mockOrder} onOrderChange={(order) => (mockOrder = order)} />
+			{:else}
+				<div class="text-gray-500">Order deleted.</div>
+			{/if}
 		</div>
 	</section>
 </main>

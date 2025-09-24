@@ -19,7 +19,7 @@
 		editMode = false,
 		currency = 'kr',
 		showTotal = true,
-		onOrderChange
+		onOrderChange = undefined
 	}: Props = $props();
 
 	onMount(() => {
@@ -56,13 +56,11 @@
 
 	function handleQuantityChange(idx: number, newValue: number) {
 		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
-		if (onOrderChange) {
-			onOrderChange({
-				...order,
-				orderlines: [...editableOrderlines],
-				totalPrice
-			});
-		}
+		onOrderChange?.({
+			...order,
+			orderlines: [...editableOrderlines],
+			totalPrice
+		});
 	}
 
 	function formatPrice(amount: number) {

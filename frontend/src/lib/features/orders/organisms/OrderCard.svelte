@@ -4,14 +4,18 @@
 	import type { Order } from '../models/order';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
 	import OrderEditor from '../molecules/OrderEditor.svelte';
+	import { ordersService } from '../ordersService';
+	import { notifications } from '$lib/core/notifications/notificationStore';
+	import type { UpdateDayRequest } from '../models/update/updateDayRequest';
 
 	type OrderCardProps = {
 		order: Order;
+		onOrderChange?: (order: Order | undefined) => void;
 	};
 
-	let { order }: OrderCardProps = $props();
+	let { order, onOrderChange = undefined }: OrderCardProps = $props();
 
-	let originalOrder = $state<Order | undefined>(undefined);
+	let originalOrder = $state(order);
 
 	let editMode = $state(false);
 	function handleEdit() {
@@ -19,22 +23,41 @@
 		originalOrder = order;
 	}
 
-	function handleSave() {
-		// TODO:
-		editMode = false;
-		originalOrder = undefined;
-	}
-
 	function handleCancel() {
 		editMode = false;
-		if (originalOrder) order = originalOrder;
-		originalOrder = undefined;
+		order = originalOrder;
+		onOrderChange?.(order);
 	}
 
-	function handleDelete() {
-		// TODO:
-		editMode = false;
-		originalOrder = undefined;
+	async function handleSave() {
+		await handleUpdate({
+			kitchenId: order.kitchenId,
+			date: order.date,
+			desiredOrders: order.orderlines
+		});
+		onOrderChange?.(order);
+	}
+
+	async function handleDelete() {
+		try {
+			await handleUpdate({
+				kitchenId: order.kitchenId,
+				date: order.date,
+				desiredOrders: []
+			});
+			onOrderChange?.(undefined);
+		} catch (_) {}
+	}
+
+	async function handleUpdate(req: UpdateDayRequest) {
+		try {
+			await ordersService.updateDay(req);
+			notifications.success('Order updated successfully.');
+		} catch (err) {
+			notifications.error('Failed to update order.');
+		} finally {
+			editMode = false;
+		}
 	}
 </script>
 
