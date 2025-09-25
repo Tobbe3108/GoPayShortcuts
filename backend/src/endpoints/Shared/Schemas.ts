@@ -84,7 +84,8 @@ export class Schemas {
 
   static MenuItemSchema() {
     return z.object({
-      name: Str({ example: "Pasta Carbonara" }),
+      item: Str({ example: "Pasta Carbonara" }),
+      subItems: z.array(Str({ example: "Parmesan" })),
       category: Str({ example: "Main Courses" }),
       allergens: z.array(Str({ example: "gluten" })),
     });

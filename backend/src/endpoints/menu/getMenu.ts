@@ -32,13 +32,17 @@ export class GetMenu extends OpenAPIRoute {
     for (const [date, day] of Object.entries(response)) {
       result.push({
         date,
-        items: day.items.map((item: any) => ({
-          name: item.menu_name,
-          category: item.item_category,
-          allergens: Object.entries(item.allergens || {})
-            .filter(([_, v]) => v === true)
-            .map(([k]) => k),
-        })),
+        items: day.items.map((item: any) => {
+          let parts: string[] = GetItemParts(item);
+          return {
+            item: parts[0],
+            subItems: parts.length > 1 ? parts.slice(1) : [],
+            category: item.item_category,
+            allergens: Object.entries(item.allergens || {})
+              .filter(([_, v]) => v === true)
+              .map(([k]) => k),
+          };
+        }),
       });
     }
 
@@ -50,8 +54,21 @@ export class GetMenu extends OpenAPIRoute {
 export type SimplifiedMenuDay = {
   date: string;
   items: {
-    name: string;
+    item: string;
+    subItems: string[];
     category: string;
     allergens: string[];
   }[];
 };
+
+function GetItemParts(item: any) {
+  let parts: string[];
+
+  if (item.menu_name.includes("-")) {
+    parts = item.menu_name.split("-").map((s: string) => s.trim());
+  } else {
+    parts = [item.menu_name.trim()];
+  }
+
+  return parts;
+}

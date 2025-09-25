@@ -1,5 +1,6 @@
 export interface MenuItem {
-	name: string;
+	item: string;
+	subItems: string[];
 	category: string;
 	allergens: string[];
 }
