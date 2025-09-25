@@ -21,7 +21,7 @@
 	});
 
 	function getISO(date: Date): string {
-		const today = new Date();
+		const today = new Date(date);
 		return today.toISOString().slice(0, 10);
 	}
 
@@ -44,16 +44,21 @@
 			{#if menuItems.length === 0}
 				<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
 			{:else}
-				<div class="flex flex-col space-y-4">
+				<div class="space-y-4">
 					{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
-						<div>
+						<div class="space-y-1">
 							<Label size="lg">{category}</Label>
 							{#each items as item}
-								<div class="flex items-center">
-									<Label>{item.name}</Label>
-									<!-- TODO: Change datastructure of returned menu in backend - Split on the first - and add the stuff after on a new line in a smaller label -->
+								<div class="flex flex-row flex-wrap items-center gap-4">
+									<div class="flex flex-col">
+										<Label>{item.item}</Label>
+										{#if item.subItems && item.subItems.length}
+											<Label size="sm" variant="muted">{capitalize(item.subItems.join(', '))}</Label
+											>
+										{/if}
+									</div>
 									{#if item.allergens && item.allergens.length}
-										<div class="group ml-5">
+										<div class="row-span-2 group shrink">
 											<Label size="xs" variant="muted">Allergener</Label>
 											<Label
 												size="xs"
