@@ -35,7 +35,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 2. Create molecule components - DONE
+### 2. Create molecule components
 
 **Where to find information:**
 
@@ -51,13 +51,17 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Components needed:**
 
-- ProductQuantitySelector: Component with +/- buttons and quantity display  
-- OrderSummary: Display order details (items, quantities, prices)  
-- EditModeControls: Save/cancel/delete action buttons for edit mode  
+- ProductQuantitySelector: Component with +/- buttons and quantity display - DONE  
+- OrderSummary: Display order details (items, quantities, prices) - DONE  
+- EditModeControls: Save/cancel/delete action buttons for edit mode - DONE  
+- DayHeader: Date and day name for each column - DONE  
+- TodaysMenu: Displays today's menu items - DONE  
+- AddLocationCard: Card with location selector to add a new order  
+- WeekNavigator: Previous/current/next week navigation controls  
 
 ---
 
-### 3. Develop organism components
+### 3. Develop organism components - DONE
 
 **Where to find information:**
 
@@ -73,11 +77,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Components needed:**
 
-- OrderCard: The main card component for each order, with edit/view modes
-- DayHeader: Date and day name for each column
-- TodaysMenu: Displays today's menu items
-- AddLocationCard: Card with location selector to add a new order
-- WeekNavigator: Previous/current/next week navigation controls
+- OrderCard: The main card component for each order, with edit/view modes - DONE
 
 ---
 
@@ -97,9 +97,9 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Components needed:**
 
+- MainLayoutTemplate: Update the main layout with week navigation
 - WeekGridTemplate: Desktop week view with days as columns
 - DayViewTemplate: Mobile-optimized single day view
-- MainLayoutTemplate: Update the main layout with week navigation
 
 ---
 
