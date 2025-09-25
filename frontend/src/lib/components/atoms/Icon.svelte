@@ -45,7 +45,7 @@
 	{:else if name === 'minus'}<Minus {size} aria-label={ariaLabel} />
 	{:else if name === 'check'}<Check {size} aria-label={ariaLabel} />
 	{:else if name === 'close'}<X {size} aria-label={ariaLabel} />
-	{:else if name === 'open'}<ChevronUp {size} aria-label={ariaLabel} />
-	{:else if name === 'collapse'}<ChevronDown {size} aria-label={ariaLabel} />
+	{:else if name === 'open'}<ChevronDown {size} aria-label={ariaLabel} />
+	{:else if name === 'collapse'}<ChevronUp {size} aria-label={ariaLabel} />
 	{/if}
 </span>
