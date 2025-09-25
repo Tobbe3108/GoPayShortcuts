@@ -5,7 +5,6 @@
 	import Card from '$lib/components/atoms/Card.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { onMount } from 'svelte';
-	import { capitalize } from '$lib/core/utils/stringUtils';
 
 	let { date }: { date: Date } = $props();
 
@@ -36,41 +35,54 @@
 	}
 </script>
 
-<div class="flex flex-wrap">
+<div class="flex flex-col items-center w-full">
 	<Card>
 		{#if loading}
-			<Label variant="muted">Indlæser menu...</Label>
+			<div class="flex justify-center py-8">
+				<Label variant="muted">Indlæser menu...</Label>
+			</div>
 		{:else if menuItems}
 			{#if menuItems.length === 0}
-				<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
+				<div class="flex justify-center py-8">
+					<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
+				</div>
 			{:else}
-				<div class="space-y-4">
+				<div>
 					{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
-						<div class="space-y-1">
-							<Label size="lg">{category}</Label>
-							{#each items as item}
-								<div class="flex flex-row flex-wrap items-center gap-4">
-									<div class="flex flex-col">
-										<Label>{item.item}</Label>
+						<div class="mb-2">
+							<Label size="xs" className="font-semibold uppercase tracking-wide">{category}</Label>
+							<ul>
+								{#each items as item}
+									<li class="flex items-center text-sm py-1 px-0.5 gap-2">
+										<Label size="sm">{item.item}</Label>
 										{#if item.subItems && item.subItems.length}
-											<Label size="sm" variant="muted">{capitalize(item.subItems.join(', '))}</Label
+											<Label size="sm" variant="muted" className="italic capitalize"
+												>{item.subItems.join(', ')}</Label
 											>
 										{/if}
-									</div>
-									{#if item.allergens && item.allergens.length}
-										<div class="row-span-2 group shrink">
-											<Label size="xs" variant="muted">Allergener</Label>
-											<Label
-												size="xs"
-												variant="muted"
-												className="absolute hidden group-hover:block"
+										{#if item.allergens && item.allergens.length}
+											<span
+												class="ml-auto relative group align-middle flex items-center justify-end min-w-[80px]"
 											>
-												{capitalize(item.allergens.join(', '))}
-											</Label>
-										</div>
-									{/if}
-								</div>
-							{/each}
+												<Label
+													size="xs"
+													variant="muted"
+													className="inline-block px-1.5 py-0.5 text-[10px] leading-tight bg-gray-100 text-gray-500 rounded font-medium cursor-pointer select-none group-hover:bg-gray-200 group-focus-within:bg-gray-200 transition"
+												>
+													Allergener
+												</Label>
+												<Label
+													size="xs"
+													variant="default"
+													className="absolute right-0 top-full z-10 mt-1 w-max rounded bg-white border border-gray-200 shadow px-2 py-1 text-xs text-gray-700 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-150 capitalize"
+												>
+													{item.allergens.join(', ')}
+												</Label>
+											</span>
+										{/if}
+									</li>
+								{/each}
+							</ul>
 						</div>
 					{/each}
 				</div>
