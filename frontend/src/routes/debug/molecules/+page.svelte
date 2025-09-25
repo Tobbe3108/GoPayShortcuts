@@ -6,6 +6,7 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
+	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 
 	let inputValue = $state('');
 
@@ -81,5 +82,10 @@
 	<section>
 		<Label size="xl" className="mb-2">TodaysMenu Demo</Label>
 		<TodaysMenu date={new Date()} />
+	</section>
+
+	<section>
+		<Label size="xl" className="mb-2">AddLocationCard Demo</Label>
+		<AddLocationCard />
 	</section>
 </div>
