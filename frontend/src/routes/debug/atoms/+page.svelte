@@ -92,7 +92,7 @@
 		<Label size="xl" className="mb-2">LocationSelector Demo</Label>
 		<Selector
 			label="Some lable"
-			{locations}
+			options={locations}
 			selectedId={selectedLocation}
 			onChange={(id: string | number) => (selectedLocation = id)}
 		/>

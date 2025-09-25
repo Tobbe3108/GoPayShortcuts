@@ -1,21 +1,21 @@
 <script lang="ts">
 	import Label from './Label.svelte';
-	interface LocationOption {
+	interface Option {
 		id: string | number;
 		name: string;
 	}
 
 	interface Props {
 		label?: string;
-		locations: LocationOption[];
+		options: Option[];
 		selectedId?: string | number;
 		disabled?: boolean;
 		onChange?: (id: string | number) => void;
 	}
 
 	let {
-		label = 'Location',
-		locations = [],
+		label = undefined,
+		options: options = [],
 		selectedId = undefined,
 		disabled = false,
 		onChange = undefined
@@ -40,7 +40,7 @@
 		aria-label={label}
 	>
 		<option value="" disabled selected={!selectedId}>Select a location</option>
-		{#each locations as loc}
+		{#each options as loc}
 			<option value={loc.id} selected={loc.id === selectedId}>{loc.name}</option>
 		{/each}
 	</select>
