@@ -30,8 +30,6 @@
 	}
 
 	async function handleSave() {
-		//TODO: Do nothing if order is the same
-
 		if (order.orderlines.every((line) => line.quantity === 0)) {
 			handleDelete();
 			return;
@@ -70,7 +68,7 @@
 
 <Card>
 	<div class="flex flex-row items-center justify-between mb-2">
-		<Label size="xl" className="font-semibold">{order.kitchenName}</Label>
+		<Label size="xl" className="capitalize tracking-wide">{order.kitchenName}</Label>
 		<EditModeControls
 			direction="row"
 			locked={order.cancelEnabled === false}
