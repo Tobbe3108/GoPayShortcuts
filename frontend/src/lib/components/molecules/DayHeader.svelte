@@ -10,6 +10,6 @@
 </script>
 
 <div class="flex flex-col items-center py-2">
-	<Label size="xxl" variant="default" className="capitalize">{dayName}</Label>
+	<Label size="xxl" variant="default" className="capitalize tracking-wide">{dayName}</Label>
 	<Label size="xs" variant="muted" className="capitalize">{dateStr}</Label>
 </div>
