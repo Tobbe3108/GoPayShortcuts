@@ -64,13 +64,13 @@
 						<div class="space-y-2">
 							{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
 								<div>
-									<Label size="sm" className="uppercase tracking-wide">{category}</Label>
+									<Label size="md" className="tracking-wide font-semibold">{category}</Label>
 									<ul>
 										{#each items as item}
-											<li class="flex py-1 gap-2">
+											<li class="flex items-center py-1 gap-2">
 												<Label size="sm">{item.item}</Label>
 												{#if item.subItems && item.subItems.length}
-													<Label size="sm" variant="muted" className="italic capitalize"
+													<Label size="xs" variant="muted" className="italic capitalize"
 														>{item.subItems.join(', ')}</Label
 													>
 												{/if}

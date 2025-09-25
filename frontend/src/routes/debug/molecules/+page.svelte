@@ -80,6 +80,6 @@
 
 	<section>
 		<Label size="xl" className="mb-2">TodaysMenu Demo</Label>
-		<TodaysMenu date={new Date().setDate(24)} />
+		<TodaysMenu date={new Date()} />
 	</section>
 </div>
