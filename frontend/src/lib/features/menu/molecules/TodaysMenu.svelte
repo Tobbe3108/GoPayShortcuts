@@ -38,22 +38,18 @@
 <div class="flex flex-col items-center w-full">
 	<Card>
 		{#if loading}
-			<div class="flex justify-center py-8">
-				<Label variant="muted">Indlæser menu...</Label>
-			</div>
+			<Label variant="muted">Indlæser menu...</Label>
 		{:else if menuItems}
 			{#if menuItems.length === 0}
-				<div class="flex justify-center py-8">
-					<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
-				</div>
+				<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
 			{:else}
-				<div>
+				<div class="space-y-2">
 					{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
-						<div class="mb-2">
-							<Label size="xs" className="font-semibold uppercase tracking-wide">{category}</Label>
+						<div>
+							<Label size="sm" className="uppercase tracking-wide">{category}</Label>
 							<ul>
 								{#each items as item}
-									<li class="flex items-center text-sm py-1 px-0.5 gap-2">
+									<li class="flex py-1 gap-2">
 										<Label size="sm">{item.item}</Label>
 										{#if item.subItems && item.subItems.length}
 											<Label size="sm" variant="muted" className="italic capitalize"
@@ -65,16 +61,20 @@
 												class="ml-auto relative group align-middle flex items-center justify-end min-w-[80px]"
 											>
 												<Label
-													size="xs"
 													variant="muted"
-													className="inline-block px-1.5 py-0.5 text-[10px] leading-tight bg-gray-100 text-gray-500 rounded font-medium cursor-pointer select-none group-hover:bg-gray-200 group-focus-within:bg-gray-200 transition"
+													className="inline-block px-1 py-0.5 text-[10px] leading-tight transition
+                          bg-gray-100 rounded cursor-pointer select-none 
+                          group-hover:bg-gray-200 group-focus-within:bg-gray-200"
 												>
 													Allergener
 												</Label>
 												<Label
 													size="xs"
 													variant="default"
-													className="absolute right-0 top-full z-10 mt-1 w-max rounded bg-white border border-gray-200 shadow px-2 py-1 text-xs text-gray-700 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-150 capitalize"
+													className="absolute right-0 top-full z-10 mt-0.5 w-max px-2 py-1 rounded capitalize
+                          bg-white border border-gray-200 shadow opacity-0 pointer-events-none 
+                          group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto 
+                          transition-opacity duration-150"
 												>
 													{item.allergens.join(', ')}
 												</Label>
