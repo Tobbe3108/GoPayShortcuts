@@ -6,6 +6,7 @@ import type { LoginResponse } from '$lib/features/auth/models/loginResponse';
 import type { Product } from '$lib/features/products/product';
 import type { MenuDay } from '$lib/features/menu/models/menuDay';
 import type { OrdersResponse } from '$lib/features/orders/models/ordersResponse';
+import type { Location } from '$lib/features/locations/location';
 
 import { API_BASE_URL } from '../config/environment';
 import { authStore } from '$lib/features/auth/store';

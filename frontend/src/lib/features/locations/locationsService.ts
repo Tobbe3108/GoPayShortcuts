@@ -1,4 +1,5 @@
 import { apiClient } from '$lib/core/api/apiClient';
+import type { Location } from './location';
 
 /**
  * Locations service for accessing location data from the backend
