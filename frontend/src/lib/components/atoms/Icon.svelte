@@ -1,7 +1,26 @@
 <script lang="ts">
-	import { Pencil, Trash2, Lock, Plus, Minus, Check, X } from 'lucide-svelte';
+	import {
+		Pencil,
+		Trash2,
+		Lock,
+		Plus,
+		Minus,
+		Check,
+		X,
+		ChevronUp,
+		ChevronDown
+	} from 'lucide-svelte';
 
-	type IconName = 'edit' | 'delete' | 'lock' | 'plus' | 'minus' | 'check' | 'close';
+	type IconName =
+		| 'edit'
+		| 'delete'
+		| 'lock'
+		| 'plus'
+		| 'minus'
+		| 'check'
+		| 'close'
+		| 'open'
+		| 'collapse';
 	type IconProps = {
 		role?: string;
 		ariaLabel?: string;
@@ -26,5 +45,7 @@
 	{:else if name === 'minus'}<Minus {size} aria-label={ariaLabel} />
 	{:else if name === 'check'}<Check {size} aria-label={ariaLabel} />
 	{:else if name === 'close'}<X {size} aria-label={ariaLabel} />
+	{:else if name === 'open'}<ChevronUp {size} aria-label={ariaLabel} />
+	{:else if name === 'collapse'}<ChevronDown {size} aria-label={ariaLabel} />
 	{/if}
 </span>
