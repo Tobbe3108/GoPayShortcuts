@@ -6,6 +6,7 @@
 	import { startOfWeek, endOfWeek, getWeek, addDays, format } from 'date-fns';
 	import { ordersService } from '$lib/features/orders/ordersService';
 	import type { Order } from '$lib/features/orders/models/order';
+	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 
 	type WeekGridProps = {
 		date: Date;
@@ -13,13 +14,16 @@
 
 	let { date }: WeekGridProps = $props();
 
-	let weekNumber = $state(getWeek(date));
-	let weekStart = $derived(startOfWeek(weekNumber));
-	let weekEnd = $derived(endOfWeek(weekNumber));
+	let weekStart = $state(startOfWeek(date, { weekStartsOn: 1 }));
+	let weekEnd = $state(endOfWeek(date, { weekStartsOn: 1 }));
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
 	let orders: Order[] = $state([]);
-	$effect(() => async () => (orders = await ordersService.listOrders(weekStart, weekEnd)));
+	$effect(() => {
+		(async () => {
+			orders = await ordersService.listOrders(weekStart, weekEnd);
+		})();
+	});
 
 	function ordersByDay(date: Date) {
 		return orders.filter((o) => o.date === format(date, 'yyyy-MM-dd'));
@@ -29,15 +33,17 @@
 <div>
 	<WeekNavigator
 		{date}
-		onWeekChange={(newWeek) => {
-			weekNumber = newWeek;
+		onWeekChange={(newStart, newEnd) => {
+			weekStart = newStart;
+			weekEnd = newEnd;
 		}}
 	/>
 
-	<!-- <div class="grid grid-cols-5 gap-4">
+	<div class="grid grid-cols-5 gap-4">
 		{#each weekDates as date}
 			<div class="flex flex-col space-y-4">
 				<DayHeader {date} />
+				<TodaysMenu {date} />
 				{#each ordersByDay(date) as order}
 					<OrderCard {order} onOrderChange={() => {}} />
 				{/each}
@@ -47,5 +53,5 @@
 				/>
 			</div>
 		{/each}
-	</div> -->
+	</div>
 </div>
