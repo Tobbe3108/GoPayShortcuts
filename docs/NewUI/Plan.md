@@ -56,7 +56,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - EditModeControls: Save/cancel/delete action buttons for edit mode - DONE  
 - DayHeader: Date and day name for each column - DONE  
 - TodaysMenu: Displays today's menu items - DONE  
-- AddLocationCard: Card with location selector to add a new order  
+- AddLocationCard: Card with location selector to add a new order - DONE  
 - WeekNavigator: Previous/current/next week navigation controls  
 
 ---
