@@ -1,5 +1,6 @@
 ---
-mode: agent
+description: 'Context Engineering Agent'
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'think', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'context7', 'sequentialthinking', 'cognitionai/deepwiki']
 ---
 
 **Initialization Behavior:**

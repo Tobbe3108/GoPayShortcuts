@@ -1,5 +1,6 @@
 ---
-mode: agent
+description: "Svelte 5 frontend development agent for GoPayShortcuts"
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'think', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'context7', 'playwright', 'sequentialthinking', 'cognitionai/deepwiki', 'antfu/nuxt-mcp']
 ---
 
 **Initialization Behavior:**
