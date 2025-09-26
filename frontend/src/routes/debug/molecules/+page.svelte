@@ -7,6 +7,7 @@
 	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
+	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
 
 	let inputValue = $state('');
 
@@ -24,6 +25,8 @@
 	let newOrder: Order | undefined = $state(undefined);
 
 	let lastAction = $state('');
+
+	let weekNumber = $state<number>();
 </script>
 
 <div class="p-6 space-y-6">
@@ -87,11 +90,17 @@
 	</section>
 
 	<Label size="xl">AddLocationCard Demo</Label>
-	<section>
+	<section class="justify-center">
 		<AddLocationCard
 			newOrder={(order) => (newOrder = order)}
 			locationsWithOrders={newOrder ? [newOrder.kitchenId] : []}
 		/>
 		<Label variant="muted">Latest order location: {newOrder?.kitchenName}</Label>
+	</section>
+
+	<Label size="xl">WeekNavigator Demo</Label>
+	<section class="max-w-max justify-center">
+		<WeekNavigator date={new Date()} onWeekChange={(newWeek) => (weekNumber = newWeek)} />
+		<Label variant="muted">Selected week: {weekNumber}</Label>
 	</section>
 </div>
