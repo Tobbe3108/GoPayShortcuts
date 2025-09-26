@@ -56,7 +56,7 @@
 			aria-controls="todays-menu-content"
 			onclick={() => (collapsed = !collapsed)}
 		>
-			<Label size="md" className="tracking-wide cursor-pointer">Lokationer</Label>
+			<Label size="md" className="tracking-wide cursor-pointer">Tilføj Lokation</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
@@ -69,11 +69,13 @@
 					{#if locations.length === 0}
 						<Label variant="muted">Ingen lokationer fundet...</Label>
 					{:else}
-						<div class="flex flex-col">
+						<div class="flex flex-col space-y-2">
 							{#each locations as loc}
-								<Button variant="transparent" onclick={() => handleLocationClick(loc)}
-									>{loc.name}</Button
-								>
+								<Button variant="transparent" size="sm" onclick={() => handleLocationClick(loc)}>
+									<Label size="xs" className="cursor-pointer capitalize tracking-wide"
+										>{loc.name}</Label
+									>
+								</Button>
 							{/each}
 						</div>
 					{/if}
