@@ -51,8 +51,8 @@
 		[
 			variantClasses[variant as Variant],
 			sizeClasses[size as Size],
-			'font-bold rounded transition-opacity duration-150 ease-in-out disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
-			!disabled ? 'cursor-pointer' : '',
+			'rounded transition-opacity duration-150 ease-in-out disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
+			disabled ? '' : 'cursor-pointer',
 			fullWidth ? 'w-full' : '',
 			className
 		].join(' ')
