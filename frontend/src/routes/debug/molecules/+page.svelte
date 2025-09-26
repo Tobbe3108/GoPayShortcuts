@@ -34,8 +34,8 @@
 
 	<Label size="xxl">Molecules Debug Page</Label>
 
+	<Label size="xl">FormField Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">FormField Demo</Label>
 		<FormField
 			label="FormField Test"
 			placeholder="Type here..."
@@ -44,8 +44,8 @@
 		<Label variant="muted">Input: {inputValue}</Label>
 	</section>
 
+	<Label size="xl">OrderEditor Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">OrderEditor Demo</Label>
 		<div class="flex space-x-4">
 			<OrderEditor {order} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
 			<OrderEditor
@@ -56,8 +56,8 @@
 		</div>
 	</section>
 
+	<Label size="xl">EditModeControls Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">EditModeControls Demo</Label>
 		<EditModeControls
 			direction="row"
 			onSave={() => (lastAction = 'Save')}
@@ -74,18 +74,18 @@
 		<Label variant="muted">Last action: {lastAction}</Label>
 	</section>
 
+	<Label size="xl">DayHeader Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">DayHeader Demo</Label>
 		<DayHeader date={new Date()} />
 	</section>
 
+	<Label size="xl">TodaysMenu Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">TodaysMenu Demo</Label>
 		<TodaysMenu date={new Date()} />
 	</section>
 
+	<Label size="xl">AddLocationCard Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">AddLocationCard Demo</Label>
 		<AddLocationCard />
 	</section>
 </div>

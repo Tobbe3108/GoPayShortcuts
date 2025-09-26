@@ -32,14 +32,14 @@
 
 	<Label size="xxl">Organisms Debug Page</Label>
 
+	<Label size="xl">Notifications Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Notifications Demo</Label>
 		<Button onclick={addTestNotification}>Add Test Notification</Button>
 		<Notifications />
 	</section>
 
+	<Label size="xl">OrderCard Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">OrderCard Demo</Label>
 		<div class="max-w-md">
 			{#if mockOrder}
 				<OrderCard order={mockOrder} onOrderChange={(order) => (mockOrder = order)} />

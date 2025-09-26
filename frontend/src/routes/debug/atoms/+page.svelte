@@ -29,8 +29,8 @@
 
 	<Label size="xxl">Atoms Debug Page</Label>
 
+	<Label size="xl">Input Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Input Demo</Label>
 		<div class="space-y-2">
 			<Input id="debug-input" placeholder="Input Atom" />
 			<Input id="debug-input-err" placeholder="Input with error" error="This is an error" />
@@ -46,8 +46,8 @@
 		</div>
 	</section>
 
+	<Label size="xl">Button Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Button Demo</Label>
 		<div class="flex flex-wrap gap-4 items-center">
 			<Button>Default Button</Button>
 			<Button variant="secondary">Secondary</Button>
@@ -57,16 +57,16 @@
 		</div>
 	</section>
 
+	<Label size="xl">Card Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Card Demo</Label>
 		<div class="flex flex-wrap gap-4">
 			<Card><div class="p-4">Card Atom (normal)</div></Card>
 			<Card muted={true}><div class="p-4">Card Atom (muted)</div></Card>
 		</div>
 	</section>
 
+	<Label size="xl">Label Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Label Demo</Label>
 		<div class="space-y-2">
 			<Label forId="label-default">Default Label</Label>
 			<Label forId="label-success" variant="success" size="xxl">Success Label</Label>
@@ -75,8 +75,8 @@
 		</div>
 	</section>
 
+	<Label size="xl">Icon Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Icon Demo</Label>
 		<div class="flex flex-wrap gap-4 items-center">
 			<Icon name="edit" ariaLabel="Edit" />
 			<Icon name="delete" ariaLabel="Delete" className="text-danger" />
@@ -88,8 +88,8 @@
 		</div>
 	</section>
 
+	<Label size="xl">LocationSelector Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">LocationSelector Demo</Label>
 		<Selector
 			label="Some lable"
 			options={locations}
@@ -99,13 +99,13 @@
 		<Label variant="muted">Location: {selectedLocation}</Label>
 	</section>
 
+	<Label size="xl">LoadingSpinner Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">LoadingSpinner Demo</Label>
 		<LoadingSpinner />
 	</section>
 
+	<Label size="xl">Quantity Demo</Label>
 	<section>
-		<Label size="xl" className="mb-2">Quantity Demo</Label>
 		<Quantity value={quantity} min={0} max={10} onChange={(v: number) => (quantity = v)} />
 		<Label variant="muted">Quantity: {quantity}</Label>
 	</section>
