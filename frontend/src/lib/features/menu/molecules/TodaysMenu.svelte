@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide, fade } from 'svelte/transition';
+	import { getIsoDate } from '$lib/core/utils/dateUtils';
 
 	let { date }: { date: Date } = $props();
 
@@ -17,16 +18,11 @@
 
 	onMount(async () => {
 		const menuDays: MenuDay[] = await menuService.getMenu();
-		const todayISO = getISO(date);
+		const todayISO = getIsoDate(date);
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
 		menuItems = todayMenu?.items;
 		loading = false;
 	});
-
-	function getISO(date: Date): string {
-		const today = new Date(date);
-		return today.toISOString().slice(0, 10);
-	}
 
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};
