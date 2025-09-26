@@ -8,7 +8,9 @@
 		Check,
 		X,
 		ChevronUp,
-		ChevronDown
+		ChevronDown,
+		ChevronLeft,
+		ChevronRight
 	} from 'lucide-svelte';
 
 	type IconName =
@@ -20,7 +22,9 @@
 		| 'check'
 		| 'close'
 		| 'open'
-		| 'collapse';
+		| 'collapse'
+		| 'left'
+		| 'right';
 	type IconProps = {
 		role?: string;
 		ariaLabel?: string;
@@ -47,5 +51,7 @@
 	{:else if name === 'close'}<X {size} aria-label={ariaLabel} />
 	{:else if name === 'open'}<ChevronDown {size} aria-label={ariaLabel} />
 	{:else if name === 'collapse'}<ChevronUp {size} aria-label={ariaLabel} />
+	{:else if name === 'left'}<ChevronLeft {size} aria-label={ariaLabel} />
+	{:else if name === 'right'}<ChevronRight {size} aria-label={ariaLabel} />
 	{/if}
 </span>
