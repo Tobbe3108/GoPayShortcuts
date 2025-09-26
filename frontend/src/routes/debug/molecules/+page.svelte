@@ -21,6 +21,8 @@
 		totalPrice: 200
 	});
 
+	let newOrder: Order | undefined = $state(undefined);
+
 	let lastAction = $state('');
 </script>
 
@@ -86,6 +88,10 @@
 
 	<Label size="xl">AddLocationCard Demo</Label>
 	<section>
-		<AddLocationCard />
+		<AddLocationCard
+			newOrder={(order) => (newOrder = order)}
+			locationsWithOrders={newOrder ? [newOrder.kitchenId] : []}
+		/>
+		<Label variant="muted">Latest order location: {newOrder?.kitchenName}</Label>
 	</section>
 </div>

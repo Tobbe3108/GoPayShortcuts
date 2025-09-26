@@ -1,5 +1,4 @@
 export interface Location {
-	id: number;
+	kitchenId: number;
 	name: string;
-	address: string;
 }

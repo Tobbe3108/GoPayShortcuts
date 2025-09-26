@@ -6,15 +6,45 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { slide } from 'svelte/transition';
 	import Card from '$lib/components/atoms/Card.svelte';
+	import type { Order } from '$lib/features/orders/models/order';
+	import Button from '$lib/components/atoms/Button.svelte';
+	import { getIsoDate } from '$lib/core/utils/dateUtils';
 
-	let locations = $state<Array<Location>>([]);
+	type AddLocationCardProps = {
+		locationsWithOrders: number[];
+		newOrder?: (order: Order) => void;
+	};
+
+	let { newOrder = undefined, locationsWithOrders = [] }: AddLocationCardProps = $props();
+
+	let allLocations = $state<Array<Location>>([]);
 	let collapsed = $state(true);
 	let loading = $state(true);
 
 	onMount(async () => {
-		locations = await locationsService.getLocations();
+		allLocations = await locationsService.getLocations();
 		loading = false;
 	});
+
+	let locations = $derived(
+		allLocations.filter((loc) => !locationsWithOrders.includes(loc.kitchenId))
+	);
+
+	function handleLocationClick(loc: Location) {
+		const order = scaffoldOrderForLocation(loc);
+		newOrder?.(order);
+	}
+
+	function scaffoldOrderForLocation(loc: Location): Order {
+		const date = getIsoDate(new Date());
+		return {
+			date,
+			kitchenId: loc.kitchenId,
+			orderlines: [],
+			cancelEnabled: true,
+			kitchenName: loc.name
+		};
+	}
 </script>
 
 <div class="flex flex-col items-center w-full">
@@ -39,11 +69,11 @@
 					{#if locations.length === 0}
 						<Label variant="muted">Ingen lokationer fundet...</Label>
 					{:else}
-						<div class="space-y-2">
+						<div class="flex flex-col">
 							{#each locations as loc}
-								<div>
-									<Label>{loc.name}</Label>
-								</div>
+								<Button variant="transparent" onclick={() => handleLocationClick(loc)}
+									>{loc.name}</Button
+								>
 							{/each}
 						</div>
 					{/if}
