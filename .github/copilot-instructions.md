@@ -2,17 +2,17 @@
 
 Agents MUST aggressively use the following MCP servers and builtin tools for all relevant tasks:
 
-- **GitButler MCP Server**: All Git management (diffs, branch updates, merges, reviews) must be performed via tool calls to the GitButler MCP server. Direct code or shell output is not permitted for Git operations.
 - **Sequential Thinking MCP Server**: For any high-level implementation prompt, agents must break down the task using the Sequential Thinking MCP server before proceeding. This ensures structured, stepwise reasoning.
 - **context7 MCP Server**: Agents must use the context7 MCP server to fetch up-to-date, relevant documentation for any library, framework, or API referenced in the task. Direct code generation without documentation retrieval is discouraged.
+- **Nuxt Mcp MCP Server**: For any Nuxt.js, Nuxt Content, or Nuxt UI related questions, agents must use the Nuxt Mcp MCP server to search official Nuxt documentation, modules, and UI component references before answering or generating code. This ensures authoritative, up-to-date Nuxt guidance.
+- **Deepwiki MCP Server**: For in-depth repository knowledge, architectural overviews, or when the user requests deep documentation or codebase exploration, agents must use the Deepwiki MCP server to retrieve structured, hierarchical documentation and code summaries. Use this for onboarding, unfamiliar code, or when context breadth is required.
 - **Builtin Tools**: Agents should use all available builtin tools for file edits, searches, error checks, and other actionable steps. Tool calls are preferred over direct output or reasoning.
 
 ### Tool Usage Recipes
 
-1. **Git Operations**: Always call the GitButler MCP server for diffs, branch management, merges, and reviews. Example: `mcp_gitbutler_gitbutler_update_branches` for branch updates.
-2. **Task Breakdown**: For complex or ambiguous prompts, invoke the Sequential Thinking MCP server to generate a stepwise plan before any code or context action.
-3. **Documentation Retrieval**: Use context7 MCP server to fetch documentation before implementing or refactoring code involving external libraries.
-4. **File and Workspace Actions**: Use builtin tools for file edits, searches, error checks, and other workspace actions. Avoid direct code output unless tool calls are exhausted or unavailable.
+1. **Task Breakdown**: For complex or ambiguous prompts, invoke the Sequential Thinking MCP server to generate a stepwise plan before any code or context action.
+2. **Documentation Retrieval**: Use context7 MCP server to fetch documentation before implementing or refactoring code involving external libraries. For Nuxt-specific features, modules, or UI, use the Nuxt Mcp MCP server to search Nuxt documentation and modules. For deep repository or architectural questions, use the Deepwiki MCP server to retrieve structured documentation and codebase overviews.
+3. **File and Workspace Actions**: Use builtin tools for file edits, searches, error checks, and other workspace actions. Avoid direct code output unless tool calls are exhausted or unavailable.
 
 ### Enforcement
 
