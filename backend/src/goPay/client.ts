@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import {
   RequestOTPRequest,
   RequestOTPResponse,
@@ -144,9 +145,10 @@ export class GoPayClient {
   }
 
   async getProducts(kitchenId: number): Promise<ProductsResponse | Response> {
-    const endpoint = `/suppliers/kitchens/${kitchenId}/menues/catering?date=${
-      new Date().toISOString().split("T")[0]
-    }`;
+    const endpoint = `/suppliers/kitchens/${kitchenId}/menues/catering?date=${format(
+      new Date(),
+      "yyyy-MM-dd"
+    )}`;
 
     const response = await this.request<ProductsResponse>(endpoint, {
       cf: {

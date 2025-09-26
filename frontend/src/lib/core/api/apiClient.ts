@@ -11,6 +11,7 @@ import type { Location } from '$lib/features/locations/location';
 import { API_BASE_URL } from '../config/environment';
 import { authStore } from '$lib/features/auth/store';
 import { get } from 'svelte/store';
+import { format } from 'date-fns';
 
 /**
  * API client that directly maps to our backend endpoints
@@ -87,8 +88,11 @@ export class ApiClient {
 		return this.request<MenuDay[]>('/menu', 'GET');
 	}
 
-	async listOrders(startDate: string, endDate: string): Promise<OrdersResponse> {
-		return this.request<OrdersResponse>(`/orders?start=${startDate}&end=${endDate}`, 'GET');
+	async listOrders(startDate: Date, endDate: Date): Promise<OrdersResponse> {
+		return this.request<OrdersResponse>(
+			`/orders?start=${format(startDate, 'yyyy-MM-dd')}&end=${format(endDate, 'yyyy-MM-dd')}`,
+			'GET'
+		);
 	}
 
 	async updateDay(req: UpdateDayRequest): Promise<UpdateDayResponse> {

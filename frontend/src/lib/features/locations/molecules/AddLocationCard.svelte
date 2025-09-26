@@ -8,7 +8,7 @@
 	import Card from '$lib/components/atoms/Card.svelte';
 	import type { Order } from '$lib/features/orders/models/order';
 	import Button from '$lib/components/atoms/Button.svelte';
-	import { getIsoDate } from '$lib/core/utils/dateUtils';
+	import { format } from 'date-fns';
 
 	type AddLocationCardProps = {
 		locationsWithOrders: number[];
@@ -36,7 +36,7 @@
 	}
 
 	function scaffoldOrderForLocation(loc: Location): Order {
-		const date = getIsoDate(new Date());
+		const date = format(new Date(), 'yyyy-MM-dd');
 		return {
 			date,
 			kitchenId: loc.kitchenId,

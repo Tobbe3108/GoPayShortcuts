@@ -8,7 +8,7 @@
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
-	import { getIsoDate } from '$lib/core/utils/dateUtils';
+	import { format } from 'date-fns';
 
 	let inputValue = $state('');
 
@@ -108,8 +108,8 @@
 			onWeekChange={(newStart, newEnd) => ((weekStart = newStart), (weekEnd = newEnd))}
 		/>
 		<Label variant="muted"
-			>Selected week: {weekStart ? getIsoDate(weekStart) : ''} - {weekEnd
-				? getIsoDate(weekEnd)
+			>Selected week: {weekStart ? format(weekStart, 'yyyy-MM-dd') : ''} - {weekEnd
+				? format(weekEnd, 'yyyy-MM-dd')
 				: ''}</Label
 		>
 	</section>

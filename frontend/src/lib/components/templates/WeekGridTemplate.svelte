@@ -3,9 +3,8 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
-	import { startOfWeek, endOfWeek, getWeek, addDays } from 'date-fns';
+	import { startOfWeek, endOfWeek, getWeek, addDays, format } from 'date-fns';
 	import { ordersService } from '$lib/features/orders/ordersService';
-	import { getIsoDate } from '$lib/core/utils/dateUtils';
 	import type { Order } from '$lib/features/orders/models/order';
 
 	type WeekGridProps = {
@@ -23,7 +22,7 @@
 	$effect(() => async () => (orders = await ordersService.listOrders(weekStart, weekEnd)));
 
 	function ordersByDay(date: Date) {
-		return orders.filter((o) => o.date === getIsoDate(date));
+		return orders.filter((o) => o.date === format(date, 'yyyy-MM-dd'));
 	}
 </script>
 

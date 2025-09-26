@@ -1,5 +1,4 @@
 import { apiClient } from '$lib/core/api/apiClient';
-import { getIsoDate } from '$lib/core/utils/dateUtils';
 import type { Order } from './models/order';
 import type { UpdateDayRequest } from './models/update/updateDayRequest';
 import type { UpdateDayResponse } from './models/update/updateDayResponse';
@@ -14,9 +13,7 @@ export class OrdersService {
 	static async listOrders(startDate: Date, endDate: Date): Promise<Order[]> {
 		try {
 			// Fetch orders from API
-			const start = getIsoDate(startDate);
-			const end = getIsoDate(endDate);
-			const response = await apiClient.listOrders(start, end);
+			const response = await apiClient.listOrders(startDate, endDate);
 
 			// Return the orders array directly from the response
 			return response.orders;

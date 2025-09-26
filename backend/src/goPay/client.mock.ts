@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { GoPayClient } from "./client";
 import {
   RequestOTPResponse,
@@ -112,7 +113,7 @@ export class GoPayClientMock extends GoPayClient {
   private static products: ProductsResponse = {
     menues: [
       {
-        date: new Date().toISOString().split("T")[0],
+        date: format(new Date(), "yyyy-MM-dd"),
         displayDate: "Today",
         productGroups: [
           {
