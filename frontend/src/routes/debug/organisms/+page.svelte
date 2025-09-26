@@ -27,6 +27,7 @@
 		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
 		<a href="/debug/organisms" class="text-blue-900 font-bold underline">Organisms Debug</a>
+		<a href="/debug/templates" class="text-blue-600 hover:underline">Templates Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
 

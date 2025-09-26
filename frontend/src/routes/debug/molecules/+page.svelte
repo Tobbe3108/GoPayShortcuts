@@ -8,6 +8,7 @@
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
+	import { getIsoDate } from '$lib/core/utils/dateUtils';
 
 	let inputValue = $state('');
 
@@ -26,7 +27,8 @@
 
 	let lastAction = $state('');
 
-	let weekNumber = $state<number>();
+	let weekStart = $state<Date>();
+	let weekEnd = $state<Date>();
 </script>
 
 <div class="p-6 space-y-6">
@@ -34,6 +36,7 @@
 		<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 		<a href="/debug/molecules" class="text-blue-900 font-bold underline">Molecules Debug</a>
 		<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
+		<a href="/debug/templates" class="text-blue-600 hover:underline">Templates Debug</a>
 		<a href="/debug" class="text-blue-600 hover:underline">Main Debug</a>
 	</div>
 
@@ -100,7 +103,14 @@
 
 	<Label size="xl">WeekNavigator Demo</Label>
 	<section class="max-w-max justify-center">
-		<WeekNavigator date={new Date()} onWeekChange={(newWeek) => (weekNumber = newWeek)} />
-		<Label variant="muted">Selected week: {weekNumber}</Label>
+		<WeekNavigator
+			date={new Date()}
+			onWeekChange={(newStart, newEnd) => ((weekStart = newStart), (weekEnd = newEnd))}
+		/>
+		<Label variant="muted"
+			>Selected week: {weekStart ? getIsoDate(weekStart) : ''} - {weekEnd
+				? getIsoDate(weekEnd)
+				: ''}</Label
+		>
 	</section>
 </div>

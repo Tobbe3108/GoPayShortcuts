@@ -23,8 +23,8 @@
 		orders: false,
 		updateDay: false
 	};
-	let startDateStr = '';
-	let endDateStr = '';
+	let startDate: Date | undefined = undefined;
+	let endDate: Date | undefined = undefined;
 
 	// Update Day debug state
 	let updateDayKitchenId: number | '' = '';
@@ -75,7 +75,7 @@
 	async function fetchOrders() {
 		loadingStatus.orders = true;
 		try {
-			orders = await ordersService.listOrders(startDateStr, endDateStr);
+			orders = await ordersService.listOrders(startDate!, endDate!);
 		} catch (error) {
 			console.error('Error fetching orders:', error);
 		} finally {
@@ -151,6 +151,7 @@
 				<a href="/debug/atoms" class="text-blue-600 hover:underline">Atoms Debug</a>
 				<a href="/debug/molecules" class="text-blue-600 hover:underline">Molecules Debug</a>
 				<a href="/debug/organisms" class="text-blue-600 hover:underline">Organisms Debug</a>
+				<a href="/debug/templates" class="text-blue-600 hover:underline">Templates Debug</a>
 				<a href="/debug" class="text-blue-900 font-bold underline">Main Debug</a>
 			</div>
 			<h1 class="text-3xl font-bold text-slate-800 mb-6">Debug Console</h1>
@@ -262,7 +263,7 @@
 										id="startDate"
 										type="date"
 										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-										bind:value={startDateStr}
+										bind:value={startDate}
 									/>
 								</div>
 								<div>
@@ -273,7 +274,7 @@
 										id="endDate"
 										type="date"
 										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-										bind:value={endDateStr}
+										bind:value={endDate}
 									/>
 								</div>
 								<button
