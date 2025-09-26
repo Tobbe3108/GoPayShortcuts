@@ -7,7 +7,7 @@
 
 	type weekNavigationProps = {
 		date: Date;
-		onWeekChange?: (weekNumber: number) => void;
+		onWeekChange?: (weekStart: Date, weekEnd: Date) => void;
 	};
 
 	let { date, onWeekChange = undefined }: weekNavigationProps = $props();
@@ -28,12 +28,12 @@
 
 	function prevWeek() {
 		weekOffset--;
-		onWeekChange?.(getWeekNumber());
+		onWeekChange?.(getWeekStart(), getWeekEnd());
 	}
 
 	function nextWeek() {
 		weekOffset++;
-		onWeekChange?.(getWeekNumber());
+		onWeekChange?.(getWeekStart(), getWeekEnd());
 	}
 
 	const weekRange = $derived(
