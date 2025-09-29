@@ -1,7 +1,6 @@
 import { apiClient } from '$lib/core/api/apiClient';
-import type { Order } from './models/order';
-import type { UpdateDayRequest } from './models/update/updateDayRequest';
-import type { UpdateDayResponse } from './models/update/updateDayResponse';
+import type { SimplifiedOrder } from './models/SimplifiedOrder';
+import type { UpdateDayRequest } from './models/updateDayRequest';
 
 /**
  * Orders service for accessing order data from the backend
@@ -10,12 +9,9 @@ export class OrdersService {
 	/**
 	 * Get orders for a specified date range
 	 */
-	static async listOrders(startDate: Date, endDate: Date): Promise<Order[]> {
+	static async listOrders(startDate: Date, endDate: Date): Promise<SimplifiedOrder[]> {
 		try {
-			// Fetch orders from API
 			const response = await apiClient.listOrders(startDate, endDate);
-
-			// Return the orders array directly from the response
 			return response.orders;
 		} catch (error) {
 			console.error('Failed to fetch orders:', error);
@@ -26,9 +22,10 @@ export class OrdersService {
 	/**
 	 * Update orders for a kitchen and day to match desired state
 	 */
-	static async updateDay(req: UpdateDayRequest): Promise<UpdateDayResponse> {
+	static async updateDay(req: UpdateDayRequest): Promise<SimplifiedOrder[]> {
 		try {
-			return await apiClient.updateDay(req);
+			const response = await apiClient.updateDay(req);
+			return response.orders;
 		} catch (error) {
 			console.error('Failed to update day orders:', error);
 			throw error;

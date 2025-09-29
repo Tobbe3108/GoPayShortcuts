@@ -1,5 +1,5 @@
 import { mock, when, instance } from "ts-mockito";
-import { faker } from "@faker-js/faker";
+import { fa, faker } from "@faker-js/faker";
 import {
   RequestOTPResponse,
   LoginResponse,
@@ -24,6 +24,7 @@ import { isWithinInterval, parseISO } from "date-fns";
 
 // Global caches for mock data
 let _locations: Location[] | null = null;
+let _kitchens: Record<number, Kitchen> = {};
 let _productsByKitchen: Record<number, ProductsResponse> = {};
 let _ordersByKitchen: Record<number, Record<number, DetailedOrder>> = {};
 
@@ -74,7 +75,7 @@ export class GoPayClientMock {
   async getLocations(): Promise<Location[]> {
     if (!_locations) {
       _locations = Array.from({ length: 3 }, () => ({
-        id: faker.number.int(),
+        id: faker.number.int({ min: 1000, max: 9999 }),
         name: faker.location.city(),
         kitchens: [fakeKitchen()],
       }));
@@ -204,6 +205,17 @@ export class GoPayClientMock {
           name: faker.commerce.productName(),
         })),
       })),
+      kitchen: {
+        ...fakeKitchen(kitchenId),
+        phoneNumber: faker.phone.number(),
+        email: faker.internet.email(),
+        streetName: faker.location.street(),
+        streetNumber: faker.string.numeric(2),
+        postalCode: faker.location.zipCode(),
+        city: faker.location.city(),
+        webshop: undefined,
+        vatnumber: "",
+      },
       price: fakePrice(),
       shopChannel: "web",
       uid: faker.string.uuid(),
@@ -303,8 +315,8 @@ function fakeAddress(): Address {
 }
 
 function fakeKitchen(id?: number): Kitchen {
-  return {
-    id: id ?? faker.number.int(),
+  const kitchen = {
+    id: id ?? faker.number.int({ min: 1000, max: 9999 }),
     uid: faker.string.uuid(),
     name: faker.commerce.department(),
     address: fakeAddress(),
@@ -312,6 +324,10 @@ function fakeKitchen(id?: number): Kitchen {
     brandingDetails: fakeBrandingDetails(),
     sellerSupplierParty: undefined,
   };
+
+  if (!_kitchens[kitchen.id]) _kitchens = {};
+  _kitchens[kitchen.id] = kitchen;
+  return kitchen;
 }
 
 function fakeOrganizer(): Organizer {

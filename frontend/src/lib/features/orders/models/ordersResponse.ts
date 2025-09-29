@@ -1,5 +1,5 @@
-import type { Order } from './order';
+import type { SimplifiedOrder } from './SimplifiedOrder';
 
 export interface OrdersResponse {
-	orders: Order[];
+	orders: SimplifiedOrder[];
 }

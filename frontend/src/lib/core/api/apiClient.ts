@@ -1,6 +1,5 @@
 import type { ApiError, RequestOptions } from './api';
-import type { UpdateDayRequest } from '$lib/features/orders/models/update/updateDayRequest';
-import type { UpdateDayResponse } from '$lib/features/orders/models/update/updateDayResponse';
+import type { UpdateDayRequest } from '$lib/features/orders/models/updateDayRequest';
 import type { RequestOTPResponse } from '$lib/features/auth/models/requestOTPResponse';
 import type { LoginResponse } from '$lib/features/auth/models/loginResponse';
 import type { Product } from '$lib/features/products/product';
@@ -95,8 +94,8 @@ export class ApiClient {
 		);
 	}
 
-	async updateDay(req: UpdateDayRequest): Promise<UpdateDayResponse> {
-		return this.request<UpdateDayResponse>('/orders', 'PATCH', req);
+	async updateDay(req: UpdateDayRequest): Promise<OrdersResponse> {
+		return this.request<OrdersResponse>('/orders', 'PATCH', req);
 	}
 }
 

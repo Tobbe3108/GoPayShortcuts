@@ -33,27 +33,21 @@ export class ListOrders extends OpenAPIRoute {
     },
     responses: {
       200: {
-        description: "List of detailed orders for the week",
+        description: "List of orders for the week",
         ...contentJson(
           z.object({
             orders: z.array(
               z.object({
                 order: z.object({
-                  id: z.number(),
                   date: z.string(),
                   kitchenId: z.number(),
-                  kitchenName: z.string(),
-                  status: z.string(),
                   orderLines: z.array(
                     z.object({
-                      id: z.number(),
-                      name: z.string(),
-                      price: z.number(),
+                      productId: z.number(),
                       quantity: z.number(),
+                      price: z.number(),
                     })
                   ),
-                  totalPrice: z.number(),
-                  cancelEnabled: z.boolean(),
                 }),
               })
             ),
@@ -96,6 +90,8 @@ export class ListOrders extends OpenAPIRoute {
         );
       })
       .sort((a, b) => a.date.localeCompare(b.date));
+
+    //TODO: Merge simplifiedOrders so that there are only one "order" merged orderlines
 
     c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
     return { orders: simplifiedOrders };

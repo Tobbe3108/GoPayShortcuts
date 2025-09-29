@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { Order } from '../models/order';
 	import type { Product } from '$lib/features/products/product';
 	import { productsService } from '$lib/features/products/productsService';
-	import type { OrderLine } from '../models/orderLine';
 	import { onMount } from 'svelte';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
+	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
+	import type { OrderLine } from '../models/orderLine';
 
 	interface Props {
-		order: Order;
+		order: SimplifiedOrder;
 		editMode?: boolean;
 		currency?: string;
 		showTotal?: boolean;
-		onOrderChange?: (order: Order) => void;
+		onOrderChange?: (order: SimplifiedOrder) => void;
 	}
 
 	let {
@@ -70,8 +70,7 @@
 		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
 		onOrderChange?.({
 			...order,
-			orderlines: [...editableOrderlines],
-			totalPrice
+			orderlines: [...editableOrderlines]
 		});
 	}
 

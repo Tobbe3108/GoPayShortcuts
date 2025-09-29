@@ -5,8 +5,7 @@
 	import { menuService } from '$lib/features/menu/menuService';
 	import { ordersService } from '$lib/features/orders/ordersService';
 	import MainLayout from '$lib/components/templates/MainLayout.svelte';
-	import type { UpdateDayRequest } from '$lib/features/orders/models/update/updateDayRequest';
-	import type { UpdateDayResponse } from '$lib/features/orders/models/update/updateDayResponse';
+	import type { UpdateDayRequest } from '$lib/features/orders/models/updateDayRequest';
 
 	import Card from '$lib/components/atoms/Card.svelte';
 	import { onMount } from 'svelte';

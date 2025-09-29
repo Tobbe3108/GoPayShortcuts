@@ -40,33 +40,22 @@ export class PatchOrdersState extends OpenAPIRoute {
     },
     responses: {
       200: {
-        description: "Summary of canceled and created orders",
+        description: "List of orders for the week",
         ...contentJson(
           z.object({
-            canceled: z.array(
+            orders: z.array(
               z.object({
-                orderId: z.number(),
-                status: z.string(),
-                products: z.array(
-                  z.object({
-                    productId: z.number(),
-                    name: z.string(),
-                    quantity: z.number(),
-                  })
-                ),
-              })
-            ),
-            created: z.array(
-              z.object({
-                orderId: z.number(),
-                status: z.string(),
-                products: z.array(
-                  z.object({
-                    productId: z.number(),
-                    name: z.string(),
-                    quantity: z.number(),
-                  })
-                ),
+                order: z.object({
+                  date: z.string(),
+                  kitchenId: z.number(),
+                  orderLines: z.array(
+                    z.object({
+                      productId: z.number(),
+                      quantity: z.number(),
+                      price: z.number(),
+                    })
+                  ),
+                }),
               })
             ),
           })
@@ -113,7 +102,7 @@ export class PatchOrdersState extends OpenAPIRoute {
 
     // Find which orders are fully cancelable
     const cancelableOrders = filteredOrders.filter((order) =>
-      order.deliveries.every((d) => d.cancelOrder.cancelEnable === true)
+      order.deliveries.every((d) => d.cancelOrder?.cancelEnable === true)
     );
     const fixedOrders = filteredOrders.filter(
       (order) => !cancelableOrders.includes(order)
