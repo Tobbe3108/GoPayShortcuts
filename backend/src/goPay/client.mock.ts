@@ -19,16 +19,17 @@ import {
   Address,
   Kitchen,
   Organizer,
-  Delivery,
 } from "./types";
+import { isWithinInterval, parseISO } from "date-fns";
+
+// Global caches for mock data
+let _locations: Location[] | null = null;
+let _productsByKitchen: Record<number, ProductsResponse> = {};
+let _ordersByKitchen: Record<number, Record<number, DetailedOrder>> = {};
 
 export class GoPayClientMock {
   apiUrl: string;
   token: string | null = null;
-
-  private _locations: Location[] | null = null;
-  private _productsByKitchen: Record<number, ProductsResponse> = {};
-  private _ordersByKitchen: Record<number, Record<number, DetailedOrder>> = {};
 
   constructor(apiUrl: string, token?: string) {
     this.apiUrl = apiUrl;
@@ -71,19 +72,19 @@ export class GoPayClientMock {
   }
 
   async getLocations(): Promise<Location[]> {
-    if (!this._locations) {
-      this._locations = Array.from({ length: 3 }, () => ({
+    if (!_locations) {
+      _locations = Array.from({ length: 3 }, () => ({
         id: faker.number.int(),
         name: faker.location.city(),
         kitchens: [fakeKitchen()],
       }));
     }
-    return this._locations;
+    return _locations;
   }
 
   async getProducts(kitchenId: number): Promise<ProductsResponse> {
-    if (!this._productsByKitchen[kitchenId]) {
-      this._productsByKitchen[kitchenId] = {
+    if (!_productsByKitchen[kitchenId]) {
+      _productsByKitchen[kitchenId] = {
         menues: [
           {
             date: faker.date.future().toISOString().slice(0, 10),
@@ -120,25 +121,25 @@ export class GoPayClientMock {
         kitchen: fakeKitchenSummary(kitchenId),
       };
     }
-    return this._productsByKitchen[kitchenId];
+    return _productsByKitchen[kitchenId];
   }
 
   async listOrders(
     startDate: string,
     endDate: string
   ): Promise<ListOrdersResponse> {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
 
     let orders: DetailedOrder[] = [];
-    for (const kitchenOrders of Object.values(this._ordersByKitchen)) {
+    for (const kitchenOrders of Object.values(_ordersByKitchen)) {
       orders = orders.concat(Object.values(kitchenOrders));
     }
 
     const filtered = orders.filter((order) =>
       order.deliveries.some((delivery) => {
-        const deliveryDate = new Date(delivery.deliveryTime);
-        return deliveryDate >= start && deliveryDate <= end;
+        const deliveryDate = parseISO(delivery.deliveryTime);
+        return isWithinInterval(deliveryDate, { start, end });
       })
     );
 
@@ -208,10 +209,10 @@ export class GoPayClientMock {
       uid: faker.string.uuid(),
     };
 
-    if (!this._ordersByKitchen[kitchenId]) {
-      this._ordersByKitchen[kitchenId] = {};
+    if (!_ordersByKitchen[kitchenId]) {
+      _ordersByKitchen[kitchenId] = {};
     }
-    this._ordersByKitchen[kitchenId][detailedOrder.id] = detailedOrder;
+    _ordersByKitchen[kitchenId][detailedOrder.id] = detailedOrder;
 
     return {
       orderId: detailedOrder.id,
@@ -220,7 +221,7 @@ export class GoPayClientMock {
   }
 
   async getOrderDetails(orderId: number): Promise<DetailedOrder> {
-    for (const kitchenOrders of Object.values(this._ordersByKitchen)) {
+    for (const kitchenOrders of Object.values(_ordersByKitchen)) {
       if (kitchenOrders[orderId]) {
         return kitchenOrders[orderId];
       }
@@ -229,9 +230,9 @@ export class GoPayClientMock {
   }
 
   async deleteOrder(orderId: number): Promise<DeleteOrderResponse> {
-    for (const kitchenId in this._ordersByKitchen) {
-      if (this._ordersByKitchen[kitchenId][orderId]) {
-        delete this._ordersByKitchen[kitchenId][orderId];
+    for (const kitchenId in _ordersByKitchen) {
+      if (_ordersByKitchen[kitchenId][orderId]) {
+        delete _ordersByKitchen[kitchenId][orderId];
         return { success: true };
       }
     }
