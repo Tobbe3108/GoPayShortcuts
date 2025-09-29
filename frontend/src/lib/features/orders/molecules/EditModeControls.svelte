@@ -5,6 +5,7 @@
 	type Direction = 'row' | 'column';
 
 	interface Props {
+		isEditing?: boolean;
 		disabled?: boolean;
 		locked?: boolean;
 		showDelete?: boolean;
@@ -16,6 +17,7 @@
 	}
 
 	let {
+		isEditing = false,
 		disabled = false,
 		locked = false,
 		showDelete = true,
@@ -26,7 +28,7 @@
 		onDelete = undefined
 	}: Props = $props();
 
-	let editMode = $state(false);
+	let editMode = $state(isEditing);
 
 	function handleEdit() {
 		editMode = true;

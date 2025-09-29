@@ -6,16 +6,17 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { slide } from 'svelte/transition';
 	import Card from '$lib/components/atoms/Card.svelte';
-	import type { Order } from '$lib/features/orders/models/order';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import { format } from 'date-fns';
+	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 
 	type AddLocationCardProps = {
 		locationsWithOrders: number[];
-		newOrder?: (order: Order) => void;
+		newOrder?: (order: SimplifiedOrder) => void;
+		date: Date;
 	};
 
-	let { newOrder = undefined, locationsWithOrders = [] }: AddLocationCardProps = $props();
+	let { date, newOrder = undefined, locationsWithOrders = [] }: AddLocationCardProps = $props();
 
 	let allLocations = $state<Array<Location>>([]);
 	let collapsed = $state(true);
@@ -35,14 +36,12 @@
 		newOrder?.(order);
 	}
 
-	function scaffoldOrderForLocation(loc: Location): Order {
-		const date = format(new Date(), 'yyyy-MM-dd');
+	function scaffoldOrderForLocation(loc: Location): SimplifiedOrder {
 		return {
-			date,
+			date: format(date, 'yyyy-MM-dd'),
 			kitchenId: loc.kitchenId,
 			orderlines: [],
-			cancelEnabled: true,
-			kitchenName: loc.name
+			cancelEnabled: true
 		};
 	}
 </script>

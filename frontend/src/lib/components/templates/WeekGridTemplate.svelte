@@ -5,8 +5,8 @@
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
 	import { startOfWeek, endOfWeek, getWeek, addDays, format } from 'date-fns';
 	import { ordersService } from '$lib/features/orders/ordersService';
-	import type { Order } from '$lib/features/orders/models/order';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
+	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 
 	type WeekGridProps = {
 		date: Date;
@@ -18,15 +18,21 @@
 	let weekEnd = $state(endOfWeek(date, { weekStartsOn: 1 }));
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
-	let orders: Order[] = $state([]);
+	let orders: SimplifiedOrder[] = $state([]);
+	let tempOrders: SimplifiedOrder[] = $state([]);
+
 	$effect(() => {
 		(async () => {
 			orders = await ordersService.listOrders(weekStart, weekEnd);
 		})();
 	});
 
-	function ordersByDay(date: Date) {
-		return orders.filter((o) => o.date === format(date, 'yyyy-MM-dd'));
+	function ordersByDay(list: SimplifiedOrder[], date: Date) {
+		return list.filter((o) => o.date === format(date, 'yyyy-MM-dd'));
+	}
+
+	function handleOrderChange(updatedOrder: SimplifiedOrder | undefined) {
+		// TODO:
 	}
 </script>
 
@@ -44,12 +50,20 @@
 			<div class="flex flex-col space-y-4">
 				<DayHeader {date} />
 				<TodaysMenu {date} />
-				{#each ordersByDay(date) as order}
-					<OrderCard {order} onOrderChange={() => {}} />
+				{#each ordersByDay(orders, date) as order}
+					<OrderCard {order} onOrderChange={handleOrderChange} />
+				{/each}
+				{#each ordersByDay(tempOrders, date) as tempOrder}
+					<OrderCard order={tempOrder} isEditing={true} onOrderChange={handleOrderChange} />
 				{/each}
 				<AddLocationCard
-					newOrder={(order) => {}}
-					locationsWithOrders={ordersByDay(date).map((o) => o.kitchenId)}
+					{date}
+					newOrder={(newOrder) => {
+						tempOrders = [...tempOrders, newOrder];
+					}}
+					locationsWithOrders={ordersByDay([...tempOrders, ...orders], date).map(
+						(o) => o.kitchenId
+					)}
 				/>
 			</div>
 		{/each}
