@@ -42,7 +42,8 @@ The GoPayShortcuts frontend is a static Svelte + TypeScript + Tailwind webapp, d
 
 ## Developer Workflow
 
-- Install dependencies: `bun install` (in `frontend/`)
+- **Always install packages in the correct folder:**
+  - Run `bun install` **only in the `frontend/` folder**. Never run it in the project root.
 - Start dev server: `bun run dev`
 - Build for production: `bun run build`
 - Type check: `bun run check`
