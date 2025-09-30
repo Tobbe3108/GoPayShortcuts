@@ -11,6 +11,7 @@ import {
 } from "./shared/ordersUtils";
 import { DetailedOrder } from "../../goPay/types";
 import { Schemas } from "../Shared/Schemas";
+import { isAfter, isBefore, isToday, parseISO } from "date-fns";
 
 export class PatchOrdersState extends OpenAPIRoute {
   schema = {
@@ -75,6 +76,12 @@ export class PatchOrdersState extends OpenAPIRoute {
 
     const data = await this.getValidatedData<typeof this.schema>();
     const { kitchenId, date, desiredOrders } = data.body;
+
+    const today = isToday(parseISO(date));
+    const furture = isAfter(parseISO(date), new Date());
+    if (!today && !furture) {
+      throw { statusCode: 400, message: "Cannot update orders for past dates" };
+    }
 
     const ordersResp = await client.listOrders(date, date);
     if (ordersResp instanceof Response) return ordersResp;
