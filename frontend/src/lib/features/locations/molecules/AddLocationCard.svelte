@@ -38,6 +38,8 @@
 
 	function scaffoldOrderForLocation(loc: Location): SimplifiedOrder {
 		return {
+			id: Date.now(),
+			isEditing: true,
 			date: format(date, 'yyyy-MM-dd'),
 			kitchenId: loc.kitchenId,
 			orderlines: [],

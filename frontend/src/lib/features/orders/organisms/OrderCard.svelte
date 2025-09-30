@@ -10,7 +10,7 @@
 
 	type OrderCardProps = {
 		order: SimplifiedOrder;
-		onOrderChange?: (order: SimplifiedOrder | undefined) => void;
+		onOrderChange?: (newOrderState: SimplifiedOrder[] | undefined) => void;
 		isEditing?: boolean;
 	};
 
@@ -35,22 +35,22 @@
 			return;
 		}
 
-		await handleUpdate({
+		const response = await handleUpdate({
 			kitchenId: order.kitchenId,
 			date: order.date,
 			desiredOrders: order.orderlines
 		});
-		onOrderChange?.(order);
+		onOrderChange?.(response);
 	}
 
 	async function handleDelete() {
 		try {
-			await handleUpdate({
+			const response = await handleUpdate({
 				kitchenId: order.kitchenId,
 				date: order.date,
 				desiredOrders: []
 			});
-			onOrderChange?.(undefined);
+			onOrderChange?.(response);
 		} catch (_) {}
 	}
 
