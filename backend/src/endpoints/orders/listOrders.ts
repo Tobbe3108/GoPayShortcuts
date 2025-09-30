@@ -10,6 +10,8 @@ import { Schemas } from "../Shared/Schemas";
 import {
   fetchValidOrderDetails,
   buildSimplifiedOrderFromDetailed,
+  ProductQuantity,
+  buildSimplifiedOrderFromProducts,
 } from "./shared/ordersUtils";
 
 export class ListOrders extends OpenAPIRoute {
@@ -73,27 +75,66 @@ export class ListOrders extends OpenAPIRoute {
     if (ordersResp instanceof Response) return ordersResp; // Error responses
 
     const validOrders = await fetchValidOrderDetails(ordersResp.orders, client);
+    const combinedProducts: tempOrder[] = [];
+    for (const order of validOrders) {
+      const delivery = order.deliveries?.[0];
+      const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
+      const kitchenId = order.kitchen?.id || NaN;
+      const cancelEnabled = order.deliveries.every(
+        (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
+      );
+      const simplifiedOrder = buildSimplifiedOrderFromDetailed(
+        date,
+        kitchenId,
+        order,
+        cancelEnabled
+      );
 
-    const simplifiedOrders = validOrders
-      .map((order) => {
-        const delivery = order.deliveries?.[0];
-        const date = delivery?.deliveryTime?.slice(0, 10) || "unknown";
-        const kitchenId = order.kitchen?.id || NaN;
-        const cancelEnabled = order.deliveries.every(
-          (d) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
-        );
-        return buildSimplifiedOrderFromDetailed(
-          date,
+      const existing = combinedProducts.find(
+        (o) => o.date === date && o.kitchenId === kitchenId
+      );
+      if (existing) {
+        existing.cancelEnabled.push(simplifiedOrder.cancelEnabled);
+        simplifiedOrder.orderlines.forEach((ol) => {
+          const existProd = existing.products.find(
+            (p) => p.productId === ol.productId
+          );
+          if (existProd) {
+            existProd.quantity += ol.quantity;
+          } else {
+            existing.products.push(ol);
+          }
+        });
+      } else {
+        combinedProducts.push({
+          date: date,
           kitchenId,
-          order,
-          cancelEnabled
+          products: simplifiedOrder.orderlines,
+          cancelEnabled: [simplifiedOrder.cancelEnabled],
+        });
+      }
+    }
+
+    const simplifiedOrders = await Promise.all(
+      combinedProducts.map(async (order) => {
+        return await buildSimplifiedOrderFromProducts(
+          client,
+          order.date,
+          order.kitchenId,
+          order.products,
+          order.cancelEnabled.some((ce) => ce === true)
         );
       })
-      .sort((a, b) => a.date.localeCompare(b.date));
-
-    //TODO: Merge simplifiedOrders so that there are only one "order" merged orderlines
+    ).then((orders) => orders.sort((a, b) => a.date.localeCompare(b.date)));
 
     c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
     return { orders: simplifiedOrders };
   }
 }
+
+type tempOrder = {
+  date: string;
+  kitchenId: number;
+  products: { productId: number; quantity: number; price: number }[];
+  cancelEnabled: boolean[];
+};
