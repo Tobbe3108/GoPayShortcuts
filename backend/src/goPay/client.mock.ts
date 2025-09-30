@@ -1,5 +1,5 @@
 import { mock, when, instance } from "ts-mockito";
-import { fa, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import {
   RequestOTPResponse,
   LoginResponse,

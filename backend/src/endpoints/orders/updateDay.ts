@@ -8,6 +8,7 @@ import {
   createAndPayOrder,
   ProductQuantity,
   cancelOrdersBatch,
+  SimplifiedOrder,
 } from "./shared/ordersUtils";
 import { DetailedOrder } from "../../goPay/types";
 import { Schemas } from "../Shared/Schemas";
@@ -204,22 +205,22 @@ export class PatchOrdersState extends OpenAPIRoute {
     if (createResult instanceof Response) return createResult; // Error response
 
     // Compose the new order state as an array of SimplifiedOrder
-    const simplifiedOrders = [];
+    const allOrders: SimplifiedOrder[] = [];
 
     for (const order of fixedOrders) {
-      simplifiedOrders.push(
+      allOrders.push(
         buildSimplifiedOrderFromDetailed(date, kitchenId, order, false)
       );
     }
 
     for (const order of keptOrders) {
-      simplifiedOrders.push(
+      allOrders.push(
         buildSimplifiedOrderFromDetailed(date, kitchenId, order, true)
       );
     }
 
     if (createResult !== undefined) {
-      simplifiedOrders.push(
+      allOrders.push(
         await buildSimplifiedOrderFromProducts(
           client,
           date,
@@ -230,6 +231,34 @@ export class PatchOrdersState extends OpenAPIRoute {
       );
     }
 
-    return { orders: simplifiedOrders };
+    // Nothing remains, return an empty order for the day
+    if (allOrders.length === 0) {
+      return { orders: [] };
+    }
+
+    // Combine all SimplifiedOrder objects into one per day per kitchen
+    const combinedOrderLines: Record<
+      number,
+      { productId: number; quantity: number; price: number }
+    > = {};
+
+    for (const simplified of allOrders) {
+      for (const line of simplified.orderlines) {
+        if (combinedOrderLines[line.productId]) {
+          combinedOrderLines[line.productId].quantity += line.quantity;
+        } else {
+          combinedOrderLines[line.productId] = { ...line };
+        }
+      }
+    }
+
+    const combinedOrder = {
+      date,
+      kitchenId,
+      orderlines: Object.values(combinedOrderLines),
+      cancelEnabled: allOrders.some((o) => o.cancelEnabled),
+    } as SimplifiedOrder;
+
+    return { orders: [combinedOrder] };
   }
 }
