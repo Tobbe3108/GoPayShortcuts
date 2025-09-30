@@ -20,7 +20,7 @@ import {
   Kitchen,
   Organizer,
 } from "./types";
-import { isWithinInterval, parseISO } from "date-fns";
+import { isAfter, isWithinInterval, parseISO, isToday } from "date-fns";
 
 // Global caches for mock data
 let _locations: Location[] | null = null;
@@ -194,7 +194,9 @@ export class GoPayClientMock {
         type: "LUNCH",
         deliveryTime: d.deliveryTime,
         price: fakePrice(),
-        cancelEnable: true,
+        cancelEnable:
+          isToday(parseISO(d.deliveryTime)) ||
+          isAfter(parseISO(d.deliveryTime), new Date()),
         orderLines: d.orderLines.map((ol) => ({
           id: faker.number.int(),
           productId: ol.productId,
@@ -204,6 +206,13 @@ export class GoPayClientMock {
           price: fakePrice(),
           name: faker.commerce.productName(),
         })),
+        cancelOrder: {
+          cancelEnable:
+            isToday(parseISO(d.deliveryTime)) ||
+            isAfter(parseISO(d.deliveryTime), new Date()),
+          shortMessage: faker.lorem.word(3),
+          message: faker.lorem.sentence(),
+        },
       })),
       kitchen: {
         ...fakeKitchen(kitchenId),
