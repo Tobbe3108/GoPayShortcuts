@@ -10,11 +10,17 @@
 
 	type OrderCardProps = {
 		order: SimplifiedOrder;
-		onOrderChange?: (newOrderState: SimplifiedOrder[] | undefined) => void;
+		onOrderChange?: (newOrderState: SimplifiedOrder[]) => void;
+		onOrderCancel?: (date: string, kitchenId: number) => void;
 		isEditing?: boolean;
 	};
 
-	let { order, onOrderChange = undefined, isEditing = false }: OrderCardProps = $props();
+	let {
+		order,
+		onOrderChange = undefined,
+		onOrderCancel = undefined,
+		isEditing = false
+	}: OrderCardProps = $props();
 
 	let originalOrder = $state(order);
 
@@ -40,17 +46,17 @@
 			date: order.date,
 			desiredOrders: order.orderlines
 		});
-		onOrderChange?.(response);
+		if (response) onOrderChange?.(response);
 	}
 
 	async function handleDelete() {
 		try {
-			const response = await handleUpdate({
+			await handleUpdate({
 				kitchenId: order.kitchenId,
 				date: order.date,
 				desiredOrders: []
 			});
-			onOrderChange?.(response);
+			onOrderCancel?.(order.date, order.kitchenId);
 		} catch (_) {}
 	}
 
