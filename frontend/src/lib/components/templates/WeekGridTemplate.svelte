@@ -18,59 +18,60 @@
 	let weekEnd = $state(endOfWeek(date, { weekStartsOn: 1 }));
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
-	let orders: Record<string, Record<number, SimplifiedOrder[]>> = $state({});
-	let tempOrders: Record<string, Record<number, SimplifiedOrder[]>> = $state({});
+	let orders: Record<string, SimplifiedOrder[]> = $state({});
+	let tempOrders: Record<string, SimplifiedOrder[]> = $state({});
 
 	$effect(() => {
 		(async () => {
 			orders = await ordersService.listOrders(weekStart, weekEnd).then((res) =>
 				res.reduce(
-					(acc, order) => {
-						if (!acc[order.date]) acc[order.date] = {};
-						if (!acc[order.date][order.kitchenId]) acc[order.date][order.kitchenId] = [];
-						acc[order.date][order.kitchenId].push(order);
-						return acc;
+					(record, order) => {
+						if (!record[order.date]) record[order.date] = [];
+						record[order.date].push(order);
+						return record;
 					},
-					{} as Record<string, Record<string, SimplifiedOrder[]>>
+					{} as Record<string, SimplifiedOrder[]>
 				)
 			);
 		})();
 	});
 
-	function ordersByDay(list: Record<string, Record<number, SimplifiedOrder[]>>, date: Date) {
-		const prDay = list[format(date, 'yyyy-MM-dd')] || {};
-		return Object.values(prDay || {}).flat();
+	function ordersByDay(record: Record<string, SimplifiedOrder[]>, date: Date) {
+		return record[format(date, 'yyyy-MM-dd')] || [];
 	}
 
 	function handleOrderChange(newOrderState: SimplifiedOrder[] | undefined): void {
 		if (newOrderState) {
-			updateOrdersForKitchen(newOrderState, orders);
+			for (const order of newOrderState) {
+				updateOrderForKitchen(orders, order);
+			}
 		}
 	}
 
 	function handleTempChange(newOrderState: SimplifiedOrder[] | undefined): void {
 		if (newOrderState) {
-			const first = newOrderState[0];
-			delete tempOrders[first.date][first.kitchenId];
-			updateOrdersForKitchen(newOrderState, orders);
+			for (const order of newOrderState) {
+				tempOrders[order.date] =
+					tempOrders[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
+				updateOrderForKitchen(orders, order);
+			}
 		}
 	}
 
 	function handleCancel(
+		record: Record<string, SimplifiedOrder[]>,
 		date: string,
-		kitchenId: number,
-		list: Record<string, Record<number, SimplifiedOrder[]>>
+		kitchenId: number
 	): void {
-		delete list[date][kitchenId];
+		record[date] = record[date]?.filter((o) => o.kitchenId !== kitchenId) || [];
 	}
 
-	function updateOrdersForKitchen(
-		orders: SimplifiedOrder[],
-		list: Record<string, Record<number, SimplifiedOrder[]>>
+	function updateOrderForKitchen(
+		record: Record<string, SimplifiedOrder[]>,
+		order: SimplifiedOrder
 	): void {
-		const first = orders[0];
-		if (!list[first.date]) list[first.date] = {};
-		list[first.date][first.kitchenId] = orders;
+		record[order.date] = record[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
+		record[order.date].push(order);
 	}
 </script>
 
@@ -88,25 +89,25 @@
 			<div class="flex flex-col space-y-4">
 				<DayHeader {date} />
 				<TodaysMenu {date} />
-				{#each ordersByDay(orders, date) as order}
+				{#each ordersByDay(orders, date) as order (order.kitchenId)}
 					<OrderCard
 						{order}
 						isEditing={false}
 						onOrderChange={handleOrderChange}
-						onOrderCancel={(date, kitchenId) => handleCancel(date, kitchenId, orders)}
+						onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
 					/>
 				{/each}
-				{#each ordersByDay(tempOrders, date) as order}
+				{#each ordersByDay(tempOrders, date) as order (order.kitchenId)}
 					<OrderCard
 						{order}
 						isEditing={true}
 						onOrderChange={handleTempChange}
-						onOrderCancel={(date, kitchenId) => handleCancel(date, kitchenId, tempOrders)}
+						onOrderCancel={(date, kitchenId) => handleCancel(tempOrders, date, kitchenId)}
 					/>
 				{/each}
 				<AddLocationCard
 					{date}
-					newOrder={(newOrder) => updateOrdersForKitchen([newOrder], tempOrders)}
+					newOrder={(newOrder) => updateOrderForKitchen(tempOrders, newOrder)}
 					locationsWithOrders={[...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].map(
 						(o) => o.kitchenId
 					)}

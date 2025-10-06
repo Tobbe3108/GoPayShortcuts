@@ -5,7 +5,6 @@
 	import OrderEditor from '../molecules/OrderEditor.svelte';
 	import { ordersService } from '../ordersService';
 	import { notifications } from '$lib/core/notifications/notificationStore';
-	import type { UpdateDayRequest } from '../models/updateDayRequest';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
 
 	type OrderCardProps = {
@@ -22,17 +21,22 @@
 		isEditing = false
 	}: OrderCardProps = $props();
 
+	let editMode = $state(isEditing);
 	let originalOrder = $state(order);
 
-	let editMode = $state(isEditing);
 	function handleEdit() {
 		editMode = true;
 		originalOrder = order;
 	}
 
 	function handleCancel() {
-		editMode = false;
 		order = originalOrder;
+		editMode = false;
+
+		if (order.orderlines.every((line) => line.quantity === 0)) {
+			handleDelete();
+			return;
+		}
 	}
 
 	async function handleSave() {
@@ -41,34 +45,29 @@
 			return;
 		}
 
-		const response = await handleUpdate({
-			kitchenId: order.kitchenId,
-			date: order.date,
-			desiredOrders: order.orderlines
-		});
-		if (response) onOrderChange?.(response);
+		try {
+			const response = await ordersService.updateDay({
+				kitchenId: order.kitchenId,
+				date: order.date,
+				desiredOrders: order.orderlines
+			});
+			if (response) onOrderChange?.(response);
+			editMode = false;
+		} catch (err) {
+			notifications.error('Failed to save order');
+		}
 	}
 
 	async function handleDelete() {
 		try {
-			await handleUpdate({
+			await ordersService.updateDay({
 				kitchenId: order.kitchenId,
 				date: order.date,
 				desiredOrders: []
 			});
 			onOrderCancel?.(order.date, order.kitchenId);
-		} catch (_) {}
-	}
-
-	async function handleUpdate(req: UpdateDayRequest) {
-		try {
-			const response = await ordersService.updateDay(req);
-			notifications.success('Order updated successfully.');
-			return response;
 		} catch (err) {
-			notifications.error('Failed to update order.');
-		} finally {
-			editMode = false;
+			notifications.error('Failed to cancel order');
 		}
 	}
 </script>

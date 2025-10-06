@@ -35,9 +35,9 @@
 		onEdit?.();
 	}
 
-	function handleAction(action?: () => void, mode: boolean = false) {
-		editMode = mode;
+	function handleAction(action?: () => void) {
 		action?.();
+		editMode = false;
 	}
 
 	const iconSize = 17;
