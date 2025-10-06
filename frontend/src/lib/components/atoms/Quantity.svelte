@@ -28,8 +28,8 @@
 	const iconSize = 15;
 </script>
 
-<div class="flex justify-between items-center space-x-2">
-	<div class="flex flex-row items-center gap-x-2">
+<div class="flex justify-between items-center">
+	<div class="flex flex-row items-center gap-x-1">
 		<Button
 			variant="transparent"
 			ariaLabel="Decrement"

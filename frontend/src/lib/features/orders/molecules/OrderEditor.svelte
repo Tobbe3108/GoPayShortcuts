@@ -79,45 +79,35 @@
 	}
 </script>
 
-<div class="w-full">
-	<table class="w-full text-left text-sm">
-		<tbody>
-			{#each items as item, idx}
-				<tr>
-					<td class="py-1 w-4/6">
-						<Label>{item.name}</Label>
-					</td>
-					<td class="py-1 w-1/6">
-						<div class="flex justify-center">
-							{#if editMode}
-								<Quantity
-									value={item.quantity}
-									min={0}
-									max={99}
-									onChange={(v) => handleQuantityChange(idx, v)}
-								/>
-							{:else}
-								<Label>{item.quantity}</Label>
-							{/if}
-						</div>
-					</td>
-					<td class="py-1 text-right w-1/6">
-						<Label>{formatPrice(item.price * item.quantity)}</Label>
-					</td>
-				</tr>
-			{/each}
-		</tbody>
+<div class="w-full overflow-x-auto">
+	<div class="flex flex-col w-full text-sm">
+		{#each items as item, idx}
+			<div class="flex items-center justify-center py-1 gap-1">
+				<Label className="text-left grow">{item.name}</Label>
+				<div class="flex min-w-11 justify-center">
+					{#if editMode}
+						<Quantity
+							value={item.quantity}
+							min={0}
+							max={99}
+							onChange={(v) => handleQuantityChange(idx, v)}
+						/>
+					{:else}
+						<Label>{item.quantity}</Label>
+					{/if}
+				</div>
+
+				<Label className="text-right flex-none w-auto min-w-9"
+					>{formatPrice(item.price * item.quantity)}</Label
+				>
+			</div>
+		{/each}
 		{#if showTotal}
-			<tfoot>
-				<tr class="border-t border-slate-200">
-					<td class="py-1" colspan="2">
-						<Label className="font-semibold">Total</Label>
-					</td>
-					<td class="py-1 text-right w-1/4">
-						<Label className="font-semibold">{formatPrice(totalPrice)}</Label>
-					</td>
-				</tr>
-			</tfoot>
+			<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
+				<Label className="font-semibold">Total</Label>
+
+				<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
+			</div>
 		{/if}
-	</table>
+	</div>
 </div>

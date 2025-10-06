@@ -275,7 +275,7 @@ function fakeKitchenSummary(id?: number): KitchenSummary {
 }
 
 function fakePrice(): Price {
-  const amount = faker.number.int({ min: 1000, max: 10000 });
+  const amount = faker.number.int({ min: 1, max: 99 }) * 100;
   return {
     amount,
     scale: 2,
