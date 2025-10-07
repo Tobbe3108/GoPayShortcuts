@@ -97,7 +97,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Components needed:**
 
-- WeekGridTemplate: Desktop week view with days as columns
+- WeekGridTemplate: Desktop week view with days as columns - DONE
 - DayViewTemplate: Mobile-optimized single day view
 - MainLayoutTemplate: Update the main layout with week navigation
 
