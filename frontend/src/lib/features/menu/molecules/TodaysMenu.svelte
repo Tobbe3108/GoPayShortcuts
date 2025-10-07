@@ -52,10 +52,10 @@
 		</button>
 	</div>
 	{#if !collapsed}
-		{#if !loading && menuItems}
-			<div transition:slide|local>
+		<div transition:slide|local>
+			{#if !loading}
 				<Card>
-					{#if menuItems.length === 0}
+					{#if !menuItems}
 						<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
 					{:else}
 						<div class="space-y-2">
@@ -98,7 +98,7 @@
 						</div>
 					{/if}
 				</Card>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	{/if}
 </div>
