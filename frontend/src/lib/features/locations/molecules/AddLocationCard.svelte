@@ -34,11 +34,11 @@
 	function handleLocationClick(loc: Location) {
 		const order = scaffoldOrderForLocation(loc);
 		newOrder?.(order);
+		collapsed = true;
 	}
 
 	function scaffoldOrderForLocation(loc: Location): SimplifiedOrder {
 		return {
-			tempOrder: true,
 			date: format(date, 'yyyy-MM-dd'),
 			kitchenId: loc.kitchenId,
 			orderlines: [],
