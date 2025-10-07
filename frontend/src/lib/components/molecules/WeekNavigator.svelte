@@ -7,44 +7,34 @@
 
 	type weekNavigationProps = {
 		date: Date;
-		onWeekChange?: (weekStart: Date, weekEnd: Date) => void;
+		onWeekChange?: (newWeekStart: Date) => void;
 	};
 
 	let { date, onWeekChange = undefined }: weekNavigationProps = $props();
 
-	let weekOffset = $state(0);
+	const weekStart = $derived(() => startOfWeek(date, { weekStartsOn: 1 }));
 
-	function getWeekStart() {
-		return startOfWeek(addWeeks(date, weekOffset), { weekStartsOn: 1 });
-	}
+	const weekEnd = $derived(() => endOfWeek(date, { weekStartsOn: 1 }));
 
-	function getWeekEnd() {
-		return endOfWeek(addWeeks(date, weekOffset), { weekStartsOn: 1 });
-	}
-
-	function getWeekNumber() {
-		return getWeek(getWeekStart(), { weekStartsOn: 1 });
-	}
-
-	function prevWeek() {
-		weekOffset--;
-		onWeekChange?.(getWeekStart(), getWeekEnd());
-	}
-
-	function nextWeek() {
-		weekOffset++;
-		onWeekChange?.(getWeekStart(), getWeekEnd());
-	}
+	const weekNumber = $derived(() => getWeek(weekStart(), { weekStartsOn: 1 }));
 
 	const weekRange = $derived(
-		`${format(getWeekStart(), 'd', { locale: da })}-${format(getWeekEnd(), 'd', { locale: da })} ${format(getWeekEnd(), 'MMM', { locale: da })}`
+		`${format(weekStart(), 'd', { locale: da })}-${format(weekEnd(), 'd', { locale: da })} ${format(weekEnd(), 'MMM', { locale: da })}`
 	);
 
 	const isCurrentWeek = $derived(() => {
-		const displayedStart = getWeekStart();
-		const displayedEnd = getWeekEnd();
+		const displayedStart = weekStart();
+		const displayedEnd = weekEnd();
 		return date >= displayedStart && date <= displayedEnd;
 	});
+
+	function prevWeek() {
+		onWeekChange?.(addWeeks(weekStart(), -1));
+	}
+
+	function nextWeek() {
+		onWeekChange?.(addWeeks(weekStart(), 1));
+	}
 </script>
 
 <div class="flex justify-center" aria-label="Ugenavigation">
@@ -53,10 +43,10 @@
 	</Button>
 	<div class="flex flex-col items-center">
 		<Label
-			size="xl"
+			size="xxl"
 			variant="default"
 			className="capitalize tracking-wide {isCurrentWeek() ? 'font-semibold' : ''}"
-			>Uge {getWeekNumber()}</Label
+			>Uge {weekNumber()}</Label
 		>
 		<Label size="xs" variant="muted" className="capitalize">{weekRange}</Label>
 	</div>

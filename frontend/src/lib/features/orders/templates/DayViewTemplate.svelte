@@ -12,7 +12,6 @@
 		handleCancel,
 		updateOrderForKitchen
 	} from '$lib/features/orders/orderUtils';
-	import DayNavigator from '$lib/components/organisms/DayNavigator.svelte';
 	import Card from '$lib/components/atoms/Card.svelte';
 
 	type DayViewProps = {
@@ -21,7 +20,7 @@
 
 	let { date }: DayViewProps = $props();
 
-	let selectedDate = $state(date);
+	let selectedDate = $derived(date);
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
 	let weekEnd = $derived(endOfWeek(selectedDate, { weekStartsOn: 1 }));
 
@@ -34,12 +33,6 @@
 </script>
 
 <div class="flex flex-col space-y-4 w-full">
-	<DayNavigator
-		date={selectedDate}
-		onDayChange={(newDate) => {
-			selectedDate = newDate;
-		}}
-	/>
 	<TodaysMenu date={selectedDate} />
 	{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate), ...ordersByDay(tempOrders, selectedDate)].length === 0}
 		<Card>

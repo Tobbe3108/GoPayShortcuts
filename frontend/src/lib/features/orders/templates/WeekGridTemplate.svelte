@@ -2,7 +2,6 @@
 	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
-	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 	import { startOfWeek, endOfWeek, addDays, isPast, isToday } from 'date-fns';
@@ -22,8 +21,8 @@
 
 	let { date }: WeekGridProps = $props();
 
-	let weekStart = $state(startOfWeek(date, { weekStartsOn: 1 }));
-	let weekEnd = $state(endOfWeek(date, { weekStartsOn: 1 }));
+	let weekStart = $derived(startOfWeek(date, { weekStartsOn: 1 }));
+	let weekEnd = $derived(endOfWeek(date, { weekStartsOn: 1 }));
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
 	let orders: Record<string, SimplifiedOrder[]> = $state({});
@@ -35,14 +34,6 @@
 </script>
 
 <div>
-	<WeekNavigator
-		{date}
-		onWeekChange={(newStart, newEnd) => {
-			weekStart = newStart;
-			weekEnd = newEnd;
-		}}
-	/>
-
 	<div class="grid grid-cols-5 gap-4">
 		{#each weekDates as date}
 			<div class="flex flex-col space-y-4">

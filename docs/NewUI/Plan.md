@@ -81,7 +81,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 4. Build template components
+### 4. Build template components - DONE  
 
 **Where to find information:**
 
@@ -97,8 +97,8 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Components needed:**
 
-- WeekGridTemplate: Desktop week view with days as columns - DONE
-- DayViewTemplate: Mobile-optimized single day view - DONE
+- WeekGridTemplate: Desktop week view with days as columns
+- DayViewTemplate: Mobile-optimized single day view
 - +page.svelte: Update the main page with the created templates
 
 ---
