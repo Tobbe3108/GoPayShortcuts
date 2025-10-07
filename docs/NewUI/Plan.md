@@ -98,8 +98,8 @@ This document outlines a step-by-step implementation plan for the new UI based o
 **Components needed:**
 
 - WeekGridTemplate: Desktop week view with days as columns - DONE
-- DayViewTemplate: Mobile-optimized single day view
-- MainLayoutTemplate: Update the main layout with week navigation
+- DayViewTemplate: Mobile-optimized single day view - DONE
+- +page.svelte: Update the main page with the created templates
 
 ---
 
@@ -120,10 +120,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 **Implementation:**
 
-- Create or update orderStore.ts to handle week-based order management
 - Implement logic for locked vs. editable orders
-- Add optimistic UI updates for better UX
-- Handle order creation, updates, and deletion through the API
 
 ---
 

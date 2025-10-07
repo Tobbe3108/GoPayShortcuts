@@ -22,8 +22,6 @@
 	let collapsed = $state(true);
 	let loading = $state(true);
 
-	let collapseBtn: HTMLButtonElement | undefined;
-
 	onMount(async () => {
 		allLocations = await locationsService.getLocations();
 		loading = false;
@@ -47,32 +45,11 @@
 			cancelEnabled: true
 		};
 	}
-
-	$effect(() => {
-		function collapseMenu(e: Event) {
-			if (!collapsed) {
-				if (e.type === 'click' || e.type === 'touchstart') {
-					const path = (e as any).composedPath?.() || [];
-					if (collapseBtn && path.includes(collapseBtn)) return;
-				}
-				collapsed = true;
-			}
-		}
-		window.addEventListener('click', collapseMenu, true);
-		window.addEventListener('keydown', collapseMenu, true);
-		window.addEventListener('touchstart', collapseMenu, true);
-		return () => {
-			window.removeEventListener('click', collapseMenu, true);
-			window.removeEventListener('keydown', collapseMenu, true);
-			window.removeEventListener('touchstart', collapseMenu, true);
-		};
-	});
 </script>
 
 <div class="flex flex-col items-center w-full">
 	<div class="flex flex-col items-center">
 		<button
-			bind:this={collapseBtn}
 			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
 			type="button"
 			aria-expanded={!collapsed}
