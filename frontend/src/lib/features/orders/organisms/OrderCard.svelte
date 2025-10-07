@@ -6,6 +6,9 @@
 	import { ordersService } from '../ordersService';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
+	import { locationsService } from '../../locations/locationsService';
+	import type { Location } from '../../locations/location';
+	import { onMount } from 'svelte';
 
 	type OrderCardProps = {
 		order: SimplifiedOrder;
@@ -23,6 +26,13 @@
 
 	let editMode = $state(isEditing);
 	let originalOrder = $state(order);
+	let locations = $state<Location[]>([]);
+	let loading = $state(true);
+
+	onMount(async () => {
+		locations = await locationsService.getLocations();
+		loading = false;
+	});
 
 	function handleEdit() {
 		editMode = true;
@@ -70,21 +80,27 @@
 			notifications.error('Failed to cancel order');
 		}
 	}
+
+	const kitchenName = $derived(() => {
+		const location = locations.find((l) => l.kitchenId === order.kitchenId);
+		return location?.name;
+	});
 </script>
 
-<Card>
-	<div class="flex flex-row items-center justify-between mb-2">
-		<Label size="xl" className="capitalize tracking-wide">{order.kitchenId}</Label>
-		<!-- TODO: Use location service to get kitchen name -->
-		<EditModeControls
-			{isEditing}
-			direction="row"
-			locked={order.cancelEnabled === false}
-			onEdit={handleEdit}
-			onSave={handleSave}
-			onCancel={handleCancel}
-			onDelete={handleDelete}
-		/>
-	</div>
-	<OrderEditor {order} {editMode} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
-</Card>
+{#if !loading}
+	<Card>
+		<div class="flex flex-row items-center justify-between mb-2">
+			<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
+			<EditModeControls
+				{isEditing}
+				direction="row"
+				locked={order.cancelEnabled === false}
+				onEdit={handleEdit}
+				onSave={handleSave}
+				onCancel={handleCancel}
+				onDelete={handleDelete}
+			/>
+		</div>
+		<OrderEditor {order} {editMode} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
+	</Card>
+{/if}
