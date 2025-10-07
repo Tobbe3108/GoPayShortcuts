@@ -12,11 +12,21 @@
 	let { date, onDayChange = undefined }: dayNavigationProps = $props();
 
 	function prevDay() {
-		onDayChange?.(addDays(date, -1));
+		let newDate = addDays(date, -1);
+		// If Saturday (6), go to Friday; if Sunday (0), go to Friday
+		while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+			newDate = addDays(newDate, -1);
+		}
+		onDayChange?.(newDate);
 	}
 
 	function nextDay() {
-		onDayChange?.(addDays(date, 1));
+		let newDate = addDays(date, 1);
+		// If Saturday (6), go to Monday; if Sunday (0), go to Monday
+		while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+			newDate = addDays(newDate, 1);
+		}
+		onDayChange?.(newDate);
 	}
 </script>
 
