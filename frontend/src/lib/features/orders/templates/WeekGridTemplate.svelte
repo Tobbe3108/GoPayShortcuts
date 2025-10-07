@@ -33,41 +33,39 @@
 	});
 </script>
 
-<div>
-	<div class="grid grid-cols-5 gap-4">
-		{#each weekDates as date}
-			<div class="flex flex-col space-y-4">
-				<DayHeader {date} />
-				<TodaysMenu {date} />
-				{#if isPast(date) && !isToday(date) && [...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].length === 0}
-					<Card>
-						<div class="text-xs text-gray-400 text-center">No orders for this day</div>
-					</Card>
-				{/if}
-				{#each ordersByDay(orders, date) as order (order.kitchenId)}
-					<OrderCard
-						{order}
-						isEditing={false}
-						onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
-						onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
-					/>
-				{/each}
-				{#each ordersByDay(tempOrders, date) as order (order.kitchenId)}
-					<OrderCard
-						{order}
-						isEditing={true}
-						onOrderChange={(newOrderState) => handleTempChange(orders, tempOrders, newOrderState)}
-						onOrderCancel={(date, kitchenId) => handleCancel(tempOrders, date, kitchenId)}
-					/>
-				{/each}
-				<AddLocationCard
-					{date}
-					newOrder={(newOrder) => updateOrderForKitchen(tempOrders, newOrder)}
-					locationsWithOrders={[...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].map(
-						(o) => o.kitchenId
-					)}
+<div class="grid grid-cols-5 gap-4">
+	{#each weekDates as date}
+		<div class="flex flex-col space-y-4">
+			<DayHeader {date} />
+			<TodaysMenu {date} />
+			{#if isPast(date) && !isToday(date) && [...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].length === 0}
+				<Card>
+					<div class="text-xs text-gray-400 text-center">No orders for this day</div>
+				</Card>
+			{/if}
+			{#each ordersByDay(orders, date) as order (order.kitchenId)}
+				<OrderCard
+					{order}
+					isEditing={false}
+					onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
+					onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
 				/>
-			</div>
-		{/each}
-	</div>
+			{/each}
+			{#each ordersByDay(tempOrders, date) as order (order.kitchenId)}
+				<OrderCard
+					{order}
+					isEditing={true}
+					onOrderChange={(newOrderState) => handleTempChange(orders, tempOrders, newOrderState)}
+					onOrderCancel={(date, kitchenId) => handleCancel(tempOrders, date, kitchenId)}
+				/>
+			{/each}
+			<AddLocationCard
+				{date}
+				newOrder={(newOrder) => updateOrderForKitchen(tempOrders, newOrder)}
+				locationsWithOrders={[...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].map(
+					(o) => o.kitchenId
+				)}
+			/>
+		</div>
+	{/each}
 </div>
