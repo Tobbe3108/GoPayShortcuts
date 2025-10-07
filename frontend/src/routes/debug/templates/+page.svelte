@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Label from '$lib/components/atoms/Label.svelte';
-	import WeekGridTemplate from '$lib/components/templates/WeekGridTemplate.svelte';
+	import WeekGridTemplate from '$lib/features/orders/templates/WeekGridTemplate.svelte';
+	import DayViewTemplate from '$lib/features/orders/templates/DayViewTemplate.svelte';
 </script>
 
 <div class="p-6 space-y-6">
@@ -15,5 +16,10 @@
 	<Label size="xl">WeekGridTemplate Demo</Label>
 	<section>
 		<WeekGridTemplate date={new Date()} />
+	</section>
+
+	<Label size="xl">DayViewTemplate Demo</Label>
+	<section>
+		<DayViewTemplate date={new Date()} />
 	</section>
 </div>
