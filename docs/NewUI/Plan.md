@@ -103,7 +103,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 5. Implement order state management
+### 5. Implement order state management - DONE
 
 **Where to find information:**
 
@@ -124,7 +124,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 6. Implement order card edit mode
+### 6. Implement order card edit mode - DONE
 
 **Where to find information:**
 
@@ -147,7 +147,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 7. Develop week navigation
+### 7. Develop week navigation - DONE
 
 **Where to find information:**
 
@@ -170,7 +170,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 8. Build responsive layout
+### 8. Build responsive layout - DONE
 
 **Where to find information:**
 
@@ -193,7 +193,7 @@ This document outlines a step-by-step implementation plan for the new UI based o
 
 ---
 
-### 9. Add multi-location support
+### 9. Add multi-location support - DONE
 
 **Where to find information:**
 
@@ -262,75 +262,6 @@ This document outlines a step-by-step implementation plan for the new UI based o
 - API error handling with user-friendly messages
 - Retry logic for failed requests
 - Visual indicators for validation errors
-
----
-
-### 12. Add accessibility features
-
-**Where to find information:**
-
-- Review accessibility requirements in HLS.md (section 10)
-- Check current accessibility implementations
-- See [PRD](./PRD.md) for accessibility goals
-
-**Key considerations:**
-
-- Support keyboard navigation
-- Add proper ARIA attributes
-- Ensure sufficient color contrast
-
-**Implementation:**
-
-- Keyboard navigation support
-- ARIA attributes for interactive elements
-- Sufficient color contrast
-- Focus management for modals and edit modes
-- Screen reader-friendly content
-
----
-
-### 13. Implement unit and integration tests
-
-**Where to find information:**
-
-- Look for existing tests in the project
-- Check Svelte testing documentation
-- Reference [PRD](./PRD.md) for testable user flows
-
-**Key considerations:**
-
-- Test key functionality like ordering, editing, canceling
-- Test responsive behavior
-- Ensure accessibility compliance
-
-**Implementation:**
-
-- Unit tests for atomic components
-- Integration tests for order flows
-- Test responsive behavior
-- Test accessibility compliance
-
----
-
-### 14. Final polish and optimization
-
-**Where to find information:**
-
-- All previous documentation and implementation
-
-**Key considerations:**
-
-- Optimize performance
-- Refactor code for clarity and maintainability
-- Add documentation
-- Make final visual adjustments
-
-**Implementation:**
-
-- Performance optimizations
-- Code cleanup and refactoring
-- Documentation updates
-- Final visual design adjustments
 
 ---
 
