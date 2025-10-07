@@ -5,7 +5,7 @@
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
-	import { startOfWeek, endOfWeek, addDays } from 'date-fns';
+	import { startOfWeek, endOfWeek, addDays, isPast, isToday } from 'date-fns';
 	import {
 		listOrders,
 		ordersByDay,
@@ -14,6 +14,7 @@
 		handleCancel,
 		updateOrderForKitchen
 	} from '$lib/features/orders/orderUtils';
+	import Card from '$lib/components/atoms/Card.svelte';
 
 	type WeekGridProps = {
 		date: Date;
@@ -47,6 +48,11 @@
 			<div class="flex flex-col space-y-4">
 				<DayHeader {date} />
 				<TodaysMenu {date} />
+				{#if isPast(date) && !isToday(date) && [...ordersByDay(orders, date), ...ordersByDay(tempOrders, date)].length === 0}
+					<Card>
+						<div class="text-xs text-gray-400 text-center">No orders for this day</div>
+					</Card>
+				{/if}
 				{#each ordersByDay(orders, date) as order (order.kitchenId)}
 					<OrderCard
 						{order}

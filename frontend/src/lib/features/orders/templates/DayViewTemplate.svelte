@@ -2,7 +2,7 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
-	import { endOfWeek, startOfWeek } from 'date-fns';
+	import { endOfWeek, isPast, isToday, startOfWeek } from 'date-fns';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 	import {
 		listOrders,
@@ -13,6 +13,7 @@
 		updateOrderForKitchen
 	} from '$lib/features/orders/orderUtils';
 	import DayNavigator from '$lib/components/organisms/DayNavigator.svelte';
+	import Card from '$lib/components/atoms/Card.svelte';
 
 	type DayViewProps = {
 		date: Date;
@@ -40,6 +41,11 @@
 		}}
 	/>
 	<TodaysMenu date={selectedDate} />
+	{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate), ...ordersByDay(tempOrders, selectedDate)].length === 0}
+		<Card>
+			<div class="text-xs text-gray-400 text-center">No orders for this day</div>
+		</Card>
+	{/if}
 	{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
 		<OrderCard
 			{order}
