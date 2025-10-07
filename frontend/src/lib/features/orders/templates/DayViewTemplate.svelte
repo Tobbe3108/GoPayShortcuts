@@ -3,14 +3,13 @@
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import { endOfWeek, isPast, isToday, startOfWeek } from 'date-fns';
-	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 	import {
 		listOrders,
 		ordersByDay,
 		handleOrderChange,
-		handleTempChange,
 		handleCancel,
-		updateOrderForKitchen
+		updateOrderForKitchen,
+		type TemplateOrder
 	} from '$lib/features/orders/orderUtils';
 	import Card from '$lib/components/atoms/Card.svelte';
 
@@ -24,8 +23,7 @@
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
 	let weekEnd = $derived(endOfWeek(selectedDate, { weekStartsOn: 1 }));
 
-	let orders: Record<string, SimplifiedOrder[]> = $state({});
-	let tempOrders: Record<string, SimplifiedOrder[]> = $state({});
+	let orders: Record<string, TemplateOrder[]> = $state({});
 
 	$effect(() => {
 		listOrders(weekStart, weekEnd).then((listed) => (orders = listed));
@@ -34,7 +32,7 @@
 
 <div class="flex flex-col space-y-4 w-full">
 	<TodaysMenu date={selectedDate} />
-	{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate), ...ordersByDay(tempOrders, selectedDate)].length === 0}
+	{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
 		<Card>
 			<div class="text-xs text-gray-400 text-center">No orders for this day</div>
 		</Card>
@@ -42,25 +40,14 @@
 	{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
 		<OrderCard
 			{order}
-			isEditing={false}
+			isEditing={order.tempOrder}
 			onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
 			onOrderCancel={(selectedDate, kitchenId) => handleCancel(orders, selectedDate, kitchenId)}
 		/>
 	{/each}
-	{#each ordersByDay(tempOrders, selectedDate) as order (order.kitchenId)}
-		<OrderCard
-			{order}
-			isEditing={true}
-			onOrderChange={(newOrderState) => handleTempChange(orders, tempOrders, newOrderState)}
-			onOrderCancel={(selectedDate, kitchenId) => handleCancel(tempOrders, selectedDate, kitchenId)}
-		/>
-	{/each}
 	<AddLocationCard
 		date={selectedDate}
-		newOrder={(newOrder) => updateOrderForKitchen(tempOrders, newOrder)}
-		locationsWithOrders={[
-			...ordersByDay(orders, selectedDate),
-			...ordersByDay(tempOrders, selectedDate)
-		].map((o) => o.kitchenId)}
+		newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
+		locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
 	/>
 </div>
