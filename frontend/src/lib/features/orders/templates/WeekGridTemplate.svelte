@@ -3,10 +3,17 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
-	import { startOfWeek, endOfWeek, getWeek, addDays, format } from 'date-fns';
-	import { ordersService } from '$lib/features/orders/ordersService';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
+	import { startOfWeek, endOfWeek, addDays } from 'date-fns';
+	import {
+		listOrders,
+		ordersByDay,
+		handleOrderChange,
+		handleTempChange,
+		handleCancel,
+		updateOrderForKitchen
+	} from '$lib/features/orders/orderUtils';
 
 	type WeekGridProps = {
 		date: Date;
@@ -22,57 +29,8 @@
 	let tempOrders: Record<string, SimplifiedOrder[]> = $state({});
 
 	$effect(() => {
-		(async () => {
-			orders = await ordersService.listOrders(weekStart, weekEnd).then((res) =>
-				res.reduce(
-					(record, order) => {
-						if (!record[order.date]) record[order.date] = [];
-						record[order.date].push(order);
-						return record;
-					},
-					{} as Record<string, SimplifiedOrder[]>
-				)
-			);
-		})();
+		listOrders(weekStart, weekEnd).then((listed) => (orders = listed));
 	});
-
-	function ordersByDay(record: Record<string, SimplifiedOrder[]>, date: Date) {
-		return record[format(date, 'yyyy-MM-dd')] || [];
-	}
-
-	function handleOrderChange(newOrderState: SimplifiedOrder[] | undefined): void {
-		if (newOrderState) {
-			for (const order of newOrderState) {
-				updateOrderForKitchen(orders, order);
-			}
-		}
-	}
-
-	function handleTempChange(newOrderState: SimplifiedOrder[] | undefined): void {
-		if (newOrderState) {
-			for (const order of newOrderState) {
-				tempOrders[order.date] =
-					tempOrders[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
-				updateOrderForKitchen(orders, order);
-			}
-		}
-	}
-
-	function handleCancel(
-		record: Record<string, SimplifiedOrder[]>,
-		date: string,
-		kitchenId: number
-	): void {
-		record[date] = record[date]?.filter((o) => o.kitchenId !== kitchenId) || [];
-	}
-
-	function updateOrderForKitchen(
-		record: Record<string, SimplifiedOrder[]>,
-		order: SimplifiedOrder
-	): void {
-		record[order.date] = record[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
-		record[order.date].push(order);
-	}
 </script>
 
 <div>
@@ -93,7 +51,7 @@
 					<OrderCard
 						{order}
 						isEditing={false}
-						onOrderChange={handleOrderChange}
+						onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
 						onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
 					/>
 				{/each}
@@ -101,7 +59,7 @@
 					<OrderCard
 						{order}
 						isEditing={true}
-						onOrderChange={handleTempChange}
+						onOrderChange={(newOrderState) => handleTempChange(orders, tempOrders, newOrderState)}
 						onOrderCancel={(date, kitchenId) => handleCancel(tempOrders, date, kitchenId)}
 					/>
 				{/each}
