@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { format } from 'date-fns';
+	import { format, isToday } from 'date-fns';
 	import { da } from 'date-fns/locale';
 	import Label from '$lib/components/atoms/Label.svelte';
 
@@ -10,6 +10,10 @@
 </script>
 
 <div class="flex flex-col items-center py-2">
-	<Label size="xxl" variant="default" className="capitalize tracking-wide">{dayName}</Label>
+	<Label
+		size="xl"
+		variant="default"
+		className="capitalize tracking-wide {isToday(date) ? 'font-semibold' : ''}">{dayName}</Label
+	>
 	<Label size="xs" variant="muted" className="capitalize">{dateStr}</Label>
 </div>
