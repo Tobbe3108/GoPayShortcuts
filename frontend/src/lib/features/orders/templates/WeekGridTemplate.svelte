@@ -3,7 +3,7 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
-	import { startOfWeek, endOfWeek, addDays, isPast, isToday } from 'date-fns';
+	import { startOfWeek, endOfWeek, addDays, isPast, isToday, isFuture } from 'date-fns';
 	import {
 		listOrders,
 		ordersByDay,
@@ -13,6 +13,8 @@
 		type TemplateOrder
 	} from '$lib/features/orders/orderUtils';
 	import Card from '$lib/components/atoms/Card.svelte';
+	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import { fade } from 'svelte/transition';
 
 	type WeekGridProps = {
 		date: Date;
@@ -25,35 +27,50 @@
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
 	let orders: Record<string, TemplateOrder[]> = $state({});
+	let loading = $state(true);
 
 	$effect(() => {
-		listOrders(weekStart, weekEnd).then((listed) => (orders = listed));
+		loading = true;
+		listOrders(weekStart, weekEnd).then((listed) => {
+			orders = listed;
+			loading = false;
+		});
 	});
 </script>
 
-<div class="grid grid-cols-5 gap-4">
-	{#each weekDates as date}
-		<div class="flex flex-col space-y-4">
-			<DayHeader {date} />
-			<TodaysMenu {date} />
-			{#if isPast(date) && !isToday(date) && [...ordersByDay(orders, date)].length === 0}
-				<Card>
-					<div class="text-xs text-gray-400 text-center">No orders for this day</div>
-				</Card>
-			{/if}
-			{#each ordersByDay(orders, date) as order (order.kitchenId)}
-				<OrderCard
-					{order}
-					isEditing={order.tempOrder}
-					onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
-					onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
-				/>
-			{/each}
-			<AddLocationCard
-				{date}
-				newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
-				locationsWithOrders={[...ordersByDay(orders, date)].map((o) => o.kitchenId)}
-			/>
-		</div>
-	{/each}
-</div>
+{#if !loading}
+	<div class="grid grid-cols-5 gap-4">
+		{#each weekDates as date}
+			<div class="flex flex-col space-y-4">
+				<DayHeader {date} />
+				<TodaysMenu {date} />
+				{#if isPast(date) && !isToday(date) && ordersByDay(orders, date).length === 0}
+					<Card>
+						<div transition:fade|local class="text-xs text-gray-400 text-center">
+							Bestillinger kan ikke placeres for fortidige dage.
+						</div>
+					</Card>
+				{/if}
+
+				{#each ordersByDay(orders, date) as order (order.kitchenId)}
+					<OrderCard
+						{order}
+						isEditing={order.tempOrder}
+						onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
+						onOrderCancel={(date, kitchenId) => handleCancel(orders, date, kitchenId)}
+					/>
+				{/each}
+
+				{#if isToday(date) || isFuture(date)}
+					<AddLocationCard
+						{date}
+						newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
+						locationsWithOrders={[...ordersByDay(orders, date)].map((o) => o.kitchenId)}
+					/>
+				{/if}
+			</div>
+		{/each}
+	</div>
+{:else}
+	<LoadingSpinner />
+{/if}
