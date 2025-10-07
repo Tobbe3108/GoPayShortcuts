@@ -127,7 +127,7 @@ export class ListOrders extends OpenAPIRoute {
       })
     ).then((orders) => orders.sort((a, b) => a.date.localeCompare(b.date)));
 
-    c.res.headers.set("Cache-Control", "max-age=10"); // Cache for 10 seconds
+    c.res.headers.set("Cache-Control", "max-age=10");
     return { orders: simplifiedOrders };
   }
 }

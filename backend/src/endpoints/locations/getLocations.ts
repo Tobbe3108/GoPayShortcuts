@@ -34,7 +34,7 @@ export class GetLocations extends OpenAPIRoute {
       } as GetLocationsResponse;
     });
 
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`); // Cache for 30 days
+    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`);
     return locations;
   }
 }
