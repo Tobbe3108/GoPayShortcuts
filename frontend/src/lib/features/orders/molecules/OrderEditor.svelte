@@ -23,18 +23,13 @@
 		onOrderChange = undefined
 	}: Props = $props();
 
-	onMount(() => {
-		loadProducts();
-	});
-
 	let products = $state<Product[]>([]);
 	let loading = $state(true);
-	function loadProducts() {
-		(async () => {
-			products = await productsService.getProducts();
-			loading = false;
-		})();
-	}
+
+	onMount(async () => {
+		products = await productsService.getProducts();
+		loading = false;
+	});
 
 	let editableOrderlines = $state<OrderLine[]>([]);
 	$effect(() => {
@@ -79,35 +74,37 @@
 	}
 </script>
 
-<div class="w-full overflow-x-auto">
-	<div class="flex flex-col w-full text-sm">
-		{#each items as item, idx}
-			<div class="flex items-center justify-center py-1 gap-1">
-				<Label className="text-left grow">{item.name}</Label>
-				<div class="flex min-w-11 justify-center">
-					{#if editMode}
-						<Quantity
-							value={item.quantity}
-							min={0}
-							max={99}
-							onChange={(v) => handleQuantityChange(idx, v)}
-						/>
-					{:else}
-						<Label>{item.quantity}</Label>
-					{/if}
+{#if !loading}
+	<div class="w-full overflow-x-auto">
+		<div class="flex flex-col w-full text-sm">
+			{#each items as item, idx}
+				<div class="flex items-center justify-center py-1 gap-1">
+					<Label className="text-left grow">{item.name}</Label>
+					<div class="flex min-w-11 justify-center">
+						{#if editMode}
+							<Quantity
+								value={item.quantity}
+								min={0}
+								max={99}
+								onChange={(v) => handleQuantityChange(idx, v)}
+							/>
+						{:else}
+							<Label>{item.quantity}</Label>
+						{/if}
+					</div>
+
+					<Label className="text-right flex-none w-auto min-w-9"
+						>{formatPrice(item.price * item.quantity)}</Label
+					>
 				</div>
+			{/each}
+			{#if showTotal}
+				<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
+					<Label className="font-semibold">Total</Label>
 
-				<Label className="text-right flex-none w-auto min-w-9"
-					>{formatPrice(item.price * item.quantity)}</Label
-				>
-			</div>
-		{/each}
-		{#if showTotal}
-			<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
-				<Label className="font-semibold">Total</Label>
-
-				<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
-			</div>
-		{/if}
+					<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
+				</div>
+			{/if}
+		</div>
 	</div>
-</div>
+{/if}

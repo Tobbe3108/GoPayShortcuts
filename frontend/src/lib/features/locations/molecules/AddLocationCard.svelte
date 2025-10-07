@@ -61,11 +61,9 @@
 		</button>
 	</div>
 	{#if !collapsed}
-		<div transition:slide|local>
-			<Card>
-				{#if loading}
-					<Label variant="muted">Indlæser lokationer...</Label>
-				{:else if locations}
+		{#if !loading && locations}
+			<div transition:slide|local>
+				<Card>
 					{#if locations.length === 0}
 						<Label variant="muted">Ingen lokationer fundet...</Label>
 					{:else}
@@ -79,8 +77,8 @@
 							{/each}
 						</div>
 					{/if}
-				{/if}
-			</Card>
-		</div>
+				</Card>
+			</div>
+		{/if}
 	{/if}
 </div>
