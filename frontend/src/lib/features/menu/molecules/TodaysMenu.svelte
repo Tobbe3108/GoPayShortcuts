@@ -5,45 +5,26 @@
 	import Card from '$lib/components/atoms/Card.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { onMount } from 'svelte';
-
-	let collapseBtn: HTMLButtonElement | undefined;
-
-	$effect(() => {
-		function collapseMenu(e: Event) {
-			// Only collapse if click/touch/keydown is outside the collapse button
-			if (!collapsed) {
-				if (e.type === 'click' || e.type === 'touchstart') {
-					const path = (e as any).composedPath?.() || [];
-					if (collapseBtn && path.includes(collapseBtn)) return;
-				}
-				collapsed = true;
-			}
-		}
-		window.addEventListener('click', collapseMenu, true);
-		window.addEventListener('keydown', collapseMenu, true);
-		window.addEventListener('touchstart', collapseMenu, true);
-		return () => {
-			window.removeEventListener('click', collapseMenu, true);
-			window.removeEventListener('keydown', collapseMenu, true);
-			window.removeEventListener('touchstart', collapseMenu, true);
-		};
-	});
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { format } from 'date-fns';
 
 	let { date }: { date: Date } = $props();
 
+	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
 	let collapsed = $state(true);
 
 	onMount(async () => {
-		const menuDays: MenuDay[] = await menuService.getMenu();
+		menuDays = await menuService.getMenu();
+	});
+
+	$effect(() => {
 		const todayISO = format(date, 'yyyy-MM-dd');
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
-		menuItems = todayMenu?.items;
 		loading = false;
+		menuItems = todayMenu?.items;
 	});
 
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
@@ -60,7 +41,6 @@
 <div class="flex flex-col items-center w-full">
 	<div class="flex flex-col items-center">
 		<button
-			bind:this={collapseBtn}
 			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
 			type="button"
 			aria-expanded={!collapsed}
