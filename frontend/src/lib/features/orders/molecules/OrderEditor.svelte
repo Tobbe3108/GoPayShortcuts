@@ -79,7 +79,7 @@
 		<div class="flex flex-col w-full text-sm">
 			{#each items as item, idx}
 				<div class="flex items-center justify-center py-1 gap-1">
-					<Label className="text-left grow">{item.name}</Label>
+					<Label className="text-left grow truncate">{item.name}</Label>
 					<div class="flex min-w-11 justify-center">
 						{#if editMode}
 							<Quantity

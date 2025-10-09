@@ -11,7 +11,7 @@
 	let currentDate = $state(new Date());
 
 	onMount(() => {
-		const mq = window.matchMedia('(max-width: 768px)');
+		const mq = window.matchMedia('(max-width: 1023px)');
 		isMobile = mq.matches;
 		mq.addEventListener('change', (e) => {
 			isMobile = e.matches;
