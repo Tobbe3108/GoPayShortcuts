@@ -26,18 +26,19 @@
 	}: MainLayoutProps = $props();
 </script>
 
-<div class="min-h-screen">
-	<div class="container p-4 mx-auto">
-		<div class="mx-auto flex items-center justify-between gap-4">
+<div class="container p-4 mx-auto">
+	<div class="flex flex-row items-center">
+		<div class="flex flex-1/3 justify-start">
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
-			<!-- TODO: Center -->
-			<div class="flex-1 flex justify-center">
-				{#if isMobile}
-					<DayNavigator {date} {onDayChange} />
-				{:else}
-					<WeekNavigator {date} {onWeekChange} />
-				{/if}
-			</div>
+		</div>
+		<div class="flex flex-1/3 justify-center">
+			{#if isMobile}
+				<DayNavigator {date} {onDayChange} />
+			{:else}
+				<WeekNavigator {date} {onWeekChange} />
+			{/if}
+		</div>
+		<div class="flex flex-1/3 justify-end">
 			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={() => onLogout()}>
 					{#snippet children()}
@@ -46,6 +47,6 @@
 				</Button>
 			{/if}
 		</div>
-		<div class="mt-6">{@render children?.()}</div>
 	</div>
+	<div class="mt-6">{@render children?.()}</div>
 </div>
