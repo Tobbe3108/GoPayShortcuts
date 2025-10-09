@@ -28,7 +28,7 @@
 
 <div class="min-h-screen">
 	<div class="container p-4 mx-auto">
-		<div class="container mx-auto flex items-center justify-between gap-4">
+		<div class="mx-auto flex items-center justify-between gap-4">
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
 			<!-- TODO: Center -->
 			<div class="flex-1 flex justify-center">
