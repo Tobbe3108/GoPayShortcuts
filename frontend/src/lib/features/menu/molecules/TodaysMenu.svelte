@@ -38,6 +38,8 @@
 	}
 </script>
 
+<!-- TODO: Fix overlap and make slimmer -->
+
 <div class="flex flex-col items-center w-full">
 	<div class="flex flex-col items-center">
 		<button
