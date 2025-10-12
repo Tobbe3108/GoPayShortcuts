@@ -4,11 +4,14 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
+	import Button from '$lib/components/atoms/Button.svelte';
 	import OrderEditor from '../molecules/OrderEditor.svelte';
 	import { ordersService } from '../ordersService';
 	import { notifications } from '$lib/core/notifications/notificationStore';
+	import defaultStore from '$lib/features/orders/defaultStore';
 	import { locationsService } from '../../locations/locationsService';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
+	import type { TemplateOrder } from '$lib/features/orders/orderUtils';
 	import type { Location } from '../../locations/location';
 
 	type OrderCardProps = {
@@ -41,12 +44,26 @@
 	}
 
 	function handleCancel() {
-		order = originalOrder;
-		editMode = false;
-		if (order.orderlines.every((line) => line.quantity === 0)) {
-			handleDelete();
+		// If this is a temp order (e.g. applied from default) or matches the saved default,
+		// revert it to zero counts so the existing delete flow will remove it.
+		const maybeTemplate = order as TemplateOrder;
+		if (!maybeTemplate.tempOrder) {
+			order = originalOrder;
+			editMode = false;
+			if (order.orderlines.every((line) => line.quantity === 0)) {
+				handleDelete();
+				return;
+			}
 			return;
 		}
+
+		// For temp/default orders: set all quantities to 0 and call delete
+		order = {
+			...order,
+			orderlines: order.orderlines.map((l) => ({ ...l, quantity: 0 }))
+		};
+		editMode = false;
+		handleDelete();
 	}
 
 	async function handleSave() {
@@ -62,8 +79,28 @@
 			});
 			if (response) onOrderChange?.(response);
 			editMode = false;
+			// Show a notification with an actionable button to save this order as the global default
+			notifications.success('Order saved', 5000, 'Save as default', async () => {
+				try {
+					await defaultStore.saveDefault(order);
+					notifications.success('Default saved');
+				} catch (err) {
+					notifications.error('Failed to save default order');
+					console.error('save default failed', err);
+				}
+			});
 		} catch (err) {
 			notifications.error('Failed to save order');
+		}
+	}
+
+	async function handleSaveAsDefault() {
+		try {
+			await defaultStore.saveDefault(order);
+			notifications.success('Default saved');
+		} catch (err) {
+			notifications.error('Failed to save default order');
+			console.error('save default failed', err);
 		}
 	}
 
@@ -91,15 +128,17 @@
 		<div transition:fade|local>
 			<div class="flex flex-row items-center justify-between mb-2">
 				<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
-				<EditModeControls
-					{isEditing}
-					direction="row"
-					locked={order.cancelEnabled === false}
-					onEdit={handleEdit}
-					onSave={handleSave}
-					onCancel={handleCancel}
-					onDelete={handleDelete}
-				/>
+				<div class="flex items-center gap-2">
+					<EditModeControls
+						{isEditing}
+						direction="row"
+						locked={order.cancelEnabled === false}
+						onEdit={handleEdit}
+						onSave={handleSave}
+						onCancel={handleCancel}
+						onDelete={handleDelete}
+					/>
+				</div>
 			</div>
 			<OrderEditor {order} {editMode} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
 		</div>
