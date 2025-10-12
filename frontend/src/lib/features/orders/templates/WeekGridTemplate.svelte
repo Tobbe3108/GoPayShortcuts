@@ -3,7 +3,16 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
-	import { startOfWeek, endOfWeek, addDays, isPast, isToday, isFuture } from 'date-fns';
+	import {
+		startOfWeek,
+		endOfWeek,
+		addDays,
+		isPast,
+		isToday,
+		isFuture,
+		startOfDay,
+		format
+	} from 'date-fns';
 	import {
 		listOrders,
 		ordersByDay,
@@ -13,8 +22,11 @@
 		type TemplateOrder
 	} from '$lib/features/orders/orderUtils';
 	import Card from '$lib/components/atoms/Card.svelte';
+	import Button from '$lib/components/atoms/Button.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { fade } from 'svelte/transition';
+	import defaultStore from '$lib/features/orders/defaultStore';
+	import { notifications } from '$lib/core/notifications/notificationStore';
 
 	type WeekGridProps = {
 		date: Date;
@@ -48,6 +60,29 @@
 					<Card>
 						<div transition:fade|local class="text-xs text-gray-400 text-center">
 							Bestillinger kan ikke placeres for fortidige dage.
+						</div>
+					</Card>
+				{/if}
+
+				{#if isFuture(date) && ordersByDay(orders, date).length === 0}
+					<Card>
+						<div class="flex justify-center">
+							<Button
+								variant="transparent"
+								size="sm"
+								ariaLabel="Use default order"
+								onclick={async () => {
+									const def = await defaultStore.getDefault();
+									if (!def) {
+										notifications.info('No saved default order');
+										return;
+									}
+									const cloned = { ...def, date: format(date, 'yyyy-MM-dd'), tempOrder: true };
+									updateOrderForKitchen(orders, cloned);
+								}}
+							>
+								<div class="text-xs text-gray-400 text-center">Use default order</div>
+							</Button>
 						</div>
 					</Card>
 				{/if}
