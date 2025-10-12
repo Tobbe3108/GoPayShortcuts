@@ -44,26 +44,23 @@
 	}
 
 	function handleCancel() {
-		// If this is a temp order (e.g. applied from default) or matches the saved default,
-		// revert it to zero counts so the existing delete flow will remove it.
 		const maybeTemplate = order as TemplateOrder;
-		if (!maybeTemplate.tempOrder) {
-			order = originalOrder;
-			editMode = false;
-			if (order.orderlines.every((line) => line.quantity === 0)) {
-				handleDelete();
-				return;
-			}
+		order = originalOrder;
+
+		if (maybeTemplate.tempOrder) {
+			order = {
+				...order,
+				orderlines: order.orderlines.map((l) => ({ ...l, quantity: 0 }))
+			};
+		}
+
+		if (order.orderlines.every((line) => line.quantity === 0)) {
+			handleDelete();
 			return;
 		}
 
-		// For temp/default orders: set all quantities to 0 and call delete
-		order = {
-			...order,
-			orderlines: order.orderlines.map((l) => ({ ...l, quantity: 0 }))
-		};
 		editMode = false;
-		handleDelete();
+		return;
 	}
 
 	async function handleSave() {
@@ -71,36 +68,22 @@
 			handleDelete();
 			return;
 		}
-		try {
-			const response = await ordersService.updateDay({
-				kitchenId: order.kitchenId,
-				date: order.date,
-				desiredOrders: order.orderlines
-			});
-			if (response) onOrderChange?.(response);
-			editMode = false;
-			// Show a notification with an actionable button to save this order as the global default
-			notifications.success('Order saved', 5000, 'Save as default', async () => {
-				try {
-					await defaultStore.saveDefault(order);
-					notifications.success('Default saved');
-				} catch (err) {
-					notifications.error('Failed to save default order');
-					console.error('save default failed', err);
-				}
-			});
-		} catch (err) {
-			notifications.error('Failed to save order');
-		}
+
+		const response = await ordersService.updateDay({
+			kitchenId: order.kitchenId,
+			date: order.date,
+			desiredOrders: order.orderlines
+		});
+		if (response) onOrderChange?.(response);
+		editMode = false;
+		notifications.info(undefined, 2500, 'Save as default?', async () => handleSaveAsDefault());
 	}
 
 	async function handleSaveAsDefault() {
 		try {
 			await defaultStore.saveDefault(order);
-			notifications.success('Default saved');
 		} catch (err) {
 			notifications.error('Failed to save default order');
-			console.error('save default failed', err);
 		}
 	}
 

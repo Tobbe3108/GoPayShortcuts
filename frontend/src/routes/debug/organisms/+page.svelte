@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
-	import type { Order } from '$lib/features/orders/models/order';
 	import Label from '$lib/components/atoms/Label.svelte';
 
 	let mockOrder: Order | undefined = $state({
@@ -17,8 +15,18 @@
 		totalPrice: 220
 	});
 
-	function addTestNotification() {
+	function addNotifications() {
 		notifications.success('This is a test notification');
+		notifications.warning('This is a test notification');
+		notifications.error('This is a test notification');
+		notifications.info('This is a test notification');
+	}
+
+	function addNotificationsWithAction() {
+		notifications.success(undefined, undefined, 'Undo', () => {});
+		notifications.warning(undefined, undefined, 'Undo', () => {});
+		notifications.error(undefined, undefined, 'Undo', () => {});
+		notifications.info(undefined, undefined, 'Undo', () => {});
 	}
 </script>
 
@@ -35,8 +43,8 @@
 
 	<Label size="xl">Notifications Demo</Label>
 	<section>
-		<Button onclick={addTestNotification}>Add Test Notification</Button>
-		<Notifications />
+		<Button onclick={addNotifications}>Add Notification</Button>
+		<Button onclick={addNotificationsWithAction}>Add With Action</Button>
 	</section>
 
 	<Label size="xl">OrderCard Demo</Label>

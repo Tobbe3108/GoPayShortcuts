@@ -22,7 +22,6 @@
 		</div>
 	{:else}
 		{@render children?.()}
+		<Notifications />
 	{/if}
-
-	<Notifications />
 </div>
