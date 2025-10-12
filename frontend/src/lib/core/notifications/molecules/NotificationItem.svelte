@@ -30,16 +30,16 @@
 		<Label size="sm">{notification.message}</Label>
 		{#if notification.action}
 			<Button
-				variant="secondary"
-				className="ml-2"
-				size="sm"
+				variant="transparent"
+				className="ml-2 px-1 py-0.5 text-sm opacity-80 hover:opacity-100 hover:underline rounded"
 				ariaLabel={notification.actionLabel ?? 'Action'}
 				onclick={() => {
 					notification.action?.(notification.id);
 					onClose(notification.id);
 				}}
 			>
-				{notification.actionLabel ?? 'Action'}
+				<span class="sr-only">{notification.actionLabel ?? 'Action'}</span>
+				<span aria-hidden="true">{notification.actionLabel ?? 'Action'}</span>
 			</Button>
 		{/if}
 
