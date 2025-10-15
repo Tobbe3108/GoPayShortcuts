@@ -38,8 +38,6 @@
 	}
 </script>
 
-<!-- TODO: Fix overlap and make slimmer -->
-
 <div class="flex flex-col items-center w-full">
 	<div class="flex flex-col items-center">
 		<button
@@ -53,45 +51,53 @@
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
+
 	{#if !collapsed}
-		<div transition:slide|local>
+		<div transition:slide|local id="todays-menu-content" class="w-full mt-2">
 			{#if !loading}
-				<Card>
+				<Card className="p-3">
 					{#if !menuItems}
-						<Label variant="muted">Ingen menu tilgængelig for i dag...</Label>
+						<Label variant="muted" size="sm">Ingen menu tilgængelig for i dag...</Label>
 					{:else}
-						<div class="space-y-2">
+						<div class="flex flex-col gap-2">
 							{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
 								<div>
-									<Label size="md" className="tracking-wide font-semibold">{category}</Label>
-									<ul>
+									<Label size="sm" className="tracking-wide font-semibold">{category}</Label>
+									<ul class="mt-1">
 										{#each items as item}
-											<li class="flex items-center py-1 gap-2">
-												<Label size="sm">{item.item}</Label>
-												{#if item.subItems && item.subItems.length}
-													<Label size="xs" variant="muted" className="italic capitalize"
-														>{item.subItems.join(', ')}</Label
-													>
-												{/if}
-												{#if item.allergens && item.allergens.length}
-													<span
-														class="ml-auto relative group align-middle flex items-center justify-end min-w-[80px]"
-													>
-														<Label
-															variant="muted"
-															className="inline-block px-1 py-0.5 text-[10px] leading-tight transition bg-gray-100 rounded cursor-pointer select-none group-hover:bg-gray-200 group-focus-within:bg-gray-200"
+											<li class="flex items-start gap-2 text-sm">
+												<div class="flex-1">
+													<div class="flex items-baseline gap-2">
+														<Label size="sm" className="font-medium">{item.item}</Label>
+														{#if item.subItems && item.subItems.length}
+															<Label size="xs" variant="muted" className="italic capitalize"
+																>{item.subItems.join(', ')}</Label
+															>
+														{/if}
+													</div>
+													{#if item.allergens && item.allergens.length}
+														<span
+															class="ml-auto relative group align-middle inline-flex items-center mb-3 mt-1"
 														>
-															Allergener
-														</Label>
-														<Label
-															size="xs"
-															variant="default"
-															className="absolute right-0 top-full z-10 mt-0.5 w-max px-2 py-1 rounded capitalize bg-white border border-gray-200 shadow opacity-0 pointer-events-none group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-150"
-														>
-															{item.allergens.join(', ')}
-														</Label>
-													</span>
-												{/if}
+															<button
+																class="inline-block px-1 py-0.5 text-[10px] leading-tight bg-gray-100 rounded cursor-pointer select-none focus:outline-sky-500 focus-visible:outline-2"
+																aria-haspopup="dialog"
+																aria-expanded="false"
+																aria-label="Vis allergener"
+																tabindex="0"
+															>
+																Allergener
+															</button>
+															<div
+																role="dialog"
+																aria-hidden="true"
+																class="absolute right-0 top-full mt-1 w-max max-w-xs px-2 py-1 rounded capitalize bg-white border border-gray-200 shadow opacity-0 pointer-events-none group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-150 text-xs"
+															>
+																{item.allergens.join(', ')}
+															</div>
+														</span>
+													{/if}
+												</div>
 											</li>
 										{/each}
 									</ul>
