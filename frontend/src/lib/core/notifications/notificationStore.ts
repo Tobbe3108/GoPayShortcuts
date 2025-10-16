@@ -57,7 +57,6 @@ function createNotificationStore() {
 			actionLabel?: string,
 			action?: (id: string) => void
 		) => {
-			console.warn(msg);
 			addNotification(msg, 'warning', timeout ?? 10000, actionLabel, action);
 		},
 		error: (
@@ -66,7 +65,6 @@ function createNotificationStore() {
 			actionLabel?: string,
 			action?: (id: string) => void
 		) => {
-			console.error(msg);
 			addNotification(msg, 'error', timeout ?? 15000, actionLabel, action);
 		},
 		remove: removeNotification
