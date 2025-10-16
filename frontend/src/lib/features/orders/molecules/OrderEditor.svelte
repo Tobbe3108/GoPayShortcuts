@@ -27,8 +27,11 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		products = await productsService.getProducts();
-		loading = false;
+		try {
+			products = await productsService.getProducts();
+		} finally {
+			loading = false;
+		}
 	});
 
 	let editableOrderlines = $state<OrderLine[]>([]);
@@ -77,6 +80,9 @@
 {#if !loading}
 	<div class="w-full overflow-x-auto">
 		<div class="flex flex-col w-full text-sm">
+			{#if !items || items.length === 0}
+				<Label variant="muted" size="sm" className="text-center">Ingen produkter fundet...</Label>
+			{/if}
 			{#each items as item, idx}
 				<div class="flex items-center justify-center py-1 gap-1">
 					<Label className="text-left grow truncate">{item.name}</Label>

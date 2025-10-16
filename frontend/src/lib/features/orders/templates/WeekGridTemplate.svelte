@@ -3,16 +3,7 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
-	import {
-		startOfWeek,
-		endOfWeek,
-		addDays,
-		isPast,
-		isToday,
-		isFuture,
-		startOfDay,
-		format
-	} from 'date-fns';
+	import { startOfWeek, endOfWeek, addDays, isPast, isToday, isFuture, format } from 'date-fns';
 	import {
 		listOrders,
 		ordersByDay,
@@ -38,15 +29,18 @@
 	let weekEnd = $derived(endOfWeek(date, { weekStartsOn: 1 }));
 	let weekDates = $derived(Array.from({ length: 5 }, (_, i) => addDays(weekStart, i)));
 
-	let orders: Record<string, TemplateOrder[]> = $state({});
 	let loading = $state(true);
+	let orders: Record<string, TemplateOrder[]> = $state({});
 
 	$effect(() => {
-		loading = true;
-		listOrders(weekStart, weekEnd).then((listed) => {
-			orders = listed;
+		try {
+			async () => {
+				const listed = await listOrders(weekStart, weekEnd);
+				orders = listed;
+			};
+		} finally {
 			loading = false;
-		});
+		}
 	});
 </script>
 

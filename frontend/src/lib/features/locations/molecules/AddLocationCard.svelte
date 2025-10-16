@@ -23,8 +23,11 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		allLocations = await locationsService.getLocations();
-		loading = false;
+		try {
+			allLocations = await locationsService.getLocations();
+		} finally {
+			loading = false;
+		}
 	});
 
 	let locations = $derived(
@@ -62,9 +65,9 @@
 	</div>
 	{#if !collapsed}
 		<div transition:slide|local>
-			{#if !loading && locations}
+			{#if !loading}
 				<Card>
-					{#if locations.length === 0}
+					{#if !locations || locations.length === 0}
 						<Label variant="muted">Ingen lokationer fundet...</Label>
 					{:else}
 						<div class="flex flex-col space-y-2">

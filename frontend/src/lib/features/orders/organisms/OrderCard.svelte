@@ -4,7 +4,6 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
-	import Button from '$lib/components/atoms/Button.svelte';
 	import OrderEditor from '../molecules/OrderEditor.svelte';
 	import { ordersService } from '../ordersService';
 	import { notifications } from '$lib/core/notifications/notificationStore';
@@ -34,8 +33,11 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		locations = await locationsService.getLocations();
-		loading = false;
+		try {
+			locations = await locationsService.getLocations();
+		} finally {
+			loading = false;
+		}
 	});
 
 	function handleEdit() {

@@ -17,13 +17,16 @@
 	let collapsed = $state(true);
 
 	onMount(async () => {
-		menuDays = await menuService.getMenu();
+		try {
+			menuDays = await menuService.getMenu();
+		} finally {
+			loading = false;
+		}
 	});
 
 	$effect(() => {
 		const todayISO = format(date, 'yyyy-MM-dd');
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
-		loading = false;
 		menuItems = todayMenu?.items;
 	});
 
@@ -57,7 +60,7 @@
 			{#if !loading}
 				<Card className="p-3">
 					{#if !menuItems}
-						<Label variant="muted" size="sm">Ingen menu tilgængelig for i dag...</Label>
+						<Label variant="muted" size="sm">Ingen menu tilgængelig...</Label>
 					{:else}
 						<div class="flex flex-col gap-2">
 							{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
