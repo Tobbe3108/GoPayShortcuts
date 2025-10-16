@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { apiClient } from '$lib/core/api/apiClient';
 import { writable, type Writable } from 'svelte/store';
+import { notifications } from '$lib/core/notifications/notificationStore';
 
 // Keys for local storage
 const AUTH_TOKEN_KEY = 'gopay_shortcuts_token';
@@ -57,17 +58,13 @@ const createAuthStore = () => {
 		async requestOTP(email: string): Promise<void> {
 			store.update((state) => ({ ...state, isLoading: true, error: null }));
 
-			try {
-				if (browser) {
-					localStorage.setItem(EMAIL_KEY, email);
-				}
+			if (browser) {
+				localStorage.setItem(EMAIL_KEY, email);
+			}
 
-				await apiClient.requestOTP(email);
-
-				store.update((state) => ({ ...state, isLoading: false }));
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : 'Failed to send verification code';
+			const response = await apiClient.requestOTP(email);
+			if (response instanceof Error) {
+				const errorMessage = response.message || 'Failed to send verification code';
 
 				store.update((state) => ({
 					...state,
@@ -75,37 +72,20 @@ const createAuthStore = () => {
 					error: errorMessage
 				}));
 
-				throw error;
+				notifications.error('Failed to send verification code: ' + errorMessage);
+				throw response;
 			}
+
+			store.update((state) => ({ ...state, isLoading: false }));
 		},
 
 		// Verify OTP and login
 		async login(otp: string): Promise<void> {
 			store.update((state) => ({ ...state, isLoading: true, error: null }));
 
-			try {
-				const response = await apiClient.login(otp);
-				const token = response.token;
-
-				if (!token) {
-					throw new Error('No authentication token received');
-				}
-
-				// Update store
-				store.update((state) => ({
-					...state,
-					token,
-					isAuthenticated: true,
-					isLoading: false
-				}));
-
-				// Save to localStorage
-				if (browser) {
-					localStorage.setItem(AUTH_TOKEN_KEY, token);
-					localStorage.removeItem(EMAIL_KEY);
-				}
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : 'Failed to verify code';
+			const response = await apiClient.login(otp);
+			if (response instanceof Error) {
+				const errorMessage = response.message || 'Failed to verify code';
 
 				store.update((state) => ({
 					...state,
@@ -113,7 +93,35 @@ const createAuthStore = () => {
 					error: errorMessage
 				}));
 
+				throw response;
+			}
+
+			const token = response.token;
+			if (!token) {
+				const error = new Error('No authentication token received');
+
+				store.update((state) => ({
+					...state,
+					isLoading: false,
+					error: error.message
+				}));
+
+				notifications.error('No authentication token received: ' + error.message);
 				throw error;
+			}
+
+			// Update store
+			store.update((state) => ({
+				...state,
+				token,
+				isAuthenticated: true,
+				isLoading: false
+			}));
+
+			// Save to localStorage
+			if (browser) {
+				localStorage.setItem(AUTH_TOKEN_KEY, token);
+				localStorage.removeItem(EMAIL_KEY);
 			}
 		},
 

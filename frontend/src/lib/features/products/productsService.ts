@@ -1,4 +1,5 @@
 import { apiClient } from '$lib/core/api/apiClient';
+import { notifications } from '$lib/core/notifications/notificationStore';
 import type { Product } from './product';
 
 /**
@@ -9,15 +10,16 @@ export class ProductsService {
 	 * Get all products from the API
 	 */
 	static async getProducts(): Promise<Product[]> {
-		try {
-			// Fetch products from API (token is automatically included)
-			const products = await apiClient.getProducts();
+		// Fetch products from API (token is automatically included)
+		const products = await apiClient.getProducts();
 
-			return products;
-		} catch (error) {
-			console.error('Failed to fetch products:', error);
-			throw error;
+		if (products instanceof Error) {
+			console.error('Failed to fetch products:', products);
+			notifications.error('Failed to fetch products: ' + products.message);
+			throw products;
 		}
+
+		return products;
 	}
 }
 

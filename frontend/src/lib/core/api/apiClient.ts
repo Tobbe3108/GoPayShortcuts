@@ -1,4 +1,4 @@
-import type { ApiError, RequestOptions } from './api';
+import type { RequestOptions } from './api';
 import type { UpdateDayRequest } from '$lib/features/orders/models/updateDayRequest';
 import type { RequestOTPResponse } from '$lib/features/auth/models/requestOTPResponse';
 import type { LoginResponse } from '$lib/features/auth/models/loginResponse';
@@ -6,7 +6,6 @@ import type { Product } from '$lib/features/products/product';
 import type { MenuDay } from '$lib/features/menu/models/menuDay';
 import type { OrdersResponse } from '$lib/features/orders/models/ordersResponse';
 import type { Location } from '$lib/features/locations/location';
-
 import { API_BASE_URL } from '../config/environment';
 import { authStore } from '$lib/features/auth/store';
 import { get } from 'svelte/store';
@@ -33,7 +32,7 @@ export class ApiClient {
 		method: string = 'GET',
 		body?: unknown,
 		options: RequestOptions = {}
-	): Promise<T> {
+	): Promise<T | Error> {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
@@ -50,52 +49,45 @@ export class ApiClient {
 			body: body ? JSON.stringify(body) : undefined,
 			signal: options.signal
 		});
+		console.log('API Response:', response);
 
-		// Handle no content responses
-		if (response.status === 204) {
-			return {} as T;
-		}
+		if (response.status === 204) return {} as T;
 
-		// Handle errors
-		if (!response.ok) {
-			const errorData: ApiError = await response.json();
-			throw new Error(errorData.displayMessage || errorData.details || 'An unknown error occurred');
-		}
+		if (!response.ok) return new Error(response.statusText || 'An unknown error occurred');
 
-		// Parse response
 		return response.json();
 	}
 
 	// Auth endpoints
-	async requestOTP(email: string): Promise<RequestOTPResponse> {
-		return this.request<RequestOTPResponse>('/request-otp', 'POST', { email });
+	async requestOTP(email: string): Promise<RequestOTPResponse | Error> {
+		return await this.request<RequestOTPResponse>('/request-otp', 'POST', { email });
 	}
 
-	async login(otp: string): Promise<LoginResponse> {
-		return this.request<LoginResponse>('/login', 'POST', { otp });
+	async login(otp: string): Promise<LoginResponse | Error> {
+		return await this.request<LoginResponse>('/login', 'POST', { otp });
 	}
 
-	async getLocations(): Promise<Location[]> {
-		return this.request<Location[]>('/locations', 'GET');
+	async getLocations(): Promise<Location[] | Error> {
+		return await this.request<Location[]>('/locations', 'GET');
 	}
 
-	async getProducts(): Promise<Product[]> {
-		return this.request<Product[]>('/products', 'GET');
+	async getProducts(): Promise<Product[] | Error> {
+		return await this.request<Product[]>('/products', 'GET');
 	}
 
-	async getMenu(): Promise<MenuDay[]> {
-		return this.request<MenuDay[]>('/menu', 'GET');
+	async getMenu(): Promise<MenuDay[] | Error> {
+		return await this.request<MenuDay[]>('/menu', 'GET');
 	}
 
-	async listOrders(startDate: Date, endDate: Date): Promise<OrdersResponse> {
-		return this.request<OrdersResponse>(
+	async listOrders(startDate: Date, endDate: Date): Promise<OrdersResponse | Error> {
+		return await this.request<OrdersResponse>(
 			`/orders?start=${format(startDate, 'yyyy-MM-dd')}&end=${format(endDate, 'yyyy-MM-dd')}`,
 			'GET'
 		);
 	}
 
-	async updateDay(req: UpdateDayRequest): Promise<OrdersResponse> {
-		return this.request<OrdersResponse>('/orders', 'PATCH', req);
+	async updateDay(req: UpdateDayRequest): Promise<OrdersResponse | Error> {
+		return await this.request<OrdersResponse>('/orders', 'PATCH', req);
 	}
 }
 

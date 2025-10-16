@@ -1,4 +1,5 @@
 import { apiClient } from '$lib/core/api/apiClient';
+import { notifications } from '$lib/core/notifications/notificationStore';
 import type { MenuDay } from './models/menuDay';
 
 /**
@@ -9,15 +10,16 @@ export class MenuService {
 	 * Get the current menu from the API
 	 */
 	static async getMenu(): Promise<MenuDay[]> {
-		try {
-			// Fetch menu from API (token is automatically included)
-			const menu = await apiClient.getMenu();
+		// Fetch menu from API (token is automatically included)
+		const menu = await apiClient.getMenu();
 
-			return menu;
-		} catch (error) {
-			console.error('Failed to fetch menu:', error);
-			throw error;
+		if (menu instanceof Error) {
+			console.error('Failed to fetch menu:', menu);
+			notifications.error('Failed to fetch menu: ' + menu.message);
+			throw menu;
 		}
+
+		return menu;
 	}
 }
 
