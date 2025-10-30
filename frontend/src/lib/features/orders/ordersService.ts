@@ -19,6 +19,7 @@ export class OrdersService {
 			throw response;
 		}
 
+		console.log('Fetched orders:', response.orders);
 		return response.orders;
 	}
 
@@ -34,6 +35,7 @@ export class OrdersService {
 			throw response;
 		}
 
+		console.log('Updated orders:', response.orders);
 		return response.orders;
 	}
 }

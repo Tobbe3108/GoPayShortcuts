@@ -19,6 +19,7 @@ export class MenuService {
 			throw menu;
 		}
 
+		console.log('Fetched menu:', menu);
 		return menu;
 	}
 }

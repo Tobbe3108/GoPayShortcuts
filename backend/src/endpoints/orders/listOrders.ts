@@ -13,6 +13,7 @@ import {
   ProductQuantity,
   buildSimplifiedOrderFromProducts,
 } from "./shared/ordersUtils";
+import { seconds } from "../Shared/cacheDuration";
 
 export class ListOrders extends OpenAPIRoute {
   schema = {
@@ -127,7 +128,7 @@ export class ListOrders extends OpenAPIRoute {
       })
     ).then((orders) => orders.sort((a, b) => a.date.localeCompare(b.date)));
 
-    c.res.headers.set("Cache-Control", "max-age=10");
+    c.res.headers.set("Cache-Control", `max-age=${seconds(30)}`);
     return { orders: simplifiedOrders };
   }
 }

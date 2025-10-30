@@ -17,11 +17,10 @@
 	let collapsed = $state(true);
 
 	onMount(async () => {
-		try {
-			menuDays = await menuService.getMenu();
-		} finally {
-			loading = false;
-		}
+		await menuService
+			.getMenu()
+			.then((res) => (menuDays = res))
+			.finally(() => (loading = false));
 	});
 
 	$effect(() => {

@@ -23,11 +23,10 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		try {
-			allLocations = await locationsService.getLocations();
-		} finally {
-			loading = false;
-		}
+		await locationsService
+			.getLocations()
+			.then((result) => (allLocations = result))
+			.finally(() => (loading = false));
 	});
 
 	let locations = $derived(

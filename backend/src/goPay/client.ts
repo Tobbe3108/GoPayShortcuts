@@ -17,6 +17,7 @@ import {
   DetailedOrder,
   ProductsResponse,
 } from "./types";
+import { days } from "../endpoints/Shared/cacheDuration";
 
 export class GoPayClient {
   private apiUrl: string;
@@ -135,7 +136,7 @@ export class GoPayClient {
       {
         cf: {
           cacheTtlByStatus: {
-            "200-299": 86400 * 30, // 30 days
+            "200-299": days(30),
           },
         },
       }
@@ -153,7 +154,7 @@ export class GoPayClient {
     const response = await this.request<ProductsResponse>(endpoint, {
       cf: {
         cacheTtlByStatus: {
-          "200-299": 86400 * 30, // 30 days
+          "200-299": days(30),
         },
       },
     });

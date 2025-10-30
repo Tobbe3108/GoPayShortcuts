@@ -27,11 +27,10 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		try {
-			products = await productsService.getProducts();
-		} finally {
-			loading = false;
-		}
+		await productsService
+			.getProducts(order.kitchenId)
+			.then((res) => (products = res))
+			.finally(() => (loading = false));
 	});
 
 	let editableOrderlines = $state<OrderLine[]>([]);

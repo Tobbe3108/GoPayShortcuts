@@ -33,11 +33,10 @@
 	let loading = $state(true);
 
 	onMount(async () => {
-		try {
-			locations = await locationsService.getLocations();
-		} finally {
-			loading = false;
-		}
+		await locationsService
+			.getLocations()
+			.then((res) => (locations = res))
+			.finally(() => (loading = false));
 	});
 
 	function handleEdit() {

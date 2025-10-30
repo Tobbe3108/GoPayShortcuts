@@ -2,6 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { type AppContext, createGoPayClient } from "../../types";
 import { z } from "zod";
 import { Schemas } from "../Shared/Schemas";
+import { days } from "../Shared/cacheDuration";
 
 export class GetLocations extends OpenAPIRoute {
   schema = {
@@ -34,7 +35,7 @@ export class GetLocations extends OpenAPIRoute {
       } as GetLocationsResponse;
     });
 
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`);
+    c.res.headers.set("Cache-Control", `max-age=${days(30)}`);
     return locations;
   }
 }

@@ -2,6 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import { Schemas } from "../Shared/Schemas";
 import { AppContext, createMeyersClient } from "../../types";
+import { days } from "../Shared/cacheDuration";
 
 export class GetMenu extends OpenAPIRoute {
   schema = {
@@ -46,7 +47,7 @@ export class GetMenu extends OpenAPIRoute {
       });
     }
 
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 1}`);
+    c.res.headers.set("Cache-Control", `max-age=${days(1)}`);
     return result;
   }
 }

@@ -31,14 +31,13 @@
 	let orders: Record<string, TemplateOrder[]> = $state({});
 
 	$effect(() => {
-		try {
-			async () => {
-				const listed = await listOrders(weekStart, weekEnd);
+		listOrders(weekStart, weekEnd)
+			.then((listed) => {
 				orders = listed;
-			};
-		} finally {
-			loading = false;
-		}
+			})
+			.finally(() => {
+				loading = false;
+			});
 	});
 </script>
 
