@@ -71,8 +71,9 @@ export class ApiClient {
 		return await this.request<Location[]>('/locations', 'GET');
 	}
 
-	async getProducts(): Promise<Product[] | Error> {
-		return await this.request<Product[]>('/products', 'GET');
+	async getProducts(kitchenId: number): Promise<Product[] | Error> {
+		const query = `?kitchenId=${encodeURIComponent(String(kitchenId))}`;
+		return await this.request<Product[]>(`/products${query}`, 'GET');
 	}
 
 	async getMenu(): Promise<MenuDay[] | Error> {

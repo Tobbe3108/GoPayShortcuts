@@ -102,6 +102,8 @@ export class ListOrders extends OpenAPIRoute {
           );
           if (existProd) {
             existProd.quantity += ol.quantity;
+            existProd.price = ol.price || existProd.price;
+            if (!existProd.name && ol.name) existProd.name = ol.name;
           } else {
             existing.products.push(ol);
           }
@@ -136,6 +138,11 @@ export class ListOrders extends OpenAPIRoute {
 type tempOrder = {
   date: string;
   kitchenId: number;
-  products: { productId: number; quantity: number; price: number }[];
+  products: {
+    productId: number;
+    quantity: number;
+    price: number;
+    name?: string;
+  }[];
   cancelEnabled: boolean[];
 };

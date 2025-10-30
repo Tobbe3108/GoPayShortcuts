@@ -9,9 +9,9 @@ export class ProductsService {
 	/**
 	 * Get all products from the API
 	 */
-	static async getProducts(): Promise<Product[]> {
+	static async getProducts(kitchenId: number): Promise<Product[]> {
 		// Fetch products from API (token is automatically included)
-		const products = await apiClient.getProducts();
+		const products = await apiClient.getProducts(kitchenId);
 
 		if (products instanceof Error) {
 			console.error('Failed to fetch products:', products);

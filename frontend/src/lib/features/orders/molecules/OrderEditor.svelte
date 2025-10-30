@@ -63,6 +63,14 @@
 
 	const totalPrice = $derived(editableOrderlines.reduce((sum, l) => sum + l.price * l.quantity, 0));
 
+	// Orderlines whose product ids are not present in the current products list (can happen if backend
+	// returns legacy product ids). We surface them so quantities aren't silently hidden.
+	const unmatchedOrderlines = $derived(
+		order?.orderlines
+			? order.orderlines.filter((l) => !products.some((p) => p.id === l.productId))
+			: []
+	);
+
 	function handleQuantityChange(idx: number, newValue: number) {
 		editableOrderlines[idx] = { ...editableOrderlines[idx], quantity: newValue };
 		onOrderChange?.({
@@ -103,6 +111,25 @@
 					>
 				</div>
 			{/each}
+
+			{#if unmatchedOrderlines.length > 0}
+				<div class="mt-2 border-t border-slate-200 pt-2">
+					<Label variant="muted" size="xs" className="block mb-1"
+						>Ukendte produkter (ID mismatch)</Label
+					>
+					{#each unmatchedOrderlines as l}
+						<div class="flex items-center justify-center py-1 gap-1 opacity-75">
+							<Label className="text-left grow truncate">Produkt #{l.productId}</Label>
+							<div class="flex min-w-11 justify-center">
+								<Label>{l.quantity}</Label>
+							</div>
+							<Label className="text-right flex-none w-auto min-w-9"
+								>{formatPrice(l.price * l.quantity)}</Label
+							>
+						</div>
+					{/each}
+				</div>
+			{/if}
 			{#if showTotal}
 				<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
 					<Label className="font-semibold">Total</Label>
