@@ -31,6 +31,7 @@
 	let originalOrder = $state(order);
 	let locations = $state<Location[]>([]);
 	let loading = $state(true);
+	let isBackendLoading = $state(false);
 
 	onMount(async () => {
 		await locationsService
@@ -70,25 +71,36 @@
 			return;
 		}
 
-		const response = await ordersService.updateDay({
-			kitchenId: order.kitchenId,
-			date: order.date,
-			desiredOrders: order.orderlines
-		});
-		if (response) onOrderChange?.(response);
-		editMode = false;
-		notifications.info(undefined, 2500, 'Save as default?', async () => handleSaveAsDefault());
+		isBackendLoading = true;
+		try {
+			const response = await ordersService.updateDay({
+				kitchenId: order.kitchenId,
+				date: order.date,
+				desiredOrders: order.orderlines
+			});
+			if (response) onOrderChange?.(response);
+			editMode = false;
+			notifications.info(undefined, 2500, 'Save as default?', async () => handleSaveAsDefault());
+		} catch (err) {
+			notifications.error('Failed to save order');
+		} finally {
+			isBackendLoading = false;
+		}
 	}
 
 	async function handleSaveAsDefault() {
+		isBackendLoading = true;
 		try {
 			await defaultStore.saveDefault(order);
 		} catch (err) {
 			notifications.error('Failed to save default order');
+		} finally {
+			isBackendLoading = false;
 		}
 	}
 
 	async function handleDelete() {
+		isBackendLoading = true;
 		try {
 			await ordersService.updateDay({
 				kitchenId: order.kitchenId,
@@ -98,6 +110,8 @@
 			onOrderCancel?.(order.date, order.kitchenId);
 		} catch (err) {
 			notifications.error('Failed to cancel order');
+		} finally {
+			isBackendLoading = false;
 		}
 	}
 
@@ -109,7 +123,11 @@
 
 {#if !loading}
 	<Card>
-		<div transition:fade|local>
+		<div
+			transition:fade|local
+			class="relative transition-opacity duration-300"
+			class:opacity-50={isBackendLoading}
+		>
 			<div class="flex flex-row items-center justify-between mb-2">
 				<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
 				<div class="flex items-center gap-2">
@@ -117,6 +135,7 @@
 						{isEditing}
 						direction="row"
 						locked={order.cancelEnabled === false}
+						disabled={isBackendLoading}
 						onEdit={handleEdit}
 						onSave={handleSave}
 						onCancel={handleCancel}
