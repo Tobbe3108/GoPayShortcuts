@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
-	import WeekNavigator from '../molecules/WeekNavigator.svelte';
+	import WeekNavigator from '../organisms/WeekNavigator.svelte';
 
 	type MainLayoutProps = {
 		onLogout?: () => void;
@@ -26,7 +26,7 @@
 	}: MainLayoutProps = $props();
 </script>
 
-<div class="container p-4 mx-auto">
+<div class="container max-w-[90vw] p-4 mx-auto">
 	<div class="flex flex-row items-center">
 		<div class="flex flex-1/3 justify-start">
 			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />

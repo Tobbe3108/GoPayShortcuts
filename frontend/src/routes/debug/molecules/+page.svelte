@@ -7,7 +7,7 @@
 	import DayHeader from '$lib/components/molecules/DayHeader.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
-	import WeekNavigator from '$lib/components/molecules/WeekNavigator.svelte';
+	import WeekNavigator from '$lib/components/organisms/WeekNavigator.svelte';
 	import { format } from 'date-fns';
 
 	let inputValue = $state('');
