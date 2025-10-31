@@ -4,8 +4,10 @@
 	import { onMount } from 'svelte';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
+	import Icon from '$lib/components/atoms/Icon.svelte';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
 	import type { OrderLine } from '../models/orderLine';
+	import { slide } from 'svelte/transition';
 
 	interface Props {
 		order: SimplifiedOrder;
@@ -45,20 +47,67 @@
 		});
 	});
 
+	// Helper to detect guest products (supports both 'gæst' and 'gaest')
+	function isGuestProduct(name: string) {
+		const n = name.toLowerCase();
+		return n.includes('gæst') || n.includes('gaest');
+	}
+
+	// Guest items derived from products + editableOrderlines regardless of quantity (so users can add them)
+	const guestItems = $derived(
+		products
+			.map((product, idx) => {
+				if (!isGuestProduct(product.name)) return null;
+				const line = editableOrderlines[idx] ?? {
+					productId: product.id,
+					quantity: 0,
+					price: product.price
+				};
+				return {
+					id: product.id,
+					name: product.name,
+					quantity: line.quantity,
+					price: product.price
+				};
+			})
+			.filter((it) => it !== null) as Array<{
+			id: number;
+			name: string;
+			quantity: number;
+			price: number;
+		}>
+	);
+
+	const guestQuantityTotal = $derived(guestItems.reduce((sum, i) => sum + i.quantity, 0));
+
+	// Collapsed state: false if guest items have quantity > 0, else true (user can toggle)
+	let guestCollapsed = $derived(guestQuantityTotal === 0);
+
+	// Main items exclude guest products when editing (guest items live in their own collapsible section).
+	// When not editing, show only selected (quantity > 0) items and include guest items inline (simpler read-only view).
 	const items = $derived(
-		products.map((product, idx) => {
-			const line = editableOrderlines[idx] ?? {
-				productId: product.id,
-				quantity: 0,
-				price: product.price
-			};
-			return {
-				id: product.id,
-				name: product.name,
-				quantity: line.quantity,
-				price: product.price
-			};
-		})
+		products
+			.map((product, idx) => {
+				if (editMode && isGuestProduct(product.name)) return null; // exclude in edit mode list
+				const line = editableOrderlines[idx] ?? {
+					productId: product.id,
+					quantity: 0,
+					price: product.price
+				};
+				return {
+					id: product.id,
+					name: product.name,
+					quantity: line.quantity,
+					price: product.price
+				};
+			})
+			.filter((it) => it !== null)
+			.filter((it) => (editMode ? true : it.quantity > 0)) as Array<{
+			id: number;
+			name: string;
+			quantity: number;
+			price: number;
+		}>
 	);
 
 	const totalPrice = $derived(editableOrderlines.reduce((sum, l) => sum + l.price * l.quantity, 0));
@@ -77,6 +126,12 @@
 			...order,
 			orderlines: [...editableOrderlines]
 		});
+	}
+
+	function handleGuestQuantityChange(productId: number, newValue: number) {
+		const idx = products.findIndex((p) => p.id === productId);
+		if (idx === -1) return;
+		handleQuantityChange(idx, newValue);
 	}
 
 	function formatPrice(amount: number) {
@@ -128,6 +183,43 @@
 							>
 						</div>
 					{/each}
+				</div>
+			{/if}
+
+			{#if editMode && guestItems.length > 0}
+				<div class="flex flex-col items-center mt-2">
+					<button
+						class="flex items-center gap-1 cursor-pointer select-none focus:outline-none"
+						type="button"
+						aria-expanded={!guestCollapsed}
+						aria-controls="guest-items-content"
+						onclick={() => (guestCollapsed = !guestCollapsed)}
+					>
+						<Label size="xs" className="tracking-wide cursor-pointer">Gæst varer</Label>
+						<Icon name={guestCollapsed ? 'open' : 'collapse'} size={10} />
+					</button>
+					{#if !guestCollapsed}
+						<div id="guest-items-content" class="w-full">
+							<div transition:slide|local>
+								{#each guestItems as g}
+									<div class="flex items-center justify-center py-1 gap-1">
+										<Label className="text-left grow truncate">{g.name}</Label>
+										<div class="flex min-w-11 justify-center">
+											<Quantity
+												value={g.quantity}
+												min={0}
+												max={99}
+												onChange={(v) => handleGuestQuantityChange(g.id, v)}
+											/>
+										</div>
+										<Label className="text-right flex-none w-auto min-w-9"
+											>{formatPrice(g.price * g.quantity)}</Label
+										>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
 				</div>
 			{/if}
 			{#if showTotal}
