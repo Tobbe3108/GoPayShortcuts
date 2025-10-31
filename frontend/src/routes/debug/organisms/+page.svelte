@@ -3,16 +3,13 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
+	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 
-	let mockOrder: Order | undefined = $state({
+	let mockOrder: SimplifiedOrder | undefined = $state({
 		date: '2025-09-22',
 		kitchenId: 1,
 		orderlines: [{ productId: 1, quantity: 2, price: 80 }],
-		cancelEnabled: true,
-		id: 123,
-		kitchenName: 'Test Kitchen',
-		status: 'open',
-		totalPrice: 220
+		cancelEnabled: true
 	});
 
 	function addNotifications() {
@@ -51,7 +48,7 @@
 	<section>
 		<div class="max-w-md">
 			{#if mockOrder}
-				<OrderCard order={mockOrder} onOrderChange={(order) => (mockOrder = order)} />
+				<OrderCard order={mockOrder} onOrderChange={(orders) => (mockOrder = orders[0])} />
 			{:else}
 				<div class="text-gray-500">Order deleted.</div>
 			{/if}

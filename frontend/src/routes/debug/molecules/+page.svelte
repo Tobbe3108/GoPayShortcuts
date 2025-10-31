@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Order } from '$lib/features/orders/models/order';
+	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import OrderEditor from '$lib/features/orders/molecules/OrderEditor.svelte';
 	import EditModeControls from '$lib/features/orders/molecules/EditModeControls.svelte';
@@ -12,18 +12,14 @@
 
 	let inputValue = $state('');
 
-	let order: Order = $state({
+	let order: SimplifiedOrder = $state({
 		date: new Date().toISOString(),
 		kitchenId: 123,
 		orderlines: [{ productId: 1, quantity: 2, price: 50 }],
-		cancelEnabled: true,
-		id: 123,
-		kitchenName: 'Test Kitchen',
-		status: 'pending',
-		totalPrice: 200
+		cancelEnabled: true
 	});
 
-	let newOrder: Order | undefined = $state(undefined);
+	let newOrder: SimplifiedOrder | undefined = $state(undefined);
 
 	let lastAction = $state('');
 
@@ -95,22 +91,16 @@
 	<Label size="xl">AddLocationCard Demo</Label>
 	<section class="justify-center">
 		<AddLocationCard
+			date={new Date()}
 			newOrder={(order) => (newOrder = order)}
 			locationsWithOrders={newOrder ? [newOrder.kitchenId] : []}
 		/>
-		<Label variant="muted">Latest order location: {newOrder?.kitchenName}</Label>
+		<Label variant="muted">Latest order location: {newOrder?.kitchenId}</Label>
 	</section>
 
 	<Label size="xl">WeekNavigator Demo</Label>
 	<section class="max-w-max justify-center">
-		<WeekNavigator
-			date={new Date()}
-			onWeekChange={(newStart, newEnd) => ((weekStart = newStart), (weekEnd = newEnd))}
-		/>
-		<Label variant="muted"
-			>Selected week: {weekStart ? format(weekStart, 'yyyy-MM-dd') : ''} - {weekEnd
-				? format(weekEnd, 'yyyy-MM-dd')
-				: ''}</Label
-		>
+		<WeekNavigator date={new Date()} onWeekChange={(newStart: Date) => (weekStart = newStart)} />
+		<Label variant="muted">Selected week: {weekStart ? format(weekStart, 'yyyy-MM-dd') : ''}</Label>
 	</section>
 </div>

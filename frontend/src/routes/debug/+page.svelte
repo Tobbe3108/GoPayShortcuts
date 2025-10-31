@@ -31,7 +31,7 @@
 	let desiredOrders: Array<{ productId: number | ''; quantity: number | '' }> = [
 		{ productId: '', quantity: '' }
 	];
-	let updateDayResult: UpdateDayResponse | null = null;
+	let updateDayResult: any = null;
 	let updateDayError: string | null = null;
 
 	// Fetch locations
@@ -50,7 +50,7 @@
 	async function fetchProducts() {
 		loadingStatus.products = true;
 		try {
-			products = await productsService.getProducts();
+			products = await productsService.getProducts(1); // Using kitchenId 1 for debug
 		} catch (error) {
 			console.error('Error fetching products:', error);
 		} finally {
@@ -85,7 +85,12 @@
 	async function fetchCurrentWeekOrders() {
 		loadingStatus.orders = true;
 		try {
-			orders = await ordersService.getOrdersForCurrentWeek();
+			const today = new Date();
+			const startOfWeek = new Date(today);
+			startOfWeek.setDate(today.getDate() - today.getDay());
+			const endOfWeek = new Date(startOfWeek);
+			endOfWeek.setDate(startOfWeek.getDate() + 6);
+			orders = await ordersService.listOrders(startOfWeek, endOfWeek);
 		} catch (error) {
 			console.error('Error fetching current week orders:', error);
 		} finally {
@@ -143,7 +148,7 @@
 	});
 </script>
 
-<MainLayout isAuthenticated={$authStore.isAuthenticated}>
+<MainLayout isAuthenticated={$authStore.isAuthenticated} date={new Date()}>
 	{#snippet children()}
 		<div class="container mx-auto px-4 py-8">
 			<div class="mb-6 flex gap-4">
