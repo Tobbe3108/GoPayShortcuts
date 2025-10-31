@@ -70,7 +70,7 @@
 											<li class="flex items-start gap-2 text-sm">
 												<div class="flex-1">
 													<div class="flex items-baseline gap-2">
-														<Label size="sm" className="font-medium">{item.item}</Label>
+														<Label size="sm">{item.item}</Label>
 														{#if item.subItems && item.subItems.length}
 															<Label size="xs" variant="muted" className="italic capitalize"
 																>{item.subItems.join(', ')}</Label
