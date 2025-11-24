@@ -8,10 +8,18 @@
 		min?: number;
 		max?: number;
 		disabled?: boolean;
+		showLockWhenAtMin?: boolean;
 		onChange?: (value: number) => void;
 	}
 
-	let { value = 0, min = 0, max = 99, disabled = false, onChange = undefined }: Props = $props();
+	let {
+		value = 0,
+		min = 0,
+		max = 99,
+		disabled = false,
+		showLockWhenAtMin = false,
+		onChange = undefined
+	}: Props = $props();
 
 	function increment() {
 		if (disabled || value >= max) return;
@@ -38,7 +46,11 @@
 			disabled={disabled || value <= min}
 			className="flex items-center justify-center"
 		>
-			<Icon name="minus" size={iconSize} ariaLabel="Decrement" />
+			{#if showLockWhenAtMin && value <= min && min > 0}
+				<Icon name="lock" size={iconSize} ariaLabel="Locked" className="text-muted-dark" />
+			{:else}
+				<Icon name="minus" size={iconSize} ariaLabel="Decrement" />
+			{/if}
 		</Button>
 		<Label className="text-primary text-center select-none flex items-center justify-center"
 			>{value}</Label

@@ -8,6 +8,7 @@
 		isEditing?: boolean;
 		disabled?: boolean;
 		locked?: boolean;
+		appendOnly?: boolean;
 		showDelete?: boolean;
 		direction?: Direction;
 		onEdit?: () => void;
@@ -20,6 +21,7 @@
 		isEditing = false,
 		disabled = false,
 		locked = false,
+		appendOnly = false,
 		showDelete = true,
 		direction = 'row',
 		onEdit = undefined,
@@ -46,7 +48,7 @@
 <div
 	class={`flex ${direction === 'column' ? 'flex-col items-start' : 'flex-row items-center gap-x-2'}`}
 >
-	{#if locked}
+	{#if locked && !appendOnly}
 		<Icon name="lock" size={iconSize} ariaLabel="Locked" className="text-muted-dark" />
 	{:else if !editMode}
 		<Button variant="transparent" ariaLabel="Edit" {disabled} onclick={handleEdit} size="">
@@ -55,7 +57,7 @@
 			{/snippet}
 		</Button>
 	{:else}
-		{#if showDelete}
+		{#if showDelete && !appendOnly}
 			<Button
 				variant="transparent"
 				ariaLabel="Delete"

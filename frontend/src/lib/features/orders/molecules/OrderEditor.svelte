@@ -12,6 +12,8 @@
 	interface Props {
 		order: SimplifiedOrder;
 		editMode?: boolean;
+		appendOnly?: boolean;
+		originalQuantities?: Map<number, number>;
 		currency?: string;
 		showTotal?: boolean;
 		onOrderChange?: (order: SimplifiedOrder) => void;
@@ -20,6 +22,8 @@
 	let {
 		order,
 		editMode = false,
+		appendOnly = false,
+		originalQuantities = new Map(),
 		currency = 'kr',
 		showTotal = true,
 		onOrderChange = undefined
@@ -152,8 +156,9 @@
 						{#if editMode}
 							<Quantity
 								value={item.quantity}
-								min={0}
+								min={appendOnly ? (originalQuantities.get(item.id) ?? 0) : 0}
 								max={99}
+								showLockWhenAtMin={appendOnly}
 								onChange={(v) => handleQuantityChange(idx, v)}
 							/>
 						{:else}
@@ -207,8 +212,9 @@
 										<div class="flex min-w-11 justify-center">
 											<Quantity
 												value={g.quantity}
-												min={0}
+												min={appendOnly ? (originalQuantities.get(g.id) ?? 0) : 0}
 												max={99}
+												showLockWhenAtMin={appendOnly}
 												onChange={(v) => handleGuestQuantityChange(g.id, v)}
 											/>
 										</div>

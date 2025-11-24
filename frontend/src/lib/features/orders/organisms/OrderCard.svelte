@@ -32,6 +32,11 @@
 	let locations = $state<Location[]>([]);
 	let loading = $state(true);
 	let isBackendLoading = $state(false);
+	let originalQuantities = $state<Map<number, number>>(new Map());
+
+	// Append-only mode: when order is locked (all deliveries non-cancelable)
+	const isLocked = $derived(order.cancelEnabled === false);
+	const appendOnly = $derived(isLocked && editMode);
 
 	onMount(async () => {
 		await locationsService
@@ -43,6 +48,8 @@
 	function handleEdit() {
 		editMode = true;
 		originalOrder = order;
+		// Snapshot current quantities for append-only validation
+		originalQuantities = new Map(order.orderlines.map((line) => [line.productId, line.quantity]));
 	}
 
 	function handleCancel() {
@@ -66,6 +73,19 @@
 	}
 
 	async function handleSave() {
+		// Validate append-only constraint: no quantity decreases allowed
+		if (isLocked) {
+			for (const line of order.orderlines) {
+				const originalQty = originalQuantities.get(line.productId) ?? 0;
+				if (line.quantity < originalQty) {
+					notifications.error(
+						'Cannot decrease quantities in a locked order. Only additions are allowed.'
+					);
+					return;
+				}
+			}
+		}
+
 		if (order.orderlines.every((line) => line.quantity === 0)) {
 			handleDelete();
 			return;
@@ -134,7 +154,8 @@
 					<EditModeControls
 						{isEditing}
 						direction="row"
-						locked={order.cancelEnabled === false}
+						locked={false}
+						{appendOnly}
 						disabled={isBackendLoading}
 						onEdit={handleEdit}
 						onSave={handleSave}
@@ -143,7 +164,13 @@
 					/>
 				</div>
 			</div>
-			<OrderEditor {order} {editMode} onOrderChange={(updatedOrder) => (order = updatedOrder)} />
+			<OrderEditor
+				{order}
+				{editMode}
+				{appendOnly}
+				{originalQuantities}
+				onOrderChange={(updatedOrder) => (order = updatedOrder)}
+			/>
 		</div>
 	</Card>
 {/if}
