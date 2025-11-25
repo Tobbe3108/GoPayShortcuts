@@ -13,6 +13,6 @@
   "vars": {
     "GOPAY_API_URL": "https://prod.facilitynet.dk/api",
     "MEYERS_API_URL": "https://meyers.kanpla.dk/api",
-    "USE_LOCAL_MOCK_CLIENTS": true
+    "USE_LOCAL_MOCK_CLIENTS": false
   }
 }
