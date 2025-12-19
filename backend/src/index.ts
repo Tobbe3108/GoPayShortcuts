@@ -20,10 +20,7 @@ app.use(
   "*",
   cors({
     // Allow local dev and GitHub Pages
-    origin: [
-      "http://localhost:5173",
-      "https://tobbe3108.github.io/GoPayShortcuts",
-    ],
+    origin: ["http://localhost:5173", "https://tobbe3108.github.io"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     exposeHeaders: ["Content-Length"],
