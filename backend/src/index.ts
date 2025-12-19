@@ -19,7 +19,11 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:5173"],
+    // Allow local dev and GitHub Pages
+    origin: [
+      "http://localhost:5173",
+      "https://tobbe3108.github.io/GoPayShortcuts",
+    ],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     exposeHeaders: ["Content-Length"],
