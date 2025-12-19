@@ -53,6 +53,9 @@ export class RequestOTP extends OpenAPIRoute {
     var response = await client.requestOTP(data.body.email);
     if (response instanceof Response) return response; // Error responses
 
-    return new Response(null, { status: 204 });
+    return new Response(null, {
+      status: 204,
+      headers: { "Cache-Control": "no-store" },
+    });
   }
 }

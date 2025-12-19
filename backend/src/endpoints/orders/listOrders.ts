@@ -130,7 +130,10 @@ export class ListOrders extends OpenAPIRoute {
       })
     ).then((orders) => orders.sort((a, b) => a.date.localeCompare(b.date)));
 
-    c.res.headers.set("Cache-Control", `max-age=${seconds(30)}`);
+    c.res.headers.set(
+      "Cache-Control",
+      `private, max-age=${seconds(10)}, stale-while-revalidate=${seconds(20)}`
+    );
     return { orders: simplifiedOrders };
   }
 }

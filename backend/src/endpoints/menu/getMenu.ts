@@ -47,7 +47,10 @@ export class GetMenu extends OpenAPIRoute {
       });
     }
 
-    c.res.headers.set("Cache-Control", `max-age=${days(1)}`);
+    c.res.headers.set(
+      "Cache-Control",
+      `public, max-age=${days(1)}, stale-while-revalidate=${days(1)}`
+    );
     return result;
   }
 }

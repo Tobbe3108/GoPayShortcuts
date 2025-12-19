@@ -48,6 +48,8 @@ export class Login extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>();
     const client = createGoPayClient(c);
 
+    c.res.headers.set("Cache-Control", "no-store");
+
     const response = await client.login(data.body.otp);
     if (response instanceof Response) return response; // Error responses
 
