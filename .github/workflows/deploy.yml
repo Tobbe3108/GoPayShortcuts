@@ -31,6 +31,7 @@ jobs:
       - name: Build
         env:
           BASE_PATH: "/${{ github.event.repository.name }}"
+          PUBLIC_API_BASE_URL: "https://gopaybadedition.tobbe3108.workers.dev/api"
         run: bun run build
         working-directory: frontend
 
