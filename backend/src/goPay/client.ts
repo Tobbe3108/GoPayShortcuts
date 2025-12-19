@@ -213,6 +213,7 @@ export class GoPayClient {
       `/suppliers/kitchens/${kitchenId}/payment/paymentDetails/catering`,
       {
         method: "POST",
+        cache: "no-store",
       },
       request
     );
@@ -239,6 +240,7 @@ export class GoPayClient {
       `/orders/catering`,
       {
         method: "POST",
+        cache: "no-store",
       },
       request
     );
@@ -260,6 +262,7 @@ export class GoPayClient {
       `/orders/${orderId}`,
       {
         method: "DELETE",
+        cache: "no-store",
       }
     );
 

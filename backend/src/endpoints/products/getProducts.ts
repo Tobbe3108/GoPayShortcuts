@@ -67,7 +67,10 @@ export class GetProducts extends OpenAPIRoute {
     if (response instanceof Response) return response;
 
     const productsResponse = extractProducts(response);
-    c.res.headers.set("Cache-Control", `max-age=${days(30)}`);
+    c.res.headers.set(
+      "Cache-Control",
+      `private, max-age=${days(30)}, stale-while-revalidate=${days(60)}`
+    );
     return productsResponse;
   }
 }

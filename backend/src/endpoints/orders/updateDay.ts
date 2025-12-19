@@ -75,6 +75,8 @@ export class PatchOrdersState extends OpenAPIRoute {
   async handle(c: AppContext) {
     const client = createGoPayClient(c);
 
+    c.res.headers.set("Cache-Control", "no-store");
+
     const data = await this.getValidatedData<typeof this.schema>();
     const { kitchenId, date, desiredOrders } = data.body;
 
