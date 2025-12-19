@@ -24,12 +24,28 @@
 		onDayChange = undefined,
 		onWeekChange = undefined
 	}: MainLayoutProps = $props();
+
+	function goToToday() {
+		const today = new Date();
+		if (isMobile) {
+			onDayChange?.(today);
+		} else {
+			onWeekChange?.(today);
+		}
+	}
 </script>
 
 <div class="container max-w-[90vw] p-4 mx-auto">
 	<div class="flex flex-row items-center">
 		<div class="flex flex-1/3 justify-start">
-			<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
+			<button
+				onclick={goToToday}
+				class="cursor-pointer hover:opacity-75 transition-opacity"
+				aria-label="Go to today"
+				type="button"
+			>
+				<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-28 w-auto" />
+			</button>
 		</div>
 		<div class="flex flex-1/3 justify-center">
 			{#if isMobile}
