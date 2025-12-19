@@ -2,13 +2,15 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
-	import { endOfWeek, isPast, isToday, startOfWeek, isAfter, startOfDay, format } from 'date-fns';
+	import { endOfWeek, isPast, isToday, startOfWeek, isFuture, format, addDays } from 'date-fns';
+	import { fade } from 'svelte/transition';
 	import {
 		listOrders,
 		ordersByDay,
 		handleOrderChange,
 		handleCancel,
 		updateOrderForKitchen,
+		toRecord,
 		type TemplateOrder
 	} from '$lib/features/orders/orderUtils';
 	import Card from '$lib/components/atoms/Card.svelte';
@@ -16,6 +18,7 @@
 	import defaultStore from '$lib/features/orders/defaultStore';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import { ordersService } from '$lib/features/orders/ordersService';
 
 	type DayViewProps = {
 		date: Date;
@@ -29,63 +32,112 @@
 
 	let loading = $state(true);
 	let orders: Record<string, TemplateOrder[]> = $state({});
+	// In-memory prefetch cache keyed by week range (non-reactive to avoid re-run loops)
+	let prefetchCache: Record<string, Record<string, TemplateOrder[]>> = {};
+	const keyForRange = (start: Date, end: Date) =>
+		`${format(start, 'yyyy-MM-dd')}__${format(end, 'yyyy-MM-dd')}`;
 
 	$effect(() => {
+		// If we have prefetched data for the containing week, use it immediately
+		const currentKey = keyForRange(weekStart, weekEnd);
+		if (prefetchCache[currentKey]) {
+			orders = prefetchCache[currentKey];
+			loading = false;
+		}
+
+		// Primary fetch for the visible week (containing selectedDate)
 		listOrders(weekStart, weekEnd)
 			.then((listed) => {
 				orders = listed;
 			})
 			.finally(() => {
 				loading = false;
+				// After navigation and refresh, wipe prefetch cache to avoid staleness
+				prefetchCache = {};
 			});
+
+		// Fire-and-forget: prefetch next week and store it
+		const nextStart = addDays(weekStart, 7);
+		const nextEnd = addDays(weekEnd, 7);
+		const nextKey = keyForRange(nextStart, nextEnd);
+		ordersService
+			.listOrders(nextStart, nextEnd)
+			.then((arr) => {
+				prefetchCache[nextKey] = toRecord(arr);
+			})
+			.catch(() => {});
+
+		// Fire-and-forget: prefetch previous week and store it
+		const prevStart = addDays(weekStart, -7);
+		const prevEnd = addDays(weekEnd, -7);
+		const prevKey = keyForRange(prevStart, prevEnd);
+		ordersService
+			.listOrders(prevStart, prevEnd)
+			.then((arr) => {
+				prefetchCache[prevKey] = toRecord(arr);
+			})
+			.catch(() => {});
 	});
 </script>
 
-{#if !loading}
-	<div class="flex flex-col space-y-4 w-full">
-		<TodaysMenu date={selectedDate} />
-		{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
-			<Card>
-				<div class="text-xs text-gray-400 text-center">No orders for this day</div>
-			</Card>
-		{/if}
+<div class="grid grid-cols-1 gap-4">
+	<TodaysMenu date={selectedDate} />
+	{#if !loading}
+		{#key format(selectedDate, 'yyyy-MM-dd')}
+			<div in:fade class="flex flex-col space-y-4 w-full">
+				{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
+					<Card>
+						<div class="text-xs text-gray-400 text-center">
+							Bestillinger kan ikke placeres for fortidige dage.
+						</div>
+					</Card>
+				{/if}
 
-		{#if isAfter(selectedDate, startOfDay(new Date())) && [...ordersByDay(orders, selectedDate)].length === 0}
-			<Card>
-				<div class="flex justify-center">
-					<Button
-						variant="transparent"
-						size="sm"
-						ariaLabel="Use default order"
-						onclick={async () => {
-							const def = await defaultStore.getDefault();
-							if (!def) {
-								notifications.info('No saved default order');
-								return;
-							}
-							const cloned = { ...def, date: format(selectedDate, 'yyyy-MM-dd'), tempOrder: true };
-							updateOrderForKitchen(orders, cloned);
-						}}
-					>
-						<div class="text-xs text-gray-400 text-center">Use default order</div>
-					</Button>
-				</div>
-			</Card>
-		{/if}
-		{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
-			<OrderCard
-				{order}
-				isEditing={order.tempOrder}
-				onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
-				onOrderCancel={(selectedDate, kitchenId) => handleCancel(orders, selectedDate, kitchenId)}
-			/>
-		{/each}
-		<AddLocationCard
-			date={selectedDate}
-			newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
-			locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
-		/>
-	</div>
-{:else}
-	<LoadingSpinner />
-{/if}
+				{#if isFuture(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
+					<Card>
+						<div class="flex justify-center">
+							<Button
+								variant="transparent"
+								size="sm"
+								ariaLabel="Use default order"
+								onclick={async () => {
+									const def = await defaultStore.getDefault();
+									if (!def) {
+										notifications.info('No saved default order');
+										return;
+									}
+									const cloned = {
+										...def,
+										date: format(selectedDate, 'yyyy-MM-dd'),
+										tempOrder: true
+									};
+									updateOrderForKitchen(orders, cloned);
+								}}
+							>
+								<div class="text-xs text-gray-400 text-center">Use default order</div>
+							</Button>
+						</div>
+					</Card>
+				{/if}
+
+				{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
+					<OrderCard
+						{order}
+						isEditing={order.tempOrder}
+						onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
+						onOrderCancel={(selectedDate, kitchenId) =>
+							handleCancel(orders, selectedDate, kitchenId)}
+					/>
+				{/each}
+
+				{#if isToday(date) || isFuture(date)}
+					<AddLocationCard
+						date={selectedDate}
+						newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
+						locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
+					/>
+				{/if}
+			</div>
+		{/key}
+	{/if}
+</div>

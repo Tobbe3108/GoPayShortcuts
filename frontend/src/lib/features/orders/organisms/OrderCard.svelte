@@ -143,34 +143,28 @@
 
 {#if !loading}
 	<Card>
-		<div
-			transition:fade|local
-			class="relative transition-opacity duration-300"
-			class:opacity-50={isBackendLoading}
-		>
-			<div class="flex flex-row items-center justify-between mb-2">
-				<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
-				<div class="flex items-center gap-2">
-					<EditModeControls
-						{isEditing}
-						direction="row"
-						locked={false}
-						{appendOnly}
-						disabled={isBackendLoading}
-						onEdit={handleEdit}
-						onSave={handleSave}
-						onCancel={handleCancel}
-						onDelete={handleDelete}
-					/>
-				</div>
+		<div class="flex flex-row items-center justify-between mb-2">
+			<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
+			<div class="flex items-center gap-2">
+				<EditModeControls
+					{isEditing}
+					direction="row"
+					locked={false}
+					{appendOnly}
+					disabled={isBackendLoading}
+					onEdit={handleEdit}
+					onSave={handleSave}
+					onCancel={handleCancel}
+					onDelete={handleDelete}
+				/>
 			</div>
-			<OrderEditor
-				{order}
-				{editMode}
-				{appendOnly}
-				{originalQuantities}
-				onOrderChange={(updatedOrder) => (order = updatedOrder)}
-			/>
 		</div>
+		<OrderEditor
+			{order}
+			{editMode}
+			{appendOnly}
+			{originalQuantities}
+			onOrderChange={(updatedOrder) => (order = updatedOrder)}
+		/>
 	</Card>
 {/if}

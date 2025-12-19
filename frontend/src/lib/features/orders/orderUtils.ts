@@ -7,16 +7,7 @@ export interface TemplateOrder extends SimplifiedOrder {
 }
 
 export async function listOrders(weekStart: Date, weekEnd: Date) {
-	return await ordersService.listOrders(weekStart, weekEnd).then((res) =>
-		res.reduce(
-			(record, order) => {
-				if (!record[order.date]) record[order.date] = [];
-				record[order.date].push({ ...order, tempOrder: false });
-				return record;
-			},
-			{} as Record<string, TemplateOrder[]>
-		)
-	);
+	return await ordersService.listOrders(weekStart, weekEnd).then((res) => toRecord(res));
 }
 
 export function ordersByDay(record: Record<string, TemplateOrder[]>, date: Date) {
@@ -48,4 +39,16 @@ export function updateOrderForKitchen(
 ) {
 	record[order.date] = record[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
 	record[order.date].push(order);
+}
+
+// Helper: convert a flat order array into the TemplateOrder record keyed by date
+export function toRecord(orders: SimplifiedOrder[]): Record<string, TemplateOrder[]> {
+	return orders.reduce(
+		(record, order) => {
+			if (!record[order.date]) record[order.date] = [];
+			record[order.date].push({ ...order, tempOrder: false });
+			return record;
+		},
+		{} as Record<string, TemplateOrder[]>
+	);
 }
