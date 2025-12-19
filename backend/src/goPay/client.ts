@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import {
   RequestOTPRequest,
   RequestOTPResponse,
@@ -16,6 +17,7 @@ import {
   DetailedOrder,
   ProductsResponse,
 } from "./types";
+import { days } from "../endpoints/Shared/cacheDuration";
 
 export class GoPayClient {
   private apiUrl: string;
@@ -134,7 +136,7 @@ export class GoPayClient {
       {
         cf: {
           cacheTtlByStatus: {
-            "200-299": 86400 * 30, // 30 days
+            "200-299": days(30),
           },
         },
       }
@@ -144,14 +146,15 @@ export class GoPayClient {
   }
 
   async getProducts(kitchenId: number): Promise<ProductsResponse | Response> {
-    const endpoint = `/suppliers/kitchens/${kitchenId}/menues/catering?date=${
-      new Date().toISOString().split("T")[0]
-    }`;
+    const endpoint = `/suppliers/kitchens/${kitchenId}/menues/catering?date=${format(
+      new Date(),
+      "yyyy-MM-dd"
+    )}`;
 
     const response = await this.request<ProductsResponse>(endpoint, {
       cf: {
         cacheTtlByStatus: {
-          "200-299": 86400 * 30, // 30 days
+          "200-299": days(30),
         },
       },
     });
@@ -161,15 +164,41 @@ export class GoPayClient {
 
   async listOrders(
     startDate: string,
-    endDate: string,
-    offset: number = 0,
-    limit: number = 50
+    endDate: string
   ): Promise<ListOrdersResponse | Response> {
-    const response = await this.request<ListOrdersResponse>(
-      `/orders?offset=${offset}&limit=${limit}&orderType=LUNCH&deliveredStartDate=${startDate}&deliveredEndDate=${endDate}`
-    );
+    // Start with offset 0
+    let offset = 0;
+    const limit = 50;
+    const allOrders: ListOrdersResponse = { orders: [] };
+    let hasMorePages = true;
 
-    return response;
+    // Keep fetching pages until there are no more
+    while (hasMorePages) {
+      const response = await this.request<ListOrdersResponse>(
+        `/orders?offset=${offset}&limit=${limit}&orderType=LUNCH&deliveredStartDate=${startDate}&deliveredEndDate=${endDate}`
+      );
+      if (response instanceof Response) return response; // Error response
+
+      allOrders.orders = [...allOrders.orders, ...response.orders];
+
+      if (response.pagination?.nextLink?.href) {
+        // Extract the new offset from the nextLink URL
+        const nextLinkUrl = new URL(
+          response.pagination.nextLink.href,
+          "https://example.com"
+        );
+        const nextOffset = nextLinkUrl.searchParams.get("offset");
+
+        if (nextOffset) {
+          offset = parseInt(nextOffset, 10);
+        } else {
+          offset += limit;
+        }
+      } else {
+        hasMorePages = false;
+      }
+    }
+    return allOrders;
   }
 
   async placeOrder(

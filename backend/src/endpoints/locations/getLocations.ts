@@ -2,6 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { type AppContext, createGoPayClient } from "../../types";
 import { z } from "zod";
 import { Schemas } from "../Shared/Schemas";
+import { days } from "../Shared/cacheDuration";
 
 export class GetLocations extends OpenAPIRoute {
   schema = {
@@ -11,12 +12,11 @@ export class GetLocations extends OpenAPIRoute {
     responses: {
       200: {
         description: "List of locations",
-        ...contentJson(
-          z.object({
-            kitchenId: z.number(),
-            name: z.string(),
-          })
-        ),
+        ...contentJson(z.array(Schemas.LocationSchema())),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...Schemas.InternalServerError(),
     },
@@ -35,7 +35,7 @@ export class GetLocations extends OpenAPIRoute {
       } as GetLocationsResponse;
     });
 
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 30}`); // Cache for 30 days
+    c.res.headers.set("Cache-Control", `max-age=${days(30)}`);
     return locations;
   }
 }

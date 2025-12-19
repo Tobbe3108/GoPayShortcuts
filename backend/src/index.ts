@@ -1,18 +1,32 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 import { Login } from "./endpoints/auth/login";
 import { RequestOTP } from "./endpoints/auth/requestOTP";
 import { GetLocations } from "./endpoints/locations/getLocations";
 import { ListOrders } from "./endpoints/orders/listOrders";
-import { CancelOrders } from "./endpoints/orders/cancelOrders";
-import { AddOrder } from "./endpoints/orders/addOrder";
+import { PatchOrdersState } from "./endpoints/orders/updateDay";
+// import { CancelOrders } from "./endpoints/orders/cancelOrders";
+// import { AddOrder } from "./endpoints/orders/addOrder";
 import { GetProducts } from "./endpoints/products/getProducts";
 import { GetMenu } from "./endpoints/menu/getMenu";
-import { UpdateDay } from "./endpoints/orders/updateDay";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
+
+// Add CORS middleware
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:5173"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 86400,
+    credentials: true,
+  })
+);
 
 // Global auth middleware for all /api routes
 app.use("/api/*", async (c, next) => {
@@ -79,9 +93,9 @@ openapi.get("/api/products", GetProducts);
 openapi.get("/api/menu", GetMenu);
 
 openapi.get("/api/orders", ListOrders);
-openapi.post("/api/orders", AddOrder);
-openapi.patch("/api/orders", UpdateDay);
-openapi.delete("/api/orders", CancelOrders);
+// openapi.post("/api/orders", AddOrder);
+openapi.patch("/api/orders", PatchOrdersState);
+// openapi.delete("/api/orders", CancelOrders);
 
 // Export the Hono app
 export default app;

@@ -2,6 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import { Schemas } from "../Shared/Schemas";
 import { AppContext, createMeyersClient } from "../../types";
+import { days } from "../Shared/cacheDuration";
 
 export class GetMenu extends OpenAPIRoute {
   schema = {
@@ -11,16 +12,12 @@ export class GetMenu extends OpenAPIRoute {
       200: {
         description: "Simplified menu data from Meyers",
         ...contentJson(
-          z.object({
-            date: z.string(),
-            items: z.array(
-              z.object({
-                name: z.string(),
-                category: z.string(),
-                allergens: z.array(z.string()),
-              })
-            ),
-          })
+          z.array(
+            z.object({
+              date: z.string().describe("Date in YYYY-MM-DD format"),
+              items: z.array(Schemas.MenuItemSchema()),
+            })
+          )
         ),
       },
       ...Schemas.InternalServerError(),
@@ -36,17 +33,21 @@ export class GetMenu extends OpenAPIRoute {
     for (const [date, day] of Object.entries(response)) {
       result.push({
         date,
-        items: day.items.map((item: any) => ({
-          name: item.menu_name,
-          category: item.item_category,
-          allergens: Object.entries(item.allergens || {})
-            .filter(([_, v]) => v === true)
-            .map(([k]) => k),
-        })),
+        items: day.items.map((item: any) => {
+          let parts: string[] = GetItemParts(item);
+          return {
+            item: parts[0],
+            subItems: parts.length > 1 ? parts.slice(1) : [],
+            category: item.item_category,
+            allergens: Object.entries(item.allergens || {})
+              .filter(([_, v]) => v === true)
+              .map(([k]) => k),
+          };
+        }),
       });
     }
 
-    c.res.headers.set("Cache-Control", `max-age=${86400 * 7}`); // Cache for 7 days
+    c.res.headers.set("Cache-Control", `max-age=${days(1)}`);
     return result;
   }
 }
@@ -54,8 +55,21 @@ export class GetMenu extends OpenAPIRoute {
 export type SimplifiedMenuDay = {
   date: string;
   items: {
-    name: string;
+    item: string;
+    subItems: string[];
     category: string;
     allergens: string[];
   }[];
 };
+
+function GetItemParts(item: any) {
+  let parts: string[];
+
+  if (item.menu_name.includes("-")) {
+    parts = item.menu_name.split("-").map((s: string) => s.trim());
+  } else {
+    parts = [item.menu_name.trim()];
+  }
+
+  return parts;
+}

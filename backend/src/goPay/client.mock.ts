@@ -1,4 +1,5 @@
-import { GoPayClient } from "./client";
+import { mock, when, instance } from "ts-mockito";
+import { faker } from "@faker-js/faker";
 import {
   RequestOTPResponse,
   LoginResponse,
@@ -10,343 +11,170 @@ import {
   OrderDelivery,
   DetailedOrder,
   ProductsResponse,
+  KitchenSummary,
+  Price,
+  User,
+  Webshop,
+  BrandingDetails,
+  Address,
+  Kitchen,
+  Organizer,
 } from "./types";
+import { isAfter, isWithinInterval, parseISO, isToday } from "date-fns";
 
-export class GoPayClientMock extends GoPayClient {
-  private static nextOrderId = 1;
-  private static nextUserId = 1;
-  private static token = "mock-token";
-  private static user = {
-    id: GoPayClientMock.nextUserId++,
-    username: "mock@user.com",
-    userTypeId: 1,
-    userType: "mock",
-    userGroupId: 1,
-    companyId: 1,
-    uid: "mock-uid",
-    companyAuthenticationType: "mock",
-  };
+// Global caches for mock data
+let _locations: Location[] | null = null;
+let _kitchens: Record<number, Kitchen> = {};
+let _productsByKitchen: Record<number, ProductsResponse> = {};
+let _ordersByKitchen: Record<number, Record<number, DetailedOrder>> = {};
 
-  private static locations: Location[] = [
-    {
-      id: 1,
-      name: "Mock Location",
-      kitchens: [
-        {
-          id: 1,
-          uid: "kitchen-1",
-          name: "Mock Kitchen",
-          address: {
-            id: 1,
-            streetName: "Mock St",
-            streetNumber: "1",
-            postalCode: "12345",
-            city: "Mock City",
-            country: "Mockland",
-          },
-          webshops: [
-            { id: 1, name: "Mock Webshop", uid: "webshop-1", demoMode: false },
-          ],
-          brandingDetails: { imageUrl: "" },
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Another Mock Location",
-      kitchens: [
-        {
-          id: 2,
-          uid: "kitchen-2",
-          name: "Another Mock Kitchen",
-          address: {
-            id: 2,
-            streetName: "Another St",
-            streetNumber: "2",
-            postalCode: "54321",
-            city: "Another City",
-            country: "Anotherland",
-          },
-          webshops: [
-            {
-              id: 2,
-              name: "Another Mock Webshop",
-              uid: "webshop-2",
-              demoMode: false,
-            },
-          ],
-          brandingDetails: { imageUrl: "" },
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Third Mock Location",
-      kitchens: [
-        {
-          id: 3,
-          uid: "kitchen-3",
-          name: "Third Mock Kitchen",
-          address: {
-            id: 3,
-            streetName: "Third St",
-            streetNumber: "3",
-            postalCode: "67890",
-            city: "Third City",
-            country: "Thirdland",
-          },
-          webshops: [
-            {
-              id: 3,
-              name: "Third Mock Webshop",
-              uid: "webshop-3",
-              demoMode: false,
-            },
-          ],
-          brandingDetails: { imageUrl: "" },
-        },
-      ],
-    },
-  ];
+export class GoPayClientMock {
+  apiUrl: string;
+  token: string | null = null;
 
-  private static products: ProductsResponse = {
-    menues: [
-      {
-        date: new Date().toISOString().split("T")[0],
-        displayDate: "Today",
-        productGroups: [
-          {
-            id: 1,
-            name: "Main",
-            products: [
-              {
-                id: 1,
-                subject: "Lunch",
-                name: "Mock Sandwich",
-                description: "A delicious mock sandwich.",
-                price: {
-                  amount: 50,
-                  scale: 2,
-                  currency: "DKK",
-                  formatted: "50.00 DKK",
-                },
-                imageUrl: "",
-                orderDetails: { availability: { isAvailable: true } },
-                userDetails: { favoriteType: "none", canFavorite: false },
-                productType: "food",
-                kitchen: {
-                  id: 1,
-                  name: "Mock Kitchen",
-                  streetName: "Mock St",
-                  streetNumber: "1",
-                  postalCode: "12345",
-                  webshop: {
-                    id: 1,
-                    name: "Mock Webshop",
-                    uid: "webshop-1",
-                    demoMode: false,
-                  },
-                  brandingDetails: { imageUrl: "" },
-                },
-                cardDetails: { imageUrl: "", cardColor: "#fff" },
-              },
-            ],
-          },
-          {
-            id: 2,
-            name: "Mock Dessert",
-            description: "A delicious mock dessert.",
-            price: {
-              amount: 30,
-              scale: 2,
-              currency: "DKK",
-              formatted: "30.00 DKK",
-            },
-            imageUrl: "",
-            orderDetails: { availability: { isAvailable: true } },
-            userDetails: { favoriteType: "none", canFavorite: false },
-            productType: "food",
-            kitchen: {
-              id: 1,
-              name: "Mock Kitchen",
-              streetName: "Mock St",
-              streetNumber: "1",
-              postalCode: "12345",
-              webshop: {
-                id: 1,
-                name: "Mock Webshop",
-                uid: "webshop-1",
-                demoMode: false,
-              },
-              brandingDetails: { imageUrl: "" },
-            },
-            cardDetails: { imageUrl: "", cardColor: "#fff" },
-          },
-          {
-            id: 3,
-            name: "Mock Beverage",
-            description: "A refreshing mock beverage.",
-            price: {
-              amount: 20,
-              scale: 2,
-              currency: "DKK",
-              formatted: "20.00 DKK",
-            },
-            imageUrl: "",
-            orderDetails: { availability: { isAvailable: true } },
-            userDetails: { favoriteType: "none", canFavorite: false },
-            productType: "beverage",
-            kitchen: {
-              id: 1,
-              name: "Mock Kitchen",
-              streetName: "Mock St",
-              streetNumber: "1",
-              postalCode: "12345",
-              webshop: {
-                id: 1,
-                name: "Mock Webshop",
-                uid: "webshop-1",
-                demoMode: false,
-              },
-              brandingDetails: { imageUrl: "" },
-            },
-            cardDetails: { imageUrl: "", cardColor: "#fff" },
-          },
-        ],
-      },
-    ],
-    kitchen: {
-      id: 1,
-      name: "Mock Kitchen",
-      streetName: "Mock St",
-      streetNumber: "1",
-      postalCode: "12345",
-      webshop: {
-        id: 1,
-        name: "Mock Webshop",
-        uid: "webshop-1",
-        demoMode: false,
-      },
-      brandingDetails: { imageUrl: "" },
-    },
-  };
-
-  private orders: DetailedOrder[] = [];
+  constructor(apiUrl: string, token?: string) {
+    this.apiUrl = apiUrl;
+    if (token) this.token = token;
+  }
 
   async requestOTP(email: string): Promise<RequestOTPResponse> {
     return {
-      authentication: { token: GoPayClientMock.token, type: "mock" },
+      authentication: {
+        token: faker.string.uuid(),
+        type: "OTP",
+      },
       authenticationResult: {
-        type: "mock",
-        action: "otp",
+        type: "ACTIVATION_CODE",
+        action: "LOGIN",
         message: "OTP sent",
       },
-      serviceResponse: { isUserMessage: true },
+      serviceResponse: {
+        isUserMessage: true,
+      },
     };
   }
 
   async login(otp: string): Promise<LoginResponse> {
     return {
-      user: GoPayClientMock.user,
-      authentication: { token: GoPayClientMock.token },
+      user: fakeUser(),
+      authentication: {
+        token: faker.string.uuid(),
+      },
       authenticationResult: {
-        type: "mock",
-        action: "login",
+        type: "ACTIVATION_CODE",
+        action: "LOGIN",
         message: "Login successful",
       },
-      authenticationByType: { type: "mock", value: otp },
+      authenticationByType: {
+        type: "ACTIVATION_CODE",
+        value: otp,
+      },
     };
   }
 
   async getLocations(): Promise<Location[]> {
-    return GoPayClientMock.locations;
+    if (!_locations) {
+      _locations = Array.from({ length: 3 }, () => ({
+        id: faker.number.int({ min: 1000, max: 9999 }),
+        name: faker.location.city(),
+        kitchens: [fakeKitchen()],
+      }));
+    }
+    return _locations;
   }
 
   async getProducts(kitchenId: number): Promise<ProductsResponse> {
-    return GoPayClientMock.products;
+    if (!_productsByKitchen[kitchenId]) {
+      _productsByKitchen[kitchenId] = {
+        menues: [
+          {
+            date: faker.date.future().toISOString().slice(0, 10),
+            displayDate: faker.date.future().toISOString().slice(0, 10),
+            productGroups: [
+              {
+                id: faker.number.int(),
+                name: faker.commerce.department(),
+                products: Array.from({ length: 3 }, () => ({
+                  id: faker.number.int(),
+                  subject: faker.commerce.productName(),
+                  name: faker.commerce.productName(),
+                  description: faker.commerce.productDescription(),
+                  price: fakePrice(),
+                  imageUrl: faker.image.urlPicsumPhotos(),
+                  orderDetails: {
+                    availability: { isAvailable: true },
+                  },
+                  userDetails: {
+                    favoriteType: "none",
+                    canFavorite: true,
+                  },
+                  productType: "food",
+                  kitchen: fakeKitchenSummary(kitchenId),
+                  cardDetails: {
+                    imageUrl: faker.image.urlPicsumPhotos(),
+                    cardColor: faker.color.rgb(),
+                  },
+                })),
+              },
+            ],
+          },
+        ],
+        kitchen: fakeKitchenSummary(kitchenId),
+      };
+    }
+    return _productsByKitchen[kitchenId];
   }
 
   async listOrders(
     startDate: string,
-    endDate: string,
-    offset: number = 0,
-    limit: number = 50
+    endDate: string
   ): Promise<ListOrdersResponse> {
-    const filtered = this.orders.filter((o) => {
-      if (!o.created) return true;
-      const created = new Date(o.created).getTime();
-      return (
-        created >= new Date(startDate).getTime() &&
-        created <= new Date(endDate).getTime()
-      );
-    });
-    return { orders: filtered.slice(offset, offset + limit) };
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
+
+    let orders: DetailedOrder[] = [];
+    for (const kitchenOrders of Object.values(_ordersByKitchen)) {
+      orders = orders.concat(Object.values(kitchenOrders));
+    }
+
+    const filtered = orders.filter((order) =>
+      order.deliveries.some((delivery) => {
+        const deliveryDate = parseISO(delivery.deliveryTime);
+        return isWithinInterval(deliveryDate, { start, end });
+      })
+    );
+
+    return {
+      orders: filtered.map((order) => ({
+        displayName: order.displayName,
+        id: order.id,
+        orderType: order.orderType,
+        organizers: order.organizers,
+        deliveries: order.deliveries,
+        price: order.price,
+      })),
+    };
   }
 
   async placeOrder(
     kitchenId: number,
     deliveries: OrderDelivery[]
   ): Promise<PlaceOrderResponse> {
-    const orderId = GoPayClientMock.nextOrderId++;
-    const now = new Date().toISOString();
-    const order: DetailedOrder = {
-      displayName: `Order #${orderId}`,
-      id: orderId,
-      orderType: "LUNCH",
-      organizers: [{ name: GoPayClientMock.user.username }],
-      price: { amount: 50, scale: 2, currency: "DKK", formatted: "50.00 DKK" },
-      shopChannel: "mock",
-      uid: `order-${orderId}`,
-      created: now,
-      deliveries: deliveries.map((d, i) => ({
-        id: i + 1,
-        deliveryType: "mock",
-        type: "mock",
-        deliveryTime: d.deliveryTime,
-        price: {
-          amount: 50,
-          scale: 2,
-          currency: "DKK",
-          formatted: "50.00 DKK",
-        },
-        cancelEnable: true,
-        orderLines: d.orderLines.map((ol, j) => ({
-          ...ol,
-          id: j + 1,
-          itemPrice: {
-            amount: 50,
-            scale: 2,
-            currency: "DKK",
-            formatted: "50.00 DKK",
-          },
-          price: {
-            amount: 50,
-            scale: 2,
-            currency: "DKK",
-            formatted: "50.00 DKK",
-          },
-          name: "Mock Sandwich",
-        })),
-      })),
-    };
-    this.orders.push(order);
     return {
-      salesConditionsUrl: "https://mock/terms",
+      salesConditionsUrl: faker.internet.url(),
       currencyCodes: ["DKK"],
       paymentMethods: [
         {
           value: "PAYROLL_DEDUCTION",
           translationKey: "payroll",
           showSalesConditions: false,
-          icon: { type: "", url: "" },
+          icon: {
+            type: "svg",
+            url: faker.image.urlPicsumPhotos(),
+          },
         },
       ],
-      userAccountBalance: {
-        amount: 1000,
-        scale: 2,
-        currency: "DKK",
-        formatted: "1000.00 DKK",
-      },
+      userAccountBalance: fakePrice(),
     };
   }
 
@@ -355,35 +183,164 @@ export class GoPayClientMock extends GoPayClient {
     webshopUId: string,
     deliveries: OrderDelivery[]
   ): Promise<PayOrderResponse> {
-    // Find the latest order and mark as paid
-    const order = this.orders[this.orders.length - 1];
-    if (order) {
-      order.price = {
-        amount: 50,
-        scale: 2,
-        currency: "DKK",
-        formatted: "50.00 DKK",
-      };
+    const detailedOrder: DetailedOrder = {
+      displayName: faker.commerce.productName(),
+      id: faker.number.int(),
+      orderType: "LUNCH",
+      organizers: [fakeOrganizer()],
+      deliveries: deliveries.map((d) => ({
+        id: faker.number.int(),
+        deliveryType: "STANDARD",
+        type: "LUNCH",
+        deliveryTime: d.deliveryTime,
+        price: fakePrice(),
+        cancelEnable:
+          isToday(parseISO(d.deliveryTime)) ||
+          isAfter(parseISO(d.deliveryTime), new Date()),
+        orderLines: d.orderLines.map((ol) => ({
+          id: faker.number.int(),
+          productId: ol.productId,
+          items: ol.items,
+          buyerParty: ol.buyerParty,
+          itemPrice: fakePrice(),
+          price: fakePrice(),
+          name: faker.commerce.productName(),
+        })),
+        cancelOrder: {
+          cancelEnable:
+            isToday(parseISO(d.deliveryTime)) ||
+            isAfter(parseISO(d.deliveryTime), new Date()),
+          shortMessage: faker.lorem.word(3),
+          message: faker.lorem.sentence(),
+        },
+      })),
+      kitchen: {
+        ...fakeKitchen(kitchenId),
+        phoneNumber: faker.phone.number(),
+        email: faker.internet.email(),
+        streetName: faker.location.street(),
+        streetNumber: faker.string.numeric(2),
+        postalCode: faker.location.zipCode(),
+        city: faker.location.city(),
+        webshop: undefined,
+        vatnumber: "",
+      },
+      price: fakePrice(),
+      shopChannel: "web",
+      uid: faker.string.uuid(),
+    };
+
+    if (!_ordersByKitchen[kitchenId]) {
+      _ordersByKitchen[kitchenId] = {};
     }
-    return { orderId: order?.id ?? 0, status: "PAID" };
+    _ordersByKitchen[kitchenId][detailedOrder.id] = detailedOrder;
+
+    return {
+      orderId: detailedOrder.id,
+      status: "PAID",
+    };
   }
 
-  async getOrderDetails(orderId: number): Promise<DetailedOrder | Response> {
-    const order = this.orders.find((o) => o.id === orderId);
-    if (!order) {
-      return new Response(JSON.stringify({ error: "Order not found" }), {
-        status: 404,
-      });
+  async getOrderDetails(orderId: number): Promise<DetailedOrder> {
+    for (const kitchenOrders of Object.values(_ordersByKitchen)) {
+      if (kitchenOrders[orderId]) {
+        return kitchenOrders[orderId];
+      }
     }
-    return order;
+    throw { statusCode: 404, message: `Order ${orderId} not found` };
   }
 
   async deleteOrder(orderId: number): Promise<DeleteOrderResponse> {
-    const idx = this.orders.findIndex((o) => o.id === orderId);
-    if (idx !== -1) {
-      this.orders.splice(idx, 1);
-      return { success: true };
+    for (const kitchenId in _ordersByKitchen) {
+      if (_ordersByKitchen[kitchenId][orderId]) {
+        delete _ordersByKitchen[kitchenId][orderId];
+        return { success: true };
+      }
     }
     return { success: false };
   }
 }
+
+function fakeKitchenSummary(id?: number): KitchenSummary {
+  const kitchen = fakeKitchen(id);
+  return {
+    id: kitchen.id,
+    name: kitchen.name,
+    streetName: kitchen.address.streetName,
+    streetNumber: kitchen.address.streetNumber,
+    postalCode: kitchen.address.postalCode,
+    webshop: kitchen.webshops[0],
+    brandingDetails: kitchen.brandingDetails,
+  };
+}
+
+function fakePrice(): Price {
+  const amount = faker.number.int({ min: 1, max: 99 }) * 100;
+  return {
+    amount,
+    scale: 2,
+    currency: "DKK",
+    formatted: `kr. ${amount / 100}`,
+  };
+}
+
+function fakeUser(): User {
+  return {
+    id: faker.number.int(),
+    username: faker.internet.username(),
+    userTypeId: 1,
+    userType: "employee",
+    userGroupId: 1,
+    companyId: 1,
+    uid: faker.string.uuid(),
+    companyAuthenticationType: "OTP",
+  };
+}
+
+function fakeWebshop(): Webshop {
+  return {
+    id: faker.number.int(),
+    name: faker.company.name(),
+    uid: faker.string.uuid(),
+    demoMode: false,
+  };
+}
+
+function fakeBrandingDetails(): BrandingDetails {
+  return {
+    imageUrl: faker.image.urlPicsumPhotos(),
+  };
+}
+
+function fakeAddress(): Address {
+  return {
+    id: faker.number.int(),
+    streetName: faker.location.street(),
+    streetNumber: faker.string.numeric(2),
+    postalCode: faker.location.zipCode(),
+    city: faker.location.city(),
+    country: faker.location.country(),
+  };
+}
+
+function fakeKitchen(id?: number): Kitchen {
+  const kitchen = {
+    id: id ?? faker.number.int({ min: 1000, max: 9999 }),
+    uid: faker.string.uuid(),
+    name: faker.commerce.department(),
+    address: fakeAddress(),
+    webshops: [fakeWebshop()],
+    brandingDetails: fakeBrandingDetails(),
+    sellerSupplierParty: undefined,
+  };
+
+  if (!_kitchens[kitchen.id]) _kitchens = {};
+  _kitchens[kitchen.id] = kitchen;
+  return kitchen;
+}
+
+function fakeOrganizer(): Organizer {
+  return { name: faker.person.fullName() };
+}
+
+export const goPayClientMockInstance = instance(mock(GoPayClientMock));

@@ -3,12 +3,21 @@ import { GoPayClient } from "../../../goPay/client";
 import { formatAmount } from "../../Shared/priceUtils";
 import { extractProducts } from "../../Shared/productUtils";
 
-export type ProductQuantity = { productId: number; quantity: number };
+export type ProductQuantity = {
+  productId: number;
+  quantity: number;
+  name?: string;
+};
 
 export type SimplifiedOrder = {
   date: string;
   kitchenId: number;
-  orderlines: { productId: number; quantity: number; price: number }[];
+  orderlines: {
+    productId: number;
+    quantity: number;
+    price: number;
+    name?: string;
+  }[];
   cancelEnabled: boolean;
 };
 
@@ -18,7 +27,7 @@ export type DeliveryLocation = {
   webshopUid: string;
 };
 
-export async function fetchOrderDetails(
+export async function fetchValidOrderDetails(
   orders: Order[],
   client: GoPayClient
 ): Promise<DetailedOrder[]> {
@@ -49,8 +58,12 @@ export function buildSimplifiedOrderFromDetailed(
   order: DetailedOrder,
   cancelEnabled: boolean
 ): SimplifiedOrder {
-  const orderlines: { productId: number; quantity: number; price: number }[] =
-    [];
+  const orderlines: {
+    productId: number;
+    quantity: number;
+    price: number;
+    name?: string;
+  }[] = [];
 
   order.deliveries.forEach((delivery) => {
     delivery.orderLines.forEach((line) => {
@@ -61,6 +74,7 @@ export function buildSimplifiedOrderFromDetailed(
           productId: line.productId,
           quantity: line.items,
           price: formatAmount(line.price.amount, line.price.scale),
+          name: line.name,
         });
     });
   });
@@ -80,11 +94,29 @@ export async function buildSimplifiedOrderFromProducts(
     productsWithPrices as ProductsResponse
   );
 
-  const orderlines = products.map(({ productId, quantity }) => ({
-    productId,
-    quantity,
-    price: productsResponse.find((p) => p.id === productId)?.price || 0,
-  }));
+  const catalogById = new Map(
+    productsResponse.map((product) => [product.id, product])
+  );
+  const catalogByName = new Map(
+    productsResponse.map((product) => [product.name, product])
+  );
+
+  const orderlines = products.map(({ productId, quantity, name }) => {
+    let matched = catalogById.get(productId);
+
+    if (!matched && name) {
+      matched = catalogByName.get(name);
+    }
+
+    const resolvedProductId = matched?.id ?? productId;
+
+    return {
+      productId: resolvedProductId,
+      quantity,
+      price: matched?.price ?? 0,
+      name,
+    };
+  });
 
   orderlines.sort((a, b) => a.productId - b.productId);
   return { date, kitchenId, orderlines, cancelEnabled };

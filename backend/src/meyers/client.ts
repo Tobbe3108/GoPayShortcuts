@@ -1,5 +1,6 @@
 import type { MeyersMenuResponse } from "./types";
 import { MenuDataProcessor } from "./MenuDataProcessor";
+import { days } from "../endpoints/Shared/cacheDuration";
 
 export class MeyersClient {
   private apiUrl: string;
@@ -32,7 +33,7 @@ export class MeyersClient {
       body: JSON.stringify(payload),
       cf: {
         cacheTtlByStatus: {
-          "200-299": 86400 * 7, // 7 days
+          "200-299": days(1),
         },
       },
     });

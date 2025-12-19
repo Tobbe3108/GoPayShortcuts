@@ -1,1 +1,31 @@
 @import 'tailwindcss';
+
+@theme {
+	/* Primary (based on slate 800 family) */
+    --color-primary: var(--color-slate-800);
+    --color-primary-hover: var(--color-slate-700);
+	--color-ring-primary: var(--color-slate-600);
+
+	/* Secondary (medium slate neutral) */
+    --color-secondary: var(--color-slate-600);
+    --color-secondary-hover: var(--color-slate-500);
+	--color-ring-secondary: var(--color-slate-400);
+
+	/* Muted (light surfaces / cards) */
+	--color-muted: var(--color-slate-50);
+    --color-muted-dark: var(--color-gray-400);
+
+	/* Success (green palette) */
+    --color-success: var(--color-green-600);
+    --color-success-hover: var(--color-green-700);
+
+	/* Danger (destructive actions) */
+    --color-danger: var(--color-red-600);
+    --color-danger-hover: var(--color-red-700);
+	--color-ring-danger: var(--color-red-500);
+
+	/* Shared tokens for convenience (aliases) */
+	--color-action: var(--color-primary);
+	--color-action-hover: var(--color-primary-hover);
+	--color-action-on: var(--color-primary-on);
+}

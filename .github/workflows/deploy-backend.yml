@@ -2,7 +2,7 @@ name: Deploy Backend to Cloudflare Workers
 
 on:
   push:
-    branches: ["New-Backend"]
+    branches: ["master", "main"]
     paths:
       - "backend/**"
   workflow_dispatch:

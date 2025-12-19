@@ -2,17 +2,19 @@ import { OpenAPIRoute, contentJson, InputValidationException } from "chanfana";
 import { z } from "zod";
 import { createGoPayClient, AppContext } from "../../types";
 import {
-  fetchOrderDetails,
+  fetchValidOrderDetails,
   buildSimplifiedOrderFromDetailed,
   buildSimplifiedOrderFromProducts,
   createAndPayOrder,
   ProductQuantity,
   cancelOrdersBatch,
+  SimplifiedOrder,
 } from "./shared/ordersUtils";
 import { DetailedOrder } from "../../goPay/types";
 import { Schemas } from "../Shared/Schemas";
+import { isAfter, isBefore, isToday, parseISO } from "date-fns";
 
-export class UpdateDay extends OpenAPIRoute {
+export class PatchOrdersState extends OpenAPIRoute {
   schema = {
     tags: ["Orders"],
     summary: "Update orders for a kitchen and day to match desired state",
@@ -21,12 +23,17 @@ export class UpdateDay extends OpenAPIRoute {
       body: {
         ...contentJson(
           z.object({
-            kitchenId: z.number(),
-            date: z.string(),
+            kitchenId: z
+              .number()
+              .describe("ID of the kitchen where orders will be updated"),
+            date: z.string().describe("Date in YYYY-MM-DD format"),
             desiredOrders: z.array(
               z.object({
-                productId: z.number(),
-                quantity: z.number().min(0),
+                productId: z.number().describe("ID of the product"),
+                quantity: z
+                  .number()
+                  .min(0)
+                  .describe("Desired quantity (0 to remove)"),
               })
             ),
           })
@@ -35,13 +42,30 @@ export class UpdateDay extends OpenAPIRoute {
     },
     responses: {
       200: {
-        description: "Summary of canceled and created orders",
+        description: "List of orders for the week",
         ...contentJson(
           z.object({
-            canceled: z.array(z.any()),
-            created: z.array(z.any()),
+            orders: z.array(
+              z.object({
+                order: z.object({
+                  date: z.string(),
+                  kitchenId: z.number(),
+                  orderLines: z.array(
+                    z.object({
+                      productId: z.number(),
+                      quantity: z.number(),
+                      price: z.number(),
+                    })
+                  ),
+                }),
+              })
+            ),
           })
         ),
+      },
+      401: {
+        description: "Unauthorized",
+        ...Schemas.GoPayErrorResponse(),
       },
       ...InputValidationException.schema(),
       ...Schemas.InternalServerError(),
@@ -54,10 +78,16 @@ export class UpdateDay extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>();
     const { kitchenId, date, desiredOrders } = data.body;
 
+    const today = isToday(parseISO(date));
+    const furture = isAfter(parseISO(date), new Date());
+    if (!today && !furture) {
+      throw { statusCode: 400, message: "Cannot update orders for past dates" };
+    }
+
     const ordersResp = await client.listOrders(date, date);
     if (ordersResp instanceof Response) return ordersResp;
 
-    const validOrders = await fetchOrderDetails(ordersResp.orders, client);
+    const validOrders = await fetchValidOrderDetails(ordersResp.orders, client);
     const filteredOrders = validOrders.filter(
       (order) => order.kitchen?.id === kitchenId
     );
@@ -80,7 +110,7 @@ export class UpdateDay extends OpenAPIRoute {
 
     // Find which orders are fully cancelable
     const cancelableOrders = filteredOrders.filter((order) =>
-      order.deliveries.every((d) => d.cancelOrder.cancelEnable === true)
+      order.deliveries.every((d) => d.cancelOrder?.cancelEnable === true)
     );
     const fixedOrders = filteredOrders.filter(
       (order) => !cancelableOrders.includes(order)
@@ -175,22 +205,22 @@ export class UpdateDay extends OpenAPIRoute {
     if (createResult instanceof Response) return createResult; // Error response
 
     // Compose the new order state as an array of SimplifiedOrder
-    const simplifiedOrders = [];
+    const allOrders: SimplifiedOrder[] = [];
 
     for (const order of fixedOrders) {
-      simplifiedOrders.push(
+      allOrders.push(
         buildSimplifiedOrderFromDetailed(date, kitchenId, order, false)
       );
     }
 
     for (const order of keptOrders) {
-      simplifiedOrders.push(
+      allOrders.push(
         buildSimplifiedOrderFromDetailed(date, kitchenId, order, true)
       );
     }
 
     if (createResult !== undefined) {
-      simplifiedOrders.push(
+      allOrders.push(
         await buildSimplifiedOrderFromProducts(
           client,
           date,
@@ -201,6 +231,34 @@ export class UpdateDay extends OpenAPIRoute {
       );
     }
 
-    return { orders: simplifiedOrders };
+    // Nothing remains, return an empty order for the day
+    if (allOrders.length === 0) {
+      return { orders: [] };
+    }
+
+    // Combine all SimplifiedOrder objects into one per day per kitchen
+    const combinedOrderLines: Record<
+      number,
+      { productId: number; quantity: number; price: number }
+    > = {};
+
+    for (const simplified of allOrders) {
+      for (const line of simplified.orderlines) {
+        if (combinedOrderLines[line.productId]) {
+          combinedOrderLines[line.productId].quantity += line.quantity;
+        } else {
+          combinedOrderLines[line.productId] = { ...line };
+        }
+      }
+    }
+
+    const combinedOrder = {
+      date,
+      kitchenId,
+      orderlines: Object.values(combinedOrderLines),
+      cancelEnabled: allOrders.some((o) => o.cancelEnabled),
+    } as SimplifiedOrder;
+
+    return { orders: [combinedOrder] };
   }
 }
