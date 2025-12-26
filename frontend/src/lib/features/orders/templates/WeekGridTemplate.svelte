@@ -33,6 +33,14 @@
 
 	let loading = $state(true);
 	let orders: Record<string, TemplateOrder[]> = $state({});
+	let hasDefaultOrder = $state(false);
+
+	$effect(() => {
+		defaultStore.getDefault().then((def) => {
+			hasDefaultOrder = def !== null;
+		});
+	});
+
 	// In-memory prefetch cache keyed by week range (non-reactive to avoid re-run loops)
 	let prefetchCache: Record<string, Record<string, TemplateOrder[]>> = {};
 	const keyForRange = (start: Date, end: Date) =>
@@ -97,24 +105,30 @@
 
 						{#if (isToday(date) || isFuture(date)) && ordersByDay(orders, date).length === 0}
 							<Card>
-								<div class="flex justify-center">
-									<Button
-										variant="transparent"
-										size="sm"
-										ariaLabel="Use default order"
-										onclick={async () => {
-											const def = await defaultStore.getDefault();
-											if (!def) {
-												notifications.info('No saved default order');
-												return;
-											}
-											const cloned = { ...def, date: format(date, 'yyyy-MM-dd'), tempOrder: true };
-											updateOrderForKitchen(orders, cloned);
-										}}
-									>
-										<div class="text-xs text-gray-400 text-center">Use default order</div>
-									</Button>
-								</div>
+								{#if hasDefaultOrder}
+									<div class="flex justify-center">
+										<Button
+											variant="transparent"
+											size="sm"
+											ariaLabel="Use default order"
+											onclick={async () => {
+												const def = await defaultStore.getDefault();
+												if (!def) {
+													notifications.info('No saved default order');
+													return;
+												}
+												const cloned = { ...def, date: format(date, 'yyyy-MM-dd'), tempOrder: true };
+												updateOrderForKitchen(orders, cloned);
+											}}
+										>
+											<div class="text-xs text-gray-400 text-center">Use default order</div>
+										</Button>
+									</div>
+								{:else}
+									<div class="text-xs text-gray-400 text-center">
+										Save an order as default to quickly reuse it
+									</div>
+								{/if}
 							</Card>
 						{/if}
 
