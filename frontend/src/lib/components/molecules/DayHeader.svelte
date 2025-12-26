@@ -9,7 +9,7 @@
 	const dateStr = $derived(format(date, 'd. MMMM', { locale: da }));
 </script>
 
-<div class="flex flex-col items-center py-2">
+<div class="flex flex-col items-center py-2 whitespace-nowrap">
 	<Label
 		size="xl"
 		variant="default"
