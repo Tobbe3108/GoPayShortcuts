@@ -63,7 +63,7 @@
 		</button>
 	</div>
 	{#if !collapsed}
-		<div transition:slide|local>
+		<div transition:slide|local class="w-full">
 			{#if !loading}
 				<Card>
 					{#if !locations || locations.length === 0}
