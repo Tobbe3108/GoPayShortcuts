@@ -93,7 +93,7 @@
 					</Card>
 				{/if}
 
-				{#if isFuture(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
+				{#if (isToday(selectedDate) || isFuture(selectedDate)) && [...ordersByDay(orders, selectedDate)].length === 0}
 					<Card>
 						<div class="flex justify-center">
 							<Button
