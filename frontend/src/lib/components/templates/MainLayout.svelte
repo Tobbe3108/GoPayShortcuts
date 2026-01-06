@@ -2,7 +2,6 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import Button from '../atoms/Button.svelte';
-	import LanguageSwitcher from '../atoms/LanguageSwitcher.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
 	import { t } from '$lib/core/i18n';
@@ -38,7 +37,7 @@
 </script>
 
 <div class="container max-w-[90vw] p-4 mx-auto">
-	<div class="flex flex-row items-center gap-2">
+	<div class="flex flex-row items-center">
 		<div class="flex flex-1/3 justify-start">
 			<button
 				onclick={goToToday}
@@ -56,8 +55,7 @@
 				<WeekNavigator {date} {onWeekChange} />
 			{/if}
 		</div>
-		<div class="flex flex-1/3 justify-end items-center gap-2">
-			<LanguageSwitcher ariaLabel="Switch language between Danish and English" />
+		<div class="flex flex-1/3 justify-end">
 			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={() => onLogout()}>
 					{#snippet children()}
