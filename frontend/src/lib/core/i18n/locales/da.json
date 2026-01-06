@@ -1,0 +1,50 @@
+{
+  "app": {
+    "title": "GoPay BAD Edition"
+  },
+  "auth": {
+    "email": {
+      "label": "Email adresse",
+      "placeholder": "Indtast din email"
+    },
+    "otp": {
+      "label": "Verifikationskode",
+      "placeholder": "Indtast verifikationskode"
+    },
+    "buttons": {
+      "continue": "Fortsæt",
+      "verify": "Log ind",
+      "back": "Tilbage",
+      "sending": "Sender...",
+      "verifying": "Verificerer..."
+    }
+  },
+  "navigation": {
+    "logout": "Log ud",
+    "day": {
+      "label": "Dagnavigation",
+      "previous": "Forrige dag",
+      "next": "Næste dag"
+    },
+    "week": {
+      "label": "Ugenavigation",
+      "previous": "Forrige uge",
+      "next": "Næste uge",
+      "weekLabel": "Uge"
+    }
+  },
+  "locations": {
+    "addLocation": "Tilføj Lokation",
+    "noLocations": "Ingen lokationer fundet..."
+  },
+  "menu": {
+    "todaysMenu": "Dagens Menu",
+    "noMenu": "Ingen menu tilgængelig...",
+    "unknownCategory": "Ukendt kategori",
+    "allergens": "Allergener",
+    "allergenLabel": "Vis allergener"
+  },
+  "loading": {
+    "validatingSession": "Validating session..."
+  }
+}
