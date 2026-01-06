@@ -8,7 +8,6 @@
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { format } from 'date-fns';
-	import { t } from '$lib/core/i18n';
 
 	let { date }: { date: Date } = $props();
 
@@ -50,7 +49,7 @@
 			aria-controls="todays-menu-content"
 			onclick={() => (collapsed = !collapsed)}
 		>
-			<Label size="md" className="tracking-wide cursor-pointer">{t('menu.todaysMenu')}</Label>
+			<Label size="md" className="tracking-wide cursor-pointer">Dagens Menu</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
@@ -58,9 +57,9 @@
 	{#if !collapsed}
 		<div transition:slide|local id="todays-menu-content" class="w-full mt-2">
 			{#if !loading}
-			<Card className="p-3">
-				{#if !menuItems}
-					<Label variant="muted" size="sm">{t('menu.noMenu')}</Label>
+				<Card className="p-3">
+					{#if !menuItems}
+						<Label variant="muted" size="sm">Ingen menu tilgængelig...</Label>
 					{:else}
 						<div class="flex flex-col gap-2">
 							{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
@@ -82,15 +81,15 @@
 														<span
 															class="ml-auto relative group align-middle inline-flex items-center mb-3 mt-1"
 														>
-														<button
-															class="inline-block px-1 py-0.5 text-[10px] leading-tight bg-gray-100 rounded cursor-pointer select-none focus:outline-sky-500 focus-visible:outline-2"
-															aria-haspopup="dialog"
-															aria-expanded="false"
-															aria-label={t('menu.allergenLabel')}
-															tabindex="0"
-														>
-															{t('menu.allergens')}
-														</button>
+															<button
+																class="inline-block px-1 py-0.5 text-[10px] leading-tight bg-gray-100 rounded cursor-pointer select-none focus:outline-sky-500 focus-visible:outline-2"
+																aria-haspopup="dialog"
+																aria-expanded="false"
+																aria-label="Vis allergener"
+																tabindex="0"
+															>
+																Allergener
+															</button>
 															<div
 																role="dialog"
 																aria-hidden="true"

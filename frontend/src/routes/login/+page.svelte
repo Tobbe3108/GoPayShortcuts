@@ -5,7 +5,6 @@
 	import AuthForm from '$lib/features/auth/organisms/AuthForm.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { t } from '$lib/core/i18n';
 
 	let email = $state('');
 	let otp = $state('');
@@ -13,7 +12,7 @@
 
 	async function handleEmailSubmit(emailValue: string): Promise<void> {
 		if (!emailValue) {
-			notifications.error(t('auth.errors.emailRequired'));
+			notifications.error('Email er påkrævet');
 			return;
 		}
 
@@ -31,7 +30,7 @@
 
 	async function handleOTPSubmit(otpValue: string): Promise<void> {
 		if (!otpValue) {
-			notifications.error(t('auth.errors.otpRequired'));
+			notifications.error('Verifikationskode er påkrævet');
 			return;
 		}
 

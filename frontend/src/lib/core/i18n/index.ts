@@ -139,4 +139,3 @@ export function setupLanguageSubscription(): void {
 
 export { languageStore, getCurrentLanguage, setLanguage, detectBrowserLanguage } from './store';
 export type { Language } from './store';
-export { initI18n, switchLanguage } from './init';

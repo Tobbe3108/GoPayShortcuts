@@ -44,24 +44,7 @@
     "allergens": "Allergens",
     "allergenLabel": "Show allergens"
   },
-   "loading": {
-     "validatingSession": "Validating session..."
-   },
-   "auth": {
-     "errors": {
-       "emailRequired": "Email is required",
-       "otpRequired": "Verification code is required"
-     }
-   },
-   "orders": {
-     "cannotPastDays": "Orders cannot be placed for past days.",
-     "noProducts": "No products found...",
-     "unknownProducts": "Unknown products (ID mismatch)",
-     "guestItems": "Guest items",
-     "total": "Total"
-   },
-   "errors": {
-     "email": "Email is required",
-     "otp": "Verification code is required"
-   }
- }
+  "loading": {
+    "validatingSession": "Validating session..."
+  }
+}

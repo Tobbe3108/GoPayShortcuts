@@ -4,7 +4,6 @@
 	import { addWeeks, startOfWeek, endOfWeek, getWeek, format } from 'date-fns';
 	import { da } from 'date-fns/locale';
 	import Icon from '../atoms/Icon.svelte';
-	import { t } from '$lib/core/i18n';
 
 	type weekNavigationProps = {
 		date: Date;
@@ -38,8 +37,8 @@
 	}
 </script>
 
-<div class="flex justify-center" aria-label={t('navigation.week.label')}>
-	<Button variant="transparent" ariaLabel={t('navigation.week.previous')} onclick={prevWeek}>
+<div class="flex justify-center" aria-label="Ugenavigation">
+	<Button variant="transparent" ariaLabel="Forrige uge" onclick={prevWeek}>
 		<Icon name="left"></Icon>
 	</Button>
 	<div class="flex flex-col items-center">
@@ -47,11 +46,11 @@
 			size="xxl"
 			variant="default"
 			className="capitalize tracking-wide {isCurrentWeek() ? 'font-semibold' : ''}"
-			>{t('navigation.week.weekLabel')} {weekNumber()}</Label
+			>Uge {weekNumber()}</Label
 		>
 		<Label size="xs" variant="muted" className="capitalize">{weekRange}</Label>
 	</div>
-	<Button variant="transparent" ariaLabel={t('navigation.week.next')} onclick={nextWeek}>
+	<Button variant="transparent" ariaLabel="Næste uge" onclick={nextWeek}>
 		<Icon name="right"></Icon>
 	</Button>
 </div>
