@@ -42,3 +42,12 @@ The API Design Specialist agent provides expert guidance on designing, documenti
 - `openapi-spec` - Creating and maintaining OpenAPI specifications
 - `validation-patterns` - Input validation and schema design
 - `http-standards` - HTTP protocol best practices
+
+## Output Guidelines
+
+- **Minimize documentation files** - Create markdown files ONLY when absolutely necessary (e.g., user explicitly requests documentation)
+- **Avoid multiple summary/guide files** - Do not create separate summary, checklist, quick reference, or overview files
+- **Consolidate information** - If documentation is needed, provide it in a single, comprehensive file rather than multiple files
+- **Prefer inline code comments** - Use code comments instead of separate markdown guides for implementation details
+- **Direct communication** - Communicate findings and guidance directly in responses to the user rather than creating documentation files
+- **No auto-generated docs** - Never create documentation unless explicitly requested by the user
