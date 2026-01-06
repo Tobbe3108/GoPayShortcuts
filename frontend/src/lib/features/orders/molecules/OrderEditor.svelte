@@ -8,6 +8,7 @@
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
 	import type { OrderLine } from '../models/orderLine';
 	import { slide } from 'svelte/transition';
+	import { t } from '$lib/core/i18n';
 
 	interface Props {
 		order: SimplifiedOrder;
@@ -146,9 +147,9 @@
 {#if !loading}
 	<div class="w-full overflow-x-auto">
 		<div class="flex flex-col w-full text-sm">
-			{#if !items || items.length === 0}
-				<Label variant="muted" size="sm" className="text-center">Ingen produkter fundet...</Label>
-			{/if}
+		{#if !items || items.length === 0}
+			<Label variant="muted" size="sm" className="text-center">{t('orders.noProducts')}</Label>
+		{/if}
 			{#each items as item, idx}
 				<div class="flex items-center justify-center py-1 gap-1">
 					<Label className="text-left grow truncate">{item.name}</Label>
@@ -175,7 +176,7 @@
 			{#if unmatchedOrderlines.length > 0}
 				<div class="mt-2 border-t border-slate-200 pt-2">
 					<Label variant="muted" size="xs" className="block mb-1"
-						>Ukendte produkter (ID mismatch)</Label
+						>{t('orders.unknownProducts')}</Label
 					>
 					{#each unmatchedOrderlines as l}
 						<div class="flex items-center justify-center py-1 gap-1 opacity-75">
@@ -200,7 +201,7 @@
 						aria-controls="guest-items-content"
 						onclick={() => (guestCollapsed = !guestCollapsed)}
 					>
-						<Label size="xs" className="tracking-wide cursor-pointer">Gæst varer</Label>
+						<Label size="xs" className="tracking-wide cursor-pointer">{t('orders.guestItems')}</Label>
 						<Icon name={guestCollapsed ? 'open' : 'collapse'} size={10} />
 					</button>
 					{#if !guestCollapsed}
@@ -228,13 +229,13 @@
 					{/if}
 				</div>
 			{/if}
-			{#if showTotal}
-				<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
-					<Label className="font-semibold">Total</Label>
+		{#if showTotal}
+			<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
+				<Label className="font-semibold">{t('orders.total')}</Label>
 
-					<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
-				</div>
-			{/if}
+				<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
+			</div>
+		{/if}
 		</div>
 	</div>
 {/if}

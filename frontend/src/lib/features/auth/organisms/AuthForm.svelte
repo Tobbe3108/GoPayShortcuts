@@ -2,6 +2,7 @@
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import { t } from '$lib/core/i18n';
 
 	type AuthFormProps = {
 		isEmailStep?: boolean;
@@ -34,24 +35,24 @@
 			onEmailSubmit(email);
 		}}
 	>
-		<FormField
-			id="email"
-			label="Email adresse"
-			type="email"
-			placeholder="Indtast din email"
-			bind:value={email}
-			transform={(v) => v.trim()}
-			required={true}
-		/>
+	<FormField
+		id="email"
+		label={t('auth.email.label')}
+		type="email"
+		placeholder={t('auth.email.placeholder')}
+		bind:value={email}
+		transform={(v) => v.trim()}
+		required={true}
+	/>
 		<Button type="submit" disabled={isLoading || !validateEmail(email)} fullWidth={true}>
 			{#snippet children()}
 				{#if isLoading}
 					<div class="flex justify-center items-center">
 						<LoadingSpinner size="w-5 h-5" />
-						<span class="ml-2">Sender...</span>
+						<span class="ml-2">{t('auth.buttons.sending')}</span>
 					</div>
 				{:else}
-					Fortsæt
+					{t('auth.buttons.continue')}
 				{/if}
 			{/snippet}
 		</Button>
@@ -64,39 +65,39 @@
 			onOtpSubmit(otp);
 		}}
 	>
-		<FormField
-			id="otp"
-			label="Verifikationskode"
-			type="text"
-			placeholder="Indtast verifikationskode"
-			bind:value={otp}
-			transform={(v) => v.replace(/[^0-9]/g, '')}
-			validate={(v) => v.length > 0}
-			required={true}
-		/>
+	<FormField
+		id="otp"
+		label={t('auth.otp.label')}
+		type="text"
+		placeholder={t('auth.otp.placeholder')}
+		bind:value={otp}
+		transform={(v) => v.replace(/[^0-9]/g, '')}
+		validate={(v) => v.length > 0}
+		required={true}
+	/>
 		<div class="space-y-2">
-			<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
-				{#snippet children()}
-					{#if isLoading}
-						<div class="flex justify-center items-center">
-							<LoadingSpinner size="w-5 h-5" />
-							<span class="ml-2">Verificerer...</span>
-						</div>
-					{:else}
-						Log ind
-					{/if}
-				{/snippet}
-			</Button>
-			<Button
-				type="button"
-				variant="transparent"
-				size="sm"
-				className="text-secondary!"
-				onclick={() => onBackToEmail()}
-				fullWidth={true}
-			>
-				Tilbage
-			</Button>
+		<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
+			{#snippet children()}
+				{#if isLoading}
+					<div class="flex justify-center items-center">
+						<LoadingSpinner size="w-5 h-5" />
+						<span class="ml-2">{t('auth.buttons.verifying')}</span>
+					</div>
+				{:else}
+					{t('auth.buttons.verify')}
+				{/if}
+			{/snippet}
+		</Button>
+		<Button
+			type="button"
+			variant="transparent"
+			size="sm"
+			className="text-secondary!"
+			onclick={() => onBackToEmail()}
+			fullWidth={true}
+		>
+			{t('auth.buttons.back')}
+		</Button>
 		</div>
 	</form>
 {/if}

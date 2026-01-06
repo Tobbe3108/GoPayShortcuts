@@ -44,7 +44,24 @@
     "allergens": "Allergener",
     "allergenLabel": "Vis allergener"
   },
-  "loading": {
-    "validatingSession": "Validating session..."
-  }
-}
+   "loading": {
+     "validatingSession": "Validerer session..."
+   },
+   "auth": {
+     "errors": {
+       "emailRequired": "Email er påkrævet",
+       "otpRequired": "Verifikationskode er påkrævet"
+     }
+   },
+   "orders": {
+     "cannotPastDays": "Bestillinger kan ikke placeres for fortidige dage.",
+     "noProducts": "Ingen produkter fundet...",
+     "unknownProducts": "Ukendte produkter (ID mismatch)",
+     "guestItems": "Gæst varer",
+     "total": "Total"
+   },
+   "errors": {
+     "email": "Email er påkrævet",
+     "otp": "Verifikationskode er påkrævet"
+   }
+ }

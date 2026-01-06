@@ -4,6 +4,7 @@
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
+	import { t } from '$lib/core/i18n';
 
 	type MainLayoutProps = {
 		onLogout?: () => void;
@@ -58,7 +59,7 @@
 			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={() => onLogout()}>
 					{#snippet children()}
-						Log ud
+						{t('navigation.logout')}
 					{/snippet}
 				</Button>
 			{/if}

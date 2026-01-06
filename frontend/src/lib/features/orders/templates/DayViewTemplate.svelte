@@ -19,6 +19,7 @@
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { ordersService } from '$lib/features/orders/ordersService';
+	import { t } from '$lib/core/i18n';
 
 	type DayViewProps = {
 		date: Date;
@@ -92,13 +93,13 @@
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
 			<div in:fade class="flex flex-col space-y-4 w-full">
-				{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
-					<Card>
-						<div class="text-xs text-gray-400 text-center">
-							Bestillinger kan ikke placeres for fortidige dage.
-						</div>
-					</Card>
-				{/if}
+			{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
+				<Card>
+					<div class="text-xs text-gray-400 text-center">
+						{t('orders.cannotPastDays')}
+					</div>
+				</Card>
+			{/if}
 
 				{#if (isToday(selectedDate) || isFuture(selectedDate)) && [...ordersByDay(orders, selectedDate)].length === 0}
 					<Card>

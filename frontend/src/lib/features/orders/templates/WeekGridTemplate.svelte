@@ -20,6 +20,7 @@
 	import defaultStore from '$lib/features/orders/defaultStore';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import { ordersService } from '$lib/features/orders/ordersService';
+	import { t } from '$lib/core/i18n';
 
 	type WeekGridProps = {
 		date: Date;
@@ -95,13 +96,13 @@
 			{#if !loading}
 				{#key format(weekStart, 'yyyy-MM-dd')}
 					<div in:fade class="space-y-4">
-						{#if isPast(date) && !isToday(date) && ordersByDay(orders, date).length === 0}
-							<Card>
-								<div class="text-xs text-gray-400 text-center">
-									Bestillinger kan ikke placeres for fortidige dage.
-								</div>
-							</Card>
-						{/if}
+					{#if isPast(date) && !isToday(date) && ordersByDay(orders, date).length === 0}
+						<Card>
+							<div class="text-xs text-gray-400 text-center">
+								{t('orders.cannotPastDays')}
+							</div>
+						</Card>
+					{/if}
 
 						{#if (isToday(date) || isFuture(date)) && ordersByDay(orders, date).length === 0}
 							<Card>
