@@ -1,0 +1,39 @@
+{
+	"auth": {
+		"emailLabel": "Email adresse",
+		"emailPlaceholder": "Indtast din email",
+		"sendingButton": "Sender...",
+		"continueButton": "Fortsæt",
+		"otpLabel": "Verifikationskode",
+		"otpPlaceholder": "Indtast verifikationskode",
+		"verifyingButton": "Verificerer...",
+		"loginButton": "Log ind",
+		"backButton": "Tilbage",
+		"emailRequired": "Email er påkrævet",
+		"otpRequired": "Verifikationskode er påkrævet"
+	},
+	"navigation": {
+		"dayNavigation": "Dagnavigation",
+		"prevDay": "Forrige dag",
+		"nextDay": "Næste dag",
+		"weekNavigation": "Ugenavigation",
+		"prevWeek": "Forrige uge",
+		"nextWeek": "Næste uge",
+		"week": "Uge",
+		"logout": "Log ud"
+	},
+	"orders": {
+		"noProductsFound": "Ingen produkter fundet...",
+		"unmatchedProducts": "Ukendte produkter (ID mismatch)",
+		"guestItems": "Gæst varer",
+		"total": "Total",
+		"cannotDecreaseQuantities": "Cannot decrease quantities in a locked order. Only additions are allowed.",
+		"failedToSave": "Failed to save order",
+		"failedToCancel": "Failed to cancel order",
+		"saveAsDefault": "Save as default?"
+	},
+	"common": {
+		"goToToday": "Go to today",
+		"loading": "Loading..."
+	}
+}

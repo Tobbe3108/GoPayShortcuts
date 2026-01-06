@@ -1,0 +1,39 @@
+{
+	"auth": {
+		"emailLabel": "Email address",
+		"emailPlaceholder": "Enter your email",
+		"sendingButton": "Sending...",
+		"continueButton": "Continue",
+		"otpLabel": "Verification code",
+		"otpPlaceholder": "Enter verification code",
+		"verifyingButton": "Verifying...",
+		"loginButton": "Sign in",
+		"backButton": "Back",
+		"emailRequired": "Email is required",
+		"otpRequired": "Verification code is required"
+	},
+	"navigation": {
+		"dayNavigation": "Day navigation",
+		"prevDay": "Previous day",
+		"nextDay": "Next day",
+		"weekNavigation": "Week navigation",
+		"prevWeek": "Previous week",
+		"nextWeek": "Next week",
+		"week": "Week",
+		"logout": "Logout"
+	},
+	"orders": {
+		"noProductsFound": "No products found...",
+		"unmatchedProducts": "Unknown products (ID mismatch)",
+		"guestItems": "Guest items",
+		"total": "Total",
+		"cannotDecreaseQuantities": "Cannot decrease quantities in a locked order. Only additions are allowed.",
+		"failedToSave": "Failed to save order",
+		"failedToCancel": "Failed to cancel order",
+		"saveAsDefault": "Save as default?"
+	},
+	"common": {
+		"goToToday": "Go to today",
+		"loading": "Loading..."
+	}
+}

@@ -5,11 +5,21 @@
 	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import { locale } from '$lib/i18n';
+
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	// Update HTML lang attribute when locale changes
+	$effect(() => {
+		const htmlElement = document.documentElement;
+		if (htmlElement) {
+			htmlElement.lang = $locale;
+		}
+	});
 </script>
 
 <div class="min-h-screen bg-muted">
