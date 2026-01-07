@@ -14,6 +14,8 @@
 		date: Date;
 		onDayChange?: (newDate: Date) => void;
 		onWeekChange?: (newWeekStart: Date) => void;
+		prevDay?: () => void;
+		nextDay?: () => void;
 	};
 
 	let {
@@ -23,7 +25,9 @@
 		isMobile = false,
 		date,
 		onDayChange = undefined,
-		onWeekChange = undefined
+		onWeekChange = undefined,
+		prevDay = undefined,
+		nextDay = undefined
 	}: MainLayoutProps = $props();
 
 	function goToToday() {
