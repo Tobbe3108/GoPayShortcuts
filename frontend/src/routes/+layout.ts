@@ -11,7 +11,12 @@ register('da', () => import('$lib/i18n/da.json'));
 // Initialize i18n
 init({
 	fallbackLocale: 'en',
-	initialLocale: getLocaleFromNavigator() || 'en'
+	initialLocale: (() => {
+		const detected = getLocaleFromNavigator();
+		if (detected?.startsWith('da')) return 'da';
+		if (detected?.startsWith('en')) return 'en';
+		return 'en';
+	})()
 });
 
 export const load: LayoutLoad = async ({ fetch }) => {
