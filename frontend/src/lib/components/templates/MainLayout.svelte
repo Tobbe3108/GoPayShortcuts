@@ -42,7 +42,7 @@
 			<button
 				onclick={goToToday}
 				class="cursor-pointer hover:opacity-75 transition-opacity"
-				aria-label="Go to today"
+				aria-label={$_('layout.goToToday')}
 				type="button"
 			>
 				<img
