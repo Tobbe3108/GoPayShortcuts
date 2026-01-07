@@ -3,6 +3,7 @@
 	import Icon from '../atoms/Icon.svelte';
 	import { addDays } from 'date-fns';
 	import DayHeader from '../molecules/DayHeader.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type dayNavigationProps = {
 		date: Date;
@@ -28,12 +29,12 @@
 	}
 </script>
 
-<div class="flex justify-center" aria-label="Dagnavigation">
-	<Button variant="transparent" ariaLabel="Forrige dag" onclick={prevDay}>
+<div class="flex justify-center" aria-label={$_('navigation.day.label')}>
+	<Button variant="transparent" ariaLabel={$_('navigation.day.previous')} onclick={prevDay}>
 		<Icon name="left"></Icon>
 	</Button>
 	<DayHeader {date} />
-	<Button variant="transparent" ariaLabel="Næste dag" onclick={nextDay}>
+	<Button variant="transparent" ariaLabel={$_('navigation.day.next')} onclick={nextDay}>
 		<Icon name="right"></Icon>
 	</Button>
 </div>

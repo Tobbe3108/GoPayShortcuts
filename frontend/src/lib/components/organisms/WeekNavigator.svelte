@@ -2,8 +2,9 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { addWeeks, startOfWeek, endOfWeek, getWeek, format } from 'date-fns';
-	import { da } from 'date-fns/locale';
+	import { da, enUS } from 'date-fns/locale';
 	import Icon from '../atoms/Icon.svelte';
+	import { _, locale } from 'svelte-i18n';
 
 	type weekNavigationProps = {
 		date: Date;
@@ -12,6 +13,7 @@
 
 	let { date, onWeekChange = undefined }: weekNavigationProps = $props();
 
+	const currentLocale = $derived($locale && $locale.startsWith('en') ? enUS : da);
 	const weekStart = $derived(() => startOfWeek(date, { weekStartsOn: 1 }));
 
 	const weekEnd = $derived(() => endOfWeek(date, { weekStartsOn: 1 }));
@@ -19,7 +21,7 @@
 	const weekNumber = $derived(() => getWeek(weekStart(), { weekStartsOn: 1 }));
 
 	const weekRange = $derived(
-		`${format(weekStart(), 'd', { locale: da })}-${format(weekEnd(), 'd', { locale: da })} ${format(weekEnd(), 'MMM', { locale: da })}`
+		`${format(weekStart(), 'd', { locale: currentLocale })}-${format(weekEnd(), 'd', { locale: currentLocale })} ${format(weekEnd(), 'MMM', { locale: currentLocale })}`
 	);
 
 	const isCurrentWeek = $derived(() => {
@@ -37,8 +39,8 @@
 	}
 </script>
 
-<div class="flex justify-center" aria-label="Ugenavigation">
-	<Button variant="transparent" ariaLabel="Forrige uge" onclick={prevWeek}>
+<div class="flex justify-center" aria-label={$_('navigation.week.label')}>
+	<Button variant="transparent" ariaLabel={$_('navigation.week.previous')} onclick={prevWeek}>
 		<Icon name="left"></Icon>
 	</Button>
 	<div class="flex flex-col items-center">
@@ -46,11 +48,11 @@
 			size="xxl"
 			variant="default"
 			className="capitalize tracking-wide {isCurrentWeek() ? 'font-semibold' : ''}"
-			>Uge {weekNumber()}</Label
+			>{$_('navigation.week.weekPrefix')} {weekNumber()}</Label
 		>
 		<Label size="xs" variant="muted" className="capitalize">{weekRange}</Label>
 	</div>
-	<Button variant="transparent" ariaLabel="Næste uge" onclick={nextWeek}>
+	<Button variant="transparent" ariaLabel={$_('navigation.week.next')} onclick={nextWeek}>
 		<Icon name="right"></Icon>
 	</Button>
 </div>

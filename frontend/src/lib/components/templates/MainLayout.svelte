@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import { _ } from 'svelte-i18n';
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
@@ -41,10 +42,14 @@
 			<button
 				onclick={goToToday}
 				class="cursor-pointer hover:opacity-75 transition-opacity"
-				aria-label="Go to today"
+				aria-label={$_('layout.goToToday')}
 				type="button"
 			>
-				<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-16 sm:h-28 w-auto" />
+				<img
+					src="{base}/GoPayBadEdition.png"
+					alt={$_('layout.logoAlt')}
+					class="h-16 sm:h-28 w-auto"
+				/>
 			</button>
 		</div>
 		<div class="flex flex-1/3 justify-center">
@@ -58,7 +63,7 @@
 			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={() => onLogout()}>
 					{#snippet children()}
-						Log ud
+						{$_('auth.login.logout')}
 					{/snippet}
 				</Button>
 			{/if}

@@ -5,11 +5,16 @@
 	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import { locale } from 'svelte-i18n';
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	$effect(() => {
+		document.documentElement.lang = $locale || 'en';
+	});
 </script>
 
 <div class="min-h-screen bg-muted">

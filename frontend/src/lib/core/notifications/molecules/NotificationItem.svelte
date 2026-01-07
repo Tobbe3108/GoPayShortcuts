@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
@@ -36,14 +37,14 @@
 					variant="transparent"
 					size="sm"
 					className="opacity-80 hover:opacity-100 hover:underline rounded"
-					ariaLabel={notification.actionLabel ?? 'Action'}
+					ariaLabel={notification.actionLabel ?? $_('notifications.action')}
 					onclick={() => {
 						notification.action?.(notification.id);
 						onClose(notification.id);
 					}}
 				>
-					<span class="sr-only">{notification.actionLabel ?? 'Action'}</span>
-					<span aria-hidden="true">{notification.actionLabel ?? 'Action'}</span>
+					<span class="sr-only">{notification.actionLabel ?? $_('notifications.action')}</span>
+					<span aria-hidden="true">{notification.actionLabel ?? $_('notifications.action')}</span>
 				</Button>
 			</div>
 		{/if}
@@ -53,7 +54,7 @@
 				variant="transparent"
 				size="sm"
 				className="opacity-70 hover:opacity-100"
-				ariaLabel="Close notification"
+				ariaLabel={$_('notifications.close')}
 				onclick={() => onClose(notification.id)}
 			>
 				<Icon name="close" size={18} ariaLabel="close" />

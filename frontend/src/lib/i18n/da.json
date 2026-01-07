@@ -1,0 +1,170 @@
+{
+	"auth": {
+		"email": {
+			"label": "Email adresse",
+			"placeholder": "Indtast din email",
+			"required": "Email er påkrævet"
+		},
+		"otp": {
+			"label": "Verifikationskode",
+			"placeholder": "Indtast verifikationskode",
+			"required": "Verifikationskode er påkrævet"
+		},
+		"login": {
+			"button": "Log ind",
+			"continue": "Fortsæt",
+			"back": "Tilbage",
+			"logout": "Log ud",
+			"sending": "Sender...",
+			"verifying": "Verificerer...",
+			"validatingSession": "Validerer session...",
+			"validation": {
+				"emailRequired": "Email er påkrævet",
+				"codeRequired": "Verifikationskode er påkrævet"
+			}
+		}
+	},
+	"layout": {
+		"goToToday": "Gå til i dag",
+		"logoAlt": "GoPay BAD Edition Logo"
+	},
+	"orders": {
+		"saveAsDefault": "Gem som standard?",
+		"save": {
+			"success": "Ordre gemt",
+			"error": "Kunne ikke gemme ordre",
+			"defaultError": "Kunne ikke gemme standard ordre"
+		},
+		"cancel": {
+			"error": "Kunne ikke annullere ordre"
+		},
+		"lockedOrder": {
+			"decreaseError": "Kan ikke mindske antal i en låst ordre. Kun tilføjelser er tilladt."
+		},
+		"noDefault": "Ingen gemt standard ordre",
+		"products": {
+			"noneFound": "Ingen produkter fundet...",
+			"unknown": "Ukendte produkter (ID mismatch)",
+			"unknownItem": "Produkt #{id}"
+		},
+		"guestItems": "Gæst varer",
+		"total": "Total",
+		"cannotDecreaseQuantities": "Kan ikke mindske antal i en låst ordre. Kun tilføjelser er tilladt.",
+		"failedToSave": "Kunne ikke gemme ordre",
+		"failedToSaveDefault": "Kunne ikke gemme standard ordre",
+		"failedToCancel": "Kunne ikke annullere ordre",
+		"noProductsFound": "Ingen produkter fundet...",
+		"unknownProducts": "Ukendte produkter (ID mismatch)",
+		"product": "Produkt",
+		"cannotPlaceOrdersPast": "Bestillinger kan ikke placeres for fortidige dage.",
+		"useDefaultOrder": "Brug standard ordre",
+		"noSavedDefaultOrder": "Ingen gemt standard ordre",
+		"saveAsDefaultHint": "Gem en ordre som standard for hurtigt at genbruge den"
+	},
+	"locations": {
+		"add": "Tilføj Lokation",
+		"noneFound": "Ingen lokationer fundet..."
+	},
+	"menu": {
+		"today": "Dagens Menu",
+		"noneAvailable": "Ingen menu tilgængelig...",
+		"unknownCategory": "Ukendt kategori",
+		"allergens": {
+			"show": "Vis allergener",
+			"label": "Allergener"
+		}
+	},
+	"navigation": {
+		"week": {
+			"label": "Ugenavigation",
+			"previous": "Forrige uge",
+			"next": "Næste uge",
+			"weekPrefix": "Uge"
+		},
+		"day": {
+			"label": "Dagnavigation",
+			"previous": "Forrige dag",
+			"next": "Næste dag"
+		}
+	},
+	"notifications": {
+		"action": "Handling",
+		"close": "Luk notifikation"
+	},
+	"debug": {
+		"title": "Debug Konsol",
+		"navigation": {
+			"atoms": "Atoms Debug",
+			"molecules": "Molecules Debug",
+			"organisms": "Organisms Debug",
+			"templates": "Templates Debug",
+			"main": "Hoved Debug"
+		},
+		"sections": {
+			"auth": "Autentificering",
+			"locations": "Lokationer Service",
+			"products": "Produkter Service",
+			"menu": "Menu Service",
+			"orders": "Ordrer Service",
+			"ordersUpdate": "Ordrer Service – Opdater Dag"
+		},
+		"form": {
+			"startDate": "Start Dato",
+			"endDate": "Slut Dato",
+			"kitchenId": "Køkken ID",
+			"date": "Dato",
+			"productId": "Produkt ID",
+			"quantity": "Antal",
+			"desiredOrders": "Ønskede Ordrer",
+			"enterIds": "Indtast produkt ID'er og antal"
+		},
+		"buttons": {
+			"fetchLocations": "Hent Lokationer",
+			"fetchProducts": "Hent Produkter",
+			"fetchMenu": "Hent Menu",
+			"fetchOrders": "Hent Ordrer",
+			"currentWeekOrders": "Nuværende Uge Ordrer",
+			"runUpdateDay": "Kør Opdater Dag",
+			"addRow": "+ Tilføj Række",
+			"remove": "Fjern",
+			"addNotification": "Tilføj Notifikation",
+			"addWithAction": "Tilføj Med Handling"
+		},
+		"status": {
+			"loading": "Indlæser...",
+			"updating": "Opdaterer...",
+			"orderDeleted": "Ordre slettet."
+		},
+		"validation": {
+			"kitchenIdRequired": "Køkken ID og Dato er påkrævet"
+		},
+		"test": {
+			"notification": "Dette er en test notifikation",
+			"undo": "Fortryd"
+		},
+		"demos": {
+			"atoms": "Atoms Debug Side",
+			"molecules": "Molecules Debug Side",
+			"organisms": "Organisms Debug Side",
+			"input": "Input Demo",
+			"button": "Knap Demo",
+			"card": "Kort Demo",
+			"label": "Label Demo",
+			"icon": "Ikon Demo",
+			"locationSelector": "LokationsVælger Demo",
+			"loadingSpinner": "IndlæsningsSpinner Demo",
+			"quantity": "Antal Demo",
+			"formField": "FormFelt Demo",
+			"orderEditor": "OrdreEditor Demo",
+			"editModeControls": "RedigeringsTilstandKnapper Demo",
+			"dayHeader": "DagHeader Demo",
+			"todaysMenu": "DagensMenu Demo",
+			"addLocationCard": "TilføjLokationsKort Demo",
+			"weekNavigator": "UgeNavigator Demo",
+			"orderCard": "OrdreKort Demo",
+			"weekGridTemplate": "UgeGridSkabelon Demo",
+			"dayViewTemplate": "DagVisningSkabelon Demo",
+			"notifications": "Notifikationer Demo"
+		}
+	}
+}

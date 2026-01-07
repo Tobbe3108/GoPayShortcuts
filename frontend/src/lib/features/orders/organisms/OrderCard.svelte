@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
@@ -78,9 +79,7 @@
 			for (const line of order.orderlines) {
 				const originalQty = originalQuantities.get(line.productId) ?? 0;
 				if (line.quantity < originalQty) {
-					notifications.error(
-						'Cannot decrease quantities in a locked order. Only additions are allowed.'
-					);
+					notifications.error($_('orders.cannotDecreaseQuantities'));
 					return;
 				}
 			}
@@ -100,9 +99,11 @@
 			});
 			if (response) onOrderChange?.(response);
 			editMode = false;
-			notifications.info(undefined, 2500, 'Save as default?', async () => handleSaveAsDefault());
+			notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () =>
+				handleSaveAsDefault()
+			);
 		} catch (err) {
-			notifications.error('Failed to save order');
+			notifications.error($_('orders.failedToSave'));
 		} finally {
 			isBackendLoading = false;
 		}
@@ -113,7 +114,7 @@
 		try {
 			await defaultStore.saveDefault(order);
 		} catch (err) {
-			notifications.error('Failed to save default order');
+			notifications.error($_('orders.failedToSaveDefault'));
 		} finally {
 			isBackendLoading = false;
 		}
@@ -129,7 +130,7 @@
 			});
 			onOrderCancel?.(order.date, order.kitchenId);
 		} catch (err) {
-			notifications.error('Failed to cancel order');
+			notifications.error($_('orders.failedToCancel'));
 		} finally {
 			isBackendLoading = false;
 		}

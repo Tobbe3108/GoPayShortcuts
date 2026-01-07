@@ -9,6 +9,7 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import { format } from 'date-fns';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
+	import { _ } from 'svelte-i18n';
 
 	type AddLocationCardProps = {
 		locationsWithOrders: number[];
@@ -58,7 +59,7 @@
 			aria-controls="todays-menu-content"
 			onclick={() => (collapsed = !collapsed)}
 		>
-			<Label size="md" className="tracking-wide cursor-pointer">Tilføj Lokation</Label>
+			<Label size="md" className="tracking-wide cursor-pointer">{$_('locations.add')}</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
@@ -67,7 +68,7 @@
 			{#if !loading}
 				<Card>
 					{#if !locations || locations.length === 0}
-						<Label variant="muted">Ingen lokationer fundet...</Label>
+						<Label variant="muted">{$_('locations.noneFound')}</Label>
 					{:else}
 						<div class="flex flex-col space-y-2">
 							{#each locations as loc}

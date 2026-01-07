@@ -8,6 +8,7 @@
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { format } from 'date-fns';
+	import { _ } from 'svelte-i18n';
 
 	let { date }: { date: Date } = $props();
 
@@ -32,7 +33,7 @@
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};
 		for (const item of items) {
-			const cat = item.category || 'Ukendt kategori';
+			const cat = item.category || $_('menu.unknownCategory');
 			if (!grouped[cat]) grouped[cat] = [];
 			grouped[cat].push(item);
 		}
@@ -49,7 +50,7 @@
 			aria-controls="todays-menu-content"
 			onclick={() => (collapsed = !collapsed)}
 		>
-			<Label size="md" className="tracking-wide cursor-pointer">Dagens Menu</Label>
+			<Label size="md" className="tracking-wide cursor-pointer">{$_('menu.today')}</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
@@ -59,7 +60,7 @@
 			{#if !loading}
 				<Card className="p-3">
 					{#if !menuItems}
-						<Label variant="muted" size="sm">Ingen menu tilgængelig...</Label>
+						<Label variant="muted" size="sm">{$_('menu.noneAvailable')}</Label>
 					{:else}
 						<div class="flex flex-col gap-2">
 							{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
@@ -85,10 +86,10 @@
 																class="inline-block px-1 py-0.5 text-[10px] leading-tight bg-gray-100 rounded cursor-pointer select-none focus:outline-sky-500 focus-visible:outline-2"
 																aria-haspopup="dialog"
 																aria-expanded="false"
-																aria-label="Vis allergener"
+																aria-label={$_('menu.allergens.show')}
 																tabindex="0"
 															>
-																Allergener
+																{$_('menu.allergens.label')}
 															</button>
 															<div
 																role="dialog"
