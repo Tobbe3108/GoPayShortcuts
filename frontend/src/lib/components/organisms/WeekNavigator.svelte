@@ -2,9 +2,9 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { addWeeks, startOfWeek, endOfWeek, getWeek, format } from 'date-fns';
-	import { da } from 'date-fns/locale';
+	import { da, enUS } from 'date-fns/locale';
 	import Icon from '../atoms/Icon.svelte';
-	import { _ } from 'svelte-i18n';
+	import { _, locale } from 'svelte-i18n';
 
 	type weekNavigationProps = {
 		date: Date;
@@ -13,6 +13,7 @@
 
 	let { date, onWeekChange = undefined }: weekNavigationProps = $props();
 
+	const currentLocale = $derived($locale === 'en' ? enUS : da);
 	const weekStart = $derived(() => startOfWeek(date, { weekStartsOn: 1 }));
 
 	const weekEnd = $derived(() => endOfWeek(date, { weekStartsOn: 1 }));
@@ -20,7 +21,7 @@
 	const weekNumber = $derived(() => getWeek(weekStart(), { weekStartsOn: 1 }));
 
 	const weekRange = $derived(
-		`${format(weekStart(), 'd', { locale: da })}-${format(weekEnd(), 'd', { locale: da })} ${format(weekEnd(), 'MMM', { locale: da })}`
+		`${format(weekStart(), 'd', { locale: currentLocale })}-${format(weekEnd(), 'd', { locale: currentLocale })} ${format(weekEnd(), 'MMM', { locale: currentLocale })}`
 	);
 
 	const isCurrentWeek = $derived(() => {
