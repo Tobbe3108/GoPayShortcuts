@@ -118,11 +118,17 @@
 													notifications.info($_('orders.noSavedDefaultOrder'));
 													return;
 												}
-												const cloned = { ...def, date: format(date, 'yyyy-MM-dd'), tempOrder: true };
+												const cloned = {
+													...def,
+													date: format(date, 'yyyy-MM-dd'),
+													tempOrder: true
+												};
 												updateOrderForKitchen(orders, cloned);
 											}}
 										>
-											<div class="text-xs text-gray-400 text-center">{$_('orders.useDefaultOrder')}</div>
+											<div class="text-xs text-gray-400 text-center">
+												{$_('orders.useDefaultOrder')}
+											</div>
 										</Button>
 									</div>
 								{:else}

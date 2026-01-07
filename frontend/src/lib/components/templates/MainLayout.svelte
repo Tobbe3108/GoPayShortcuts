@@ -45,7 +45,11 @@
 				aria-label="Go to today"
 				type="button"
 			>
-				<img src="{base}/GoPayBadEdition.png" alt="GoPay BAD Edition Logo" class="h-16 sm:h-28 w-auto" />
+				<img
+					src="{base}/GoPayBadEdition.png"
+					alt="GoPay BAD Edition Logo"
+					class="h-16 sm:h-28 w-auto"
+				/>
 			</button>
 		</div>
 		<div class="flex flex-1/3 justify-center">

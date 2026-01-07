@@ -1,4 +1,4 @@
- <script lang="ts">
+<script lang="ts">
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
@@ -79,7 +79,7 @@
 			<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
 				{#snippet children()}
 					{#if isLoading}
-					<div class="flex justify-center items-center">
+						<div class="flex justify-center items-center">
 							<LoadingSpinner size="w-5 h-5" />
 							<span class="ml-2">{$_('auth.login.verifying')}</span>
 						</div>

@@ -22,13 +22,11 @@
 	}
 
 	let { children }: Props = $props();
-</script>
 
-<svelte:head>
-	<script>
-		$: document.documentElement.lang = $locale;
-	</script>
-</svelte:head>
+	$effect(() => {
+		document.documentElement.lang = $locale || 'da';
+	});
+</script>
 
 <div class="min-h-screen bg-muted">
 	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}

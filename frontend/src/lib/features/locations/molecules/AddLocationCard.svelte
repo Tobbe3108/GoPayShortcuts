@@ -1,4 +1,4 @@
- <script lang="ts">
+<script lang="ts">
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { locationsService } from '../locationsService';
 	import { onMount } from 'svelte';

@@ -36,8 +36,8 @@ The application uses environment variables for configuration. These are set up i
 
 Available environment variables:
 
-| Variable | Description | Default (Development) |
-|----------|-------------|----------------------|
+| Variable            | Description          | Default (Development)       |
+| ------------------- | -------------------- | --------------------------- |
 | PUBLIC_API_BASE_URL | Base URL for the API | `http://localhost:8787/api` |
 
 To add new environment variables:

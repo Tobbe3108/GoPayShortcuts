@@ -123,7 +123,9 @@
 										updateOrderForKitchen(orders, cloned);
 									}}
 								>
-									<div class="text-xs text-gray-400 text-center">{$_('orders.useDefaultOrder')}</div>
+									<div class="text-xs text-gray-400 text-center">
+										{$_('orders.useDefaultOrder')}
+									</div>
 								</Button>
 							</div>
 						{:else}

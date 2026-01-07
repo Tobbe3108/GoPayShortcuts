@@ -148,7 +148,9 @@
 	<div class="w-full overflow-x-auto">
 		<div class="flex flex-col w-full text-sm">
 			{#if !items || items.length === 0}
-				<Label variant="muted" size="sm" className="text-center">{$_('orders.noProductsFound')}</Label>
+				<Label variant="muted" size="sm" className="text-center"
+					>{$_('orders.noProductsFound')}</Label
+				>
 			{/if}
 			{#each items as item, idx}
 				<div class="flex items-center justify-center py-1 gap-1">
@@ -180,7 +182,9 @@
 					>
 					{#each unmatchedOrderlines as l}
 						<div class="flex items-center justify-center py-1 gap-1 opacity-75">
-							<Label className="text-left grow truncate">{$_('orders.product')} #{l.productId}</Label>
+							<Label className="text-left grow truncate"
+								>{$_('orders.product')} #{l.productId}</Label
+							>
 							<div class="flex min-w-11 justify-center">
 								<Label>{l.quantity}</Label>
 							</div>
@@ -201,7 +205,9 @@
 						aria-controls="guest-items-content"
 						onclick={() => (guestCollapsed = !guestCollapsed)}
 					>
-						<Label size="xs" className="tracking-wide cursor-pointer">{$_('orders.guestItems')}</Label>
+						<Label size="xs" className="tracking-wide cursor-pointer"
+							>{$_('orders.guestItems')}</Label
+						>
 						<Icon name={guestCollapsed ? 'open' : 'collapse'} size={10} />
 					</button>
 					{#if !guestCollapsed}

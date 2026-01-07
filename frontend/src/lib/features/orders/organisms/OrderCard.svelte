@@ -99,7 +99,9 @@
 			});
 			if (response) onOrderChange?.(response);
 			editMode = false;
-			notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () => handleSaveAsDefault());
+			notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () =>
+				handleSaveAsDefault()
+			);
 		} catch (err) {
 			notifications.error($_('orders.failedToSave'));
 		} finally {
