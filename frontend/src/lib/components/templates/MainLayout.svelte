@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import { _ } from 'svelte-i18n';
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
@@ -58,7 +59,7 @@
 			{#if isAuthenticated && page.url.pathname !== '/login'}
 				<Button variant="primary" onclick={() => onLogout()}>
 					{#snippet children()}
-						Log ud
+						{$_('auth.login.logout')}
 					{/snippet}
 				</Button>
 			{/if}

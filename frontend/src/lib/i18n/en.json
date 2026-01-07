@@ -1,0 +1,147 @@
+{
+  "auth": {
+    "email": {
+      "label": "Email address",
+      "placeholder": "Enter your email",
+      "required": "Email is required"
+    },
+    "otp": {
+      "label": "Verification code",
+      "placeholder": "Enter verification code",
+      "required": "Verification code is required"
+    },
+    "login": {
+      "button": "Log in",
+      "continue": "Continue",
+      "back": "Back",
+      "logout": "Log out",
+      "sending": "Sending...",
+      "verifying": "Verifying...",
+      "validatingSession": "Validating session..."
+    }
+  },
+  "orders": {
+    "saveAsDefault": "Save as default?",
+    "save": {
+      "success": "Order saved",
+      "error": "Failed to save order",
+      "defaultError": "Failed to save default order"
+    },
+    "cancel": {
+      "error": "Failed to cancel order"
+    },
+    "lockedOrder": {
+      "decreaseError": "Cannot decrease quantities in a locked order. Only additions are allowed."
+    },
+    "noDefault": "No saved default order",
+    "products": {
+      "noneFound": "No products found...",
+      "unknown": "Unknown products (ID mismatch)",
+      "unknownItem": "Product #{id}"
+    },
+    "guestItems": "Guest items",
+    "total": "Total"
+  },
+  "locations": {
+    "add": "Add Location",
+    "noneFound": "No locations found..."
+  },
+  "menu": {
+    "today": "Today's Menu",
+    "noneAvailable": "No menu available...",
+    "unknownCategory": "Unknown category",
+    "allergens": {
+      "show": "Show allergens",
+      "label": "Allergens"
+    }
+  },
+  "navigation": {
+    "week": {
+      "label": "Week navigation",
+      "previous": "Previous week",
+      "next": "Next week",
+      "weekPrefix": "Week"
+    },
+    "day": {
+      "label": "Day navigation",
+      "previous": "Previous day",
+      "next": "Next day"
+    }
+  },
+  "debug": {
+    "title": "Debug Console",
+    "navigation": {
+      "atoms": "Atoms Debug",
+      "molecules": "Molecules Debug",
+      "organisms": "Organisms Debug",
+      "templates": "Templates Debug",
+      "main": "Main Debug"
+    },
+    "sections": {
+      "auth": "Authentication",
+      "locations": "Locations Service",
+      "products": "Products Service",
+      "menu": "Menu Service",
+      "orders": "Orders Service",
+      "ordersUpdate": "Orders Service – Update Day"
+    },
+    "form": {
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "kitchenId": "Kitchen ID",
+      "date": "Date",
+      "productId": "Product ID",
+      "quantity": "Quantity",
+      "desiredOrders": "Desired Orders",
+      "enterIds": "Enter product IDs and quantities"
+    },
+    "buttons": {
+      "fetchLocations": "Fetch Locations",
+      "fetchProducts": "Fetch Products",
+      "fetchMenu": "Fetch Menu",
+      "fetchOrders": "Fetch Orders",
+      "currentWeekOrders": "Current Week Orders",
+      "runUpdateDay": "Run Update Day",
+      "addRow": "+ Add Row",
+      "remove": "Remove",
+      "addNotification": "Add Notification",
+      "addWithAction": "Add With Action"
+    },
+    "status": {
+      "loading": "Loading...",
+      "updating": "Updating...",
+      "orderDeleted": "Order deleted."
+    },
+    "validation": {
+      "kitchenIdRequired": "Kitchen ID and Date are required"
+    },
+    "test": {
+      "notification": "This is a test notification",
+      "undo": "Undo"
+    },
+    "demos": {
+      "atoms": "Atoms Debug Page",
+      "molecules": "Molecules Debug Page",
+      "organisms": "Organisms Debug Page",
+      "input": "Input Demo",
+      "button": "Button Demo",
+      "card": "Card Demo",
+      "label": "Label Demo",
+      "icon": "Icon Demo",
+      "locationSelector": "LocationSelector Demo",
+      "loadingSpinner": "LoadingSpinner Demo",
+      "quantity": "Quantity Demo",
+      "formField": "FormField Demo",
+      "orderEditor": "OrderEditor Demo",
+      "editModeControls": "EditModeControls Demo",
+      "dayHeader": "DayHeader Demo",
+      "todaysMenu": "TodaysMenu Demo",
+      "addLocationCard": "AddLocationCard Demo",
+      "weekNavigator": "WeekNavigator Demo",
+      "orderCard": "OrderCard Demo",
+      "weekGridTemplate": "WeekGridTemplate Demo",
+      "dayViewTemplate": "DayViewTemplate Demo",
+      "notifications": "Notifications Demo"
+    }
+  }
+}
