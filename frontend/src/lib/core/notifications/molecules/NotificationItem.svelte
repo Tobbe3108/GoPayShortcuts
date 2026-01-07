@@ -16,13 +16,13 @@
 </script>
 
 <div
-	class="p-3 rounded-lg shadow-lg text-primary"
+	class="p-2 rounded-lg shadow-md text-primary"
 	class:bg-green-100={notification.type === 'success'}
 	class:bg-yellow-100={notification.type === 'warning'}
 	class:bg-red-100={notification.type === 'error'}
-	class:bg-muted={notification.type === 'info'}
+	class:bg-gray-50={notification.type === 'info'}
 	class:text-muted-dark={notification.type === 'info'}
-	transition:fly={{ y: 20, duration: 300 }}
+	transition:fly={{ y: -20, duration: 200 }}
 >
 	<div class="flex items-center justify-between">
 		{#if notification.message}
