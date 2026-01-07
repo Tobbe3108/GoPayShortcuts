@@ -20,7 +20,7 @@
 	class:bg-green-100={notification.type === 'success'}
 	class:bg-yellow-100={notification.type === 'warning'}
 	class:bg-red-100={notification.type === 'error'}
-	class:bg-gray-50={notification.type === 'info'}
+	class:bg-muted={notification.type === 'info'}
 	class:text-muted-dark={notification.type === 'info'}
 	transition:fly={{ y: -20, duration: 200 }}
 >
