@@ -41,6 +41,7 @@
 		"date-fns": "^4.1.0",
 		"lodash-es": "^4.17.21",
 		"lucide-svelte": "^0.544.0",
-		"svelte-forms-lib": "^2.0.1"
+		"svelte-forms-lib": "^2.0.1",
+		"svelte-i18n": "^4.0.1"
 	}
 }

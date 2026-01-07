@@ -1,7 +1,8 @@
-<script lang="ts">
+ <script lang="ts">
 	import FormField from '$lib/components/molecules/FormField.svelte';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type AuthFormProps = {
 		isEmailStep?: boolean;
@@ -36,9 +37,9 @@
 	>
 		<FormField
 			id="email"
-			label="Email adresse"
+			label={$_('auth.email.label')}
 			type="email"
-			placeholder="Indtast din email"
+			placeholder={$_('auth.email.placeholder')}
 			bind:value={email}
 			transform={(v) => v.trim()}
 			required={true}
@@ -48,10 +49,10 @@
 				{#if isLoading}
 					<div class="flex justify-center items-center">
 						<LoadingSpinner size="w-5 h-5" />
-						<span class="ml-2">Sender...</span>
+						<span class="ml-2">{$_('auth.login.sending')}</span>
 					</div>
 				{:else}
-					Fortsæt
+					{$_('auth.login.continue')}
 				{/if}
 			{/snippet}
 		</Button>
@@ -66,9 +67,9 @@
 	>
 		<FormField
 			id="otp"
-			label="Verifikationskode"
+			label={$_('auth.otp.label')}
 			type="text"
-			placeholder="Indtast verifikationskode"
+			placeholder={$_('auth.otp.placeholder')}
 			bind:value={otp}
 			transform={(v) => v.replace(/[^0-9]/g, '')}
 			validate={(v) => v.length > 0}
@@ -78,12 +79,12 @@
 			<Button type="submit" disabled={isLoading || otp.length === 0} fullWidth={true}>
 				{#snippet children()}
 					{#if isLoading}
-						<div class="flex justify-center items-center">
+					<div class="flex justify-center items-center">
 							<LoadingSpinner size="w-5 h-5" />
-							<span class="ml-2">Verificerer...</span>
+							<span class="ml-2">{$_('auth.login.verifying')}</span>
 						</div>
 					{:else}
-						Log ind
+						{$_('auth.login.login')}
 					{/if}
 				{/snippet}
 			</Button>
@@ -95,7 +96,7 @@
 				onclick={() => onBackToEmail()}
 				fullWidth={true}
 			>
-				Tilbage
+				{$_('auth.login.back')}
 			</Button>
 		</div>
 	</form>
