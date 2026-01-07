@@ -6,7 +6,7 @@
 
 	let { date }: { date: Date } = $props();
 
-	const currentLocale = $derived($locale === 'en' ? enUS : da);
+	const currentLocale = $derived($locale && $locale.startsWith('en') ? enUS : da);
 	const dayName = $derived(format(date, 'EEEE', { locale: currentLocale }));
 	const dateStr = $derived(format(date, 'd. MMMM', { locale: currentLocale }));
 </script>

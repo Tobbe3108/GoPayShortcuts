@@ -13,7 +13,7 @@
 
 	let { date, onWeekChange = undefined }: weekNavigationProps = $props();
 
-	const currentLocale = $derived($locale === 'en' ? enUS : da);
+	const currentLocale = $derived($locale && $locale.startsWith('en') ? enUS : da);
 	const weekStart = $derived(() => startOfWeek(date, { weekStartsOn: 1 }));
 
 	const weekEnd = $derived(() => endOfWeek(date, { weekStartsOn: 1 }));
