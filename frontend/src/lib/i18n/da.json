@@ -17,8 +17,16 @@
 			"logout": "Log ud",
 			"sending": "Sender...",
 			"verifying": "Verificerer...",
-			"validatingSession": "Validerer session..."
+			"validatingSession": "Validerer session...",
+			"validation": {
+				"emailRequired": "Email er påkrævet",
+				"codeRequired": "Verifikationskode er påkrævet"
+			}
 		}
+	},
+	"layout": {
+		"goToToday": "Go til i dag",
+		"logoAlt": "GoPay BAD Edition Logo"
 	},
 	"orders": {
 		"saveAsDefault": "Gem som standard?",
@@ -79,80 +87,84 @@
 			"next": "Næste dag"
 		}
 	},
+	"notifications": {
+		"action": "Handling",
+		"close": "Luk notifikation"
+	},
 	"debug": {
-		"title": "Debug Console",
+		"title": "Debug Konsol",
 		"navigation": {
 			"atoms": "Atoms Debug",
 			"molecules": "Molecules Debug",
 			"organisms": "Organisms Debug",
 			"templates": "Templates Debug",
-			"main": "Main Debug"
+			"main": "Hoved Debug"
 		},
 		"sections": {
-			"auth": "Authentication",
-			"locations": "Locations Service",
-			"products": "Products Service",
+			"auth": "Autentificering",
+			"locations": "Lokationer Service",
+			"products": "Produkter Service",
 			"menu": "Menu Service",
-			"orders": "Orders Service",
-			"ordersUpdate": "Orders Service – Update Day"
+			"orders": "Ordrer Service",
+			"ordersUpdate": "Ordrer Service – Opdater Dag"
 		},
 		"form": {
-			"startDate": "Start Date",
-			"endDate": "End Date",
-			"kitchenId": "Kitchen ID",
-			"date": "Date",
-			"productId": "Product ID",
-			"quantity": "Quantity",
-			"desiredOrders": "Desired Orders",
-			"enterIds": "Enter product IDs and quantities"
+			"startDate": "Start Dato",
+			"endDate": "Slut Dato",
+			"kitchenId": "Køkken ID",
+			"date": "Dato",
+			"productId": "Produkt ID",
+			"quantity": "Antal",
+			"desiredOrders": "Ønskede Ordrer",
+			"enterIds": "Indtast produkt ID'er og antal"
 		},
 		"buttons": {
-			"fetchLocations": "Fetch Locations",
-			"fetchProducts": "Fetch Products",
-			"fetchMenu": "Fetch Menu",
-			"fetchOrders": "Fetch Orders",
-			"currentWeekOrders": "Current Week Orders",
-			"runUpdateDay": "Run Update Day",
-			"addRow": "+ Add Row",
-			"remove": "Remove",
-			"addNotification": "Add Notification",
-			"addWithAction": "Add With Action"
+			"fetchLocations": "Hent Lokationer",
+			"fetchProducts": "Hent Produkter",
+			"fetchMenu": "Hent Menu",
+			"fetchOrders": "Hent Ordrer",
+			"currentWeekOrders": "Nuværende Uge Ordrer",
+			"runUpdateDay": "Kør Opdater Dag",
+			"addRow": "+ Tilføj Række",
+			"remove": "Fjern",
+			"addNotification": "Tilføj Notifikation",
+			"addWithAction": "Tilføj Med Handling"
 		},
 		"status": {
-			"loading": "Loading...",
-			"updating": "Updating...",
-			"orderDeleted": "Order deleted."
+			"loading": "Indlæser...",
+			"updating": "Opdaterer...",
+			"orderDeleted": "Ordre slettet."
 		},
 		"validation": {
-			"kitchenIdRequired": "Kitchen ID and Date are required"
+			"kitchenIdRequired": "Køkken ID og Dato er påkrævet"
 		},
 		"test": {
-			"notification": "This is a test notification",
-			"undo": "Undo"
+			"notification": "Dette er en test notifikation",
+			"undo": "Fortryd"
 		},
 		"demos": {
-			"atoms": "Atoms Debug Page",
-			"molecules": "Molecules Debug Page",
-			"organisms": "Organisms Debug Page",
+			"atoms": "Atoms Debug Side",
+			"molecules": "Molecules Debug Side",
+			"organisms": "Organisms Debug Side",
 			"input": "Input Demo",
-			"button": "Button Demo",
-			"card": "Card Demo",
+			"button": "Knap Demo",
+			"card": "Kort Demo",
 			"label": "Label Demo",
-			"icon": "Icon Demo",
-			"locationSelector": "LocationSelector Demo",
-			"loadingSpinner": "LoadingSpinner Demo",
-			"quantity": "Quantity Demo",
-			"formField": "FormField Demo",
-			"orderEditor": "OrderEditor Demo",
-			"editModeControls": "EditModeControls Demo",
-			"dayHeader": "DayHeader Demo",
-			"todaysMenu": "TodaysMenu Demo",
-			"addLocationCard": "AddLocationCard Demo",
-			"weekNavigator": "WeekNavigator Demo",
-			"orderCard": "OrderCard Demo",
-			"weekGridTemplate": "WeekGridTemplate Demo",
-			"dayViewTemplate": "DayViewTemplate Demo",
-			"notifications": "Notifications Demo"
+			"icon": "Ikon Demo",
+			"locationSelector": "LokationsVælger Demo",
+			"loadingSpinner": "IndlæsningsSpinner Demo",
+			"quantity": "Antal Demo",
+			"formField": "FormFelt Demo",
+			"orderEditor": "OrdreEditor Demo",
+			"editModeControls": "RedigeringsTilstandKnapper Demo",
+			"dayHeader": "DagHeader Demo",
+			"todaysMenu": "DagensMenu Demo",
+			"addLocationCard": "TilføjLokationsKort Demo",
+			"weekNavigator": "UgeNavigator Demo",
+			"orderCard": "OrdreKort Demo",
+			"weekGridTemplate": "UgeGridSkabelon Demo",
+			"dayViewTemplate": "DagVisningSkabelon Demo",
+			"notifications": "Notifikationer Demo"
 		}
 	}
 }

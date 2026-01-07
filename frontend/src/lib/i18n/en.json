@@ -17,8 +17,16 @@
 			"logout": "Log out",
 			"sending": "Sending...",
 			"verifying": "Verifying...",
-			"validatingSession": "Validating session..."
+			"validatingSession": "Validating session...",
+			"validation": {
+				"emailRequired": "Email is required",
+				"codeRequired": "Verification code is required"
+			}
 		}
+	},
+	"layout": {
+		"goToToday": "Go to today",
+		"logoAlt": "GoPay BAD Edition Logo"
 	},
 	"orders": {
 		"saveAsDefault": "Save as default?",
@@ -78,6 +86,10 @@
 			"previous": "Previous day",
 			"next": "Next day"
 		}
+	},
+	"notifications": {
+		"action": "Action",
+		"close": "Close notification"
 	},
 	"debug": {
 		"title": "Debug Console",
