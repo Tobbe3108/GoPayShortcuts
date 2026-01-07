@@ -10,17 +10,12 @@
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 
-	type TodaysMenuProps = {
-		date: Date;
-		collapsed?: boolean;
-		onCollapsedChange?: (collapsed: boolean) => void;
-	};
-
-	let { date, collapsed = true, onCollapsedChange = undefined }: TodaysMenuProps = $props();
+	let { date }: { date: Date } = $props();
 
 	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
+	let collapsed = $state(true);
 
 	onMount(async () => {
 		await menuService
@@ -53,7 +48,7 @@
 			type="button"
 			aria-expanded={!collapsed}
 			aria-controls="todays-menu-content"
-			onclick={() => onCollapsedChange?.(!collapsed)}
+			onclick={() => (collapsed = !collapsed)}
 		>
 			<Label size="md" className="tracking-wide cursor-pointer">{$_('menu.today')}</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />

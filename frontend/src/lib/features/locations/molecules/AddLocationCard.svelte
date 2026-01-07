@@ -15,13 +15,12 @@
 		locationsWithOrders: number[];
 		newOrder?: (order: SimplifiedOrder) => void;
 		date: Date;
-		collapsed?: boolean;
-		onCollapsedChange?: (collapsed: boolean) => void;
 	};
 
-	let { date, newOrder = undefined, locationsWithOrders = [], collapsed = true, onCollapsedChange = undefined }: AddLocationCardProps = $props();
+	let { date, newOrder = undefined, locationsWithOrders = [] }: AddLocationCardProps = $props();
 
 	let allLocations = $state<Array<Location>>([]);
+	let collapsed = $state(true);
 	let loading = $state(true);
 
 	onMount(async () => {
@@ -38,7 +37,7 @@
 	function handleLocationClick(loc: Location) {
 		const order = scaffoldOrderForLocation(loc);
 		newOrder?.(order);
-		onCollapsedChange?.(true);
+		collapsed = true;
 	}
 
 	function scaffoldOrderForLocation(loc: Location): SimplifiedOrder {
@@ -58,7 +57,7 @@
 			type="button"
 			aria-expanded={!collapsed}
 			aria-controls="todays-menu-content"
-			onclick={() => onCollapsedChange?.(!collapsed)}
+			onclick={() => (collapsed = !collapsed)}
 		>
 			<Label size="md" className="tracking-wide cursor-pointer">{$_('locations.add')}</Label>
 			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
