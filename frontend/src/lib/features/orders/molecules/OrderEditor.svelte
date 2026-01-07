@@ -2,6 +2,7 @@
 	import type { Product } from '$lib/features/products/product';
 	import { productsService } from '$lib/features/products/productsService';
 	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 	import Quantity from '$lib/components/atoms/Quantity.svelte';
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
@@ -147,7 +148,7 @@
 	<div class="w-full overflow-x-auto">
 		<div class="flex flex-col w-full text-sm">
 			{#if !items || items.length === 0}
-				<Label variant="muted" size="sm" className="text-center">Ingen produkter fundet...</Label>
+				<Label variant="muted" size="sm" className="text-center">{$_('orders.noProductsFound')}</Label>
 			{/if}
 			{#each items as item, idx}
 				<div class="flex items-center justify-center py-1 gap-1">
@@ -175,11 +176,11 @@
 			{#if unmatchedOrderlines.length > 0}
 				<div class="mt-2 border-t border-slate-200 pt-2">
 					<Label variant="muted" size="xs" className="block mb-1"
-						>Ukendte produkter (ID mismatch)</Label
+						>{$_('orders.unknownProducts')}</Label
 					>
 					{#each unmatchedOrderlines as l}
 						<div class="flex items-center justify-center py-1 gap-1 opacity-75">
-							<Label className="text-left grow truncate">Produkt #{l.productId}</Label>
+							<Label className="text-left grow truncate">{$_('orders.product')} #{l.productId}</Label>
 							<div class="flex min-w-11 justify-center">
 								<Label>{l.quantity}</Label>
 							</div>
@@ -200,7 +201,7 @@
 						aria-controls="guest-items-content"
 						onclick={() => (guestCollapsed = !guestCollapsed)}
 					>
-						<Label size="xs" className="tracking-wide cursor-pointer">Gæst varer</Label>
+						<Label size="xs" className="tracking-wide cursor-pointer">{$_('orders.guestItems')}</Label>
 						<Icon name={guestCollapsed ? 'open' : 'collapse'} size={10} />
 					</button>
 					{#if !guestCollapsed}
@@ -230,7 +231,7 @@
 			{/if}
 			{#if showTotal}
 				<div class="flex justify-between border-t border-slate-200 mt-2 pt-2">
-					<Label className="font-semibold">Total</Label>
+					<Label className="font-semibold">{$_('orders.total')}</Label>
 
 					<Label className="font-semibold text-right">{formatPrice(totalPrice)}</Label>
 				</div>

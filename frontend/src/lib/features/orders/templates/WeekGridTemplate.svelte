@@ -3,6 +3,7 @@
 	import OrderCard from '$lib/features/orders/organisms/OrderCard.svelte';
 	import AddLocationCard from '$lib/features/locations/molecules/AddLocationCard.svelte';
 	import TodaysMenu from '$lib/features/menu/molecules/TodaysMenu.svelte';
+	import { _ } from 'svelte-i18n';
 	import { startOfWeek, endOfWeek, addDays, isPast, isToday, isFuture, format } from 'date-fns';
 	import {
 		listOrders,
@@ -98,7 +99,7 @@
 						{#if isPast(date) && !isToday(date) && ordersByDay(orders, date).length === 0}
 							<Card>
 								<div class="text-xs text-gray-400 text-center">
-									Bestillinger kan ikke placeres for fortidige dage.
+									{$_('orders.cannotPlaceOrdersPast')}
 								</div>
 							</Card>
 						{/if}
@@ -110,23 +111,23 @@
 										<Button
 											variant="transparent"
 											size="sm"
-											ariaLabel="Use default order"
+											ariaLabel={$_('orders.useDefaultOrder')}
 											onclick={async () => {
 												const def = await defaultStore.getDefault();
 												if (!def) {
-													notifications.info('No saved default order');
+													notifications.info($_('orders.noSavedDefaultOrder'));
 													return;
 												}
 												const cloned = { ...def, date: format(date, 'yyyy-MM-dd'), tempOrder: true };
 												updateOrderForKitchen(orders, cloned);
 											}}
 										>
-											<div class="text-xs text-gray-400 text-center">Use default order</div>
+											<div class="text-xs text-gray-400 text-center">{$_('orders.useDefaultOrder')}</div>
 										</Button>
 									</div>
 								{:else}
 									<div class="text-xs text-gray-400 text-center">
-										Save an order as default to quickly reuse it
+										{$_('orders.saveAsDefaultHint')}
 									</div>
 								{/if}
 							</Card>
