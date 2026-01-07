@@ -13,7 +13,7 @@
 	});
 </script>
 
-<div class="fixed top-3 right-4 z-50 flex flex-col gap-2 max-w-50 w-full">
+<div class="fixed top-3 right-4 z-50 flex flex-col gap-2 max-w-96 w-full">
 	{#each notificationsState as notification (notification.id)}
 		<NotificationItem {notification} onClose={notifications.remove} />
 	{/each}
