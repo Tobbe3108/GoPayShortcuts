@@ -5,8 +5,7 @@
 	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { register, init, locale, _ } from 'svelte-i18n';
-	import { getLocaleFromNavigator } from 'svelte-i18n';
+	import { register, init, locale, _, getLocaleFromNavigator } from 'svelte-i18n';
 
 	// Register locales
 	register('en', () => import('$lib/i18n/en.json'));
