@@ -5,7 +5,7 @@
 	import Notifications from '$lib/core/notifications/organisms/Notifications.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { register, init, locale, _, getLocaleFromNavigator } from 'svelte-i18n';
+	import { register, init, locale, _, getLocaleFromNavigator, isLoading } from 'svelte-i18n';
 
 	// Register locales
 	register('en', () => import('$lib/i18n/en.json'));
@@ -28,7 +28,7 @@
 </script>
 
 <div class="min-h-screen bg-muted">
-	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}
+	{#if ($authStore.isLoading && page.url.pathname !== base + '/login') || $isLoading}
 		<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
 			<div class="text-center">
 				<LoadingSpinner size="w-12 h-12" />
