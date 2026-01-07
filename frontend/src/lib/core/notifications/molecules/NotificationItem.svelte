@@ -1,10 +1,10 @@
- <script lang="ts">
- 	import { fly } from 'svelte/transition';
- 	import { _ } from 'svelte-i18n';
- 	import Button from '$lib/components/atoms/Button.svelte';
- 	import Icon from '$lib/components/atoms/Icon.svelte';
- 	import Label from '$lib/components/atoms/Label.svelte';
- 	import type { Notification } from '../notificationStore';
+<script lang="ts">
+	import { fly } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
+	import Button from '$lib/components/atoms/Button.svelte';
+	import Icon from '$lib/components/atoms/Icon.svelte';
+	import Label from '$lib/components/atoms/Label.svelte';
+	import type { Notification } from '../notificationStore';
 
 	let {
 		notification,

@@ -47,7 +47,7 @@
 			>
 				<img
 					src="{base}/GoPayBadEdition.png"
-					alt="GoPay BAD Edition Logo"
+					alt={$_('layout.logoAlt')}
 					class="h-16 sm:h-28 w-auto"
 				/>
 			</button>

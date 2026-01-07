@@ -1,4 +1,4 @@
- <script lang="ts">
+<script lang="ts">
 	import { format, isToday } from 'date-fns';
 	import { da, enUS } from 'date-fns/locale';
 	import { locale } from 'svelte-i18n';
