@@ -13,7 +13,7 @@
 	let { children }: Props = $props();
 
 	$effect(() => {
-		document.documentElement.lang = $locale || 'da';
+		document.documentElement.lang = $locale || 'en';
 	});
 </script>
 
