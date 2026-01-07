@@ -48,6 +48,8 @@
 	let isSwiping = $state(false);
 
 	function handleTouchStart(event: TouchEvent) {
+		console.log('Touch start:', event.touches[0].clientX, event.touches[0].clientY);
+		event.preventDefault();
 		const touch = event.touches[0];
 		touchStartX = touch.clientX;
 		touchStartY = touch.clientY;
@@ -56,6 +58,7 @@
 	}
 
 	function handleTouchMove(event: TouchEvent) {
+		console.log('Touch move:', event.touches[0].clientX, event.touches[0].clientY, 'isSwiping:', isSwiping);
 		if (isSwiping) {
 			// Prevent default scrolling during active swipe
 			event.preventDefault();
@@ -68,12 +71,16 @@
 
 		// Start swiping if movement is significant
 		if (deltaX > 10 || deltaY > 10) {
+			console.log('Starting swipe detection, deltaX:', deltaX, 'deltaY:', deltaY);
 			isSwiping = true;
 			event.preventDefault(); // Prevent scrolling once swipe is detected
 		}
 	}
 
 	function handleTouchEnd(event: TouchEvent) {
+		console.log('Touch end:', event.changedTouches[0].clientX, event.changedTouches[0].clientY, 'isSwiping:', isSwiping);
+		event.preventDefault();
+
 		if (!isSwiping) return;
 
 		const touch = event.changedTouches[0];
@@ -81,27 +88,32 @@
 		const deltaY = touch.clientY - touchStartY;
 		const deltaTime = Date.now() - touchStartTime;
 
+		console.log('Swipe analysis - deltaX:', deltaX, 'deltaY:', deltaY, 'deltaTime:', deltaTime);
+
 		// Only handle gestures that are fast enough and significant enough
 		const minDistance = 50;
 		const maxTime = 500;
 
 		if (deltaTime > maxTime) {
+			console.log('Swipe too slow, ignoring');
 			isSwiping = false;
 			return;
 		}
 
 		// Horizontal swipe for day navigation (left/right)
 		if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minDistance) {
+			console.log('Horizontal swipe detected');
 			if (deltaX > 0 && nextDay) {
-				// Swipe right - next day
+				console.log('Swipe right - next day');
 				nextDay();
 			} else if (deltaX < 0 && prevDay) {
-				// Swipe left - previous day
+				console.log('Swipe left - previous day');
 				prevDay();
 			}
 		}
 		// Vertical swipe down to open menu and collapse locations
 		else if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > minDistance) {
+			console.log('Vertical swipe down detected - opening menu');
 			menuCollapsed = false;
 			locationCollapsed = true;
 		}
