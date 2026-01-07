@@ -27,6 +27,26 @@
 		currentDate = newDate;
 	}
 
+	function prevDay() {
+		const newDate = new Date(currentDate);
+		newDate.setDate(newDate.getDate() - 1);
+		// Skip weekends
+		while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+			newDate.setDate(newDate.getDate() - 1);
+		}
+		currentDate = newDate;
+	}
+
+	function nextDay() {
+		const newDate = new Date(currentDate);
+		newDate.setDate(newDate.getDate() + 1);
+		// Skip weekends
+		while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+			newDate.setDate(newDate.getDate() + 1);
+		}
+		currentDate = newDate;
+	}
+
 	function handleWeekChange(newWeekStart: Date) {
 		// For week navigation, set currentDate to the start of the week
 		currentDate = newWeekStart;
@@ -42,7 +62,7 @@
 	onWeekChange={handleWeekChange}
 >
 	{#if isMobile}
-		<DayViewTemplate date={currentDate} />
+		<DayViewTemplate date={currentDate} prevDay={prevDay} nextDay={nextDay} />
 	{:else}
 		<WeekGridTemplate date={currentDate} />
 	{/if}
