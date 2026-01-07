@@ -49,7 +49,7 @@
 
 	function handleTouchStart(event: TouchEvent) {
 		console.log('Touch start:', event.touches[0].clientX, event.touches[0].clientY);
-		event.preventDefault();
+		event.preventDefault(); // Prevent page scrolling during swipe gestures
 		const touch = event.touches[0];
 		touchStartX = touch.clientX;
 		touchStartY = touch.clientY;
@@ -79,9 +79,12 @@
 
 	function handleTouchEnd(event: TouchEvent) {
 		console.log('Touch end:', event.changedTouches[0].clientX, event.changedTouches[0].clientY, 'isSwiping:', isSwiping);
-		event.preventDefault();
+		event.preventDefault(); // Prevent any default touch end behavior
 
-		if (!isSwiping) return;
+		if (!isSwiping) {
+			console.log('Not swiping, ignoring touch end');
+			return;
+		}
 
 		const touch = event.changedTouches[0];
 		const deltaX = touch.clientX - touchStartX;
@@ -116,6 +119,8 @@
 			console.log('Vertical swipe down detected - opening menu');
 			menuCollapsed = false;
 			locationCollapsed = true;
+		} else {
+			console.log('Swipe detected but not significant enough or wrong direction');
 		}
 
 		isSwiping = false;
