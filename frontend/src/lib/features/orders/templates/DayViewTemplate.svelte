@@ -40,12 +40,13 @@
 	let gestureOverlay: HTMLElement | undefined = $state();
 
 	// GESTURE OVERLAY ARCHITECTURE:
-	// The overlay uses z-index layering to handle both gestures and button clicks:
-	// - Overlay (z-10): pointer-events: auto, always captures touch events for gesture detection
-	// - Content (z-20): positioned above overlay, buttons intercept clicks due to stacking order
-	// - Touch events bubble through transparent overlay to gesture handlers
-	// - Click events reach buttons because they're rendered on top (z-20 > z-10)
-	// This eliminates the need for runtime pointer-events toggling, making interactions seamless
+	// The overlay captures touch events, but gestures are smart about which touches to process:
+	// - Overlay (z-10): pointer-events: auto, captures all touch events for gesture detection
+	// - Gesture handlers check event.target to determine if touch is on an interactive element
+	// - If touch is on button/link/input: handlers return early, no gesture processing
+	// - If touch is on whitespace: handlers process swipes and flicks normally
+	// - Content (z-20): positioned above overlay for proper visual stacking
+	// This approach ensures buttons remain fully clickable while whitespace gestures work seamlessly
 
 	// Swipe navigation handlers - dispatch events to parent component
 	const handleSwipeLeft = () => {

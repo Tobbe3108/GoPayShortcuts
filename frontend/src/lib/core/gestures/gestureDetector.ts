@@ -40,9 +40,48 @@ export class SwipeGestureHandler {
 	private readonly minDistance = 30;
 	private readonly maxVerticalRatio = 0.5;
 
+	/**
+	 * Check if the touch target is an interactive element that should handle its own events
+	 * Returns true if the target is a button, link, input, or any element with interactive attributes
+	 */
+	private isInteractiveElement(target: EventTarget | null): boolean {
+		if (!(target instanceof Element)) return false;
+		
+		const element = target as Element;
+		
+		// Direct interactive elements
+		if (['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) {
+			return true;
+		}
+		
+		// Check for elements with click handlers or specific data attributes
+		if (element.hasAttribute('onclick') || element.hasAttribute('data-interactive')) {
+			return true;
+		}
+		
+		// Check parent chain for interactive elements (up to 5 levels)
+		let current = element.parentElement;
+		for (let i = 0; i < 5 && current; i++) {
+			if (['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(current.tagName)) {
+				return true;
+			}
+			if (current.hasAttribute('onclick') || current.hasAttribute('data-interactive')) {
+				return true;
+			}
+			current = current.parentElement;
+		}
+		
+		return false;
+	}
+
 	private readonly handleTouchStart = (e: TouchEvent): void => {
 		const touch = e.touches[0];
 		if (!touch) return;
+
+		// Skip gesture processing if touch is on an interactive element
+		if (this.isInteractiveElement(e.target)) {
+			return;
+		}
 
 		this.state = {
 			startX: touch.clientX,
@@ -156,9 +195,48 @@ export class FlickGestureHandler {
 	private readonly maxDuration = 300;
 	private readonly maxHorizontalMovement = 30;
 
+	/**
+	 * Check if the touch target is an interactive element that should handle its own events
+	 * Returns true if the target is a button, link, input, or any element with interactive attributes
+	 */
+	private isInteractiveElement(target: EventTarget | null): boolean {
+		if (!(target instanceof Element)) return false;
+		
+		const element = target as Element;
+		
+		// Direct interactive elements
+		if (['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) {
+			return true;
+		}
+		
+		// Check for elements with click handlers or specific data attributes
+		if (element.hasAttribute('onclick') || element.hasAttribute('data-interactive')) {
+			return true;
+		}
+		
+		// Check parent chain for interactive elements (up to 5 levels)
+		let current = element.parentElement;
+		for (let i = 0; i < 5 && current; i++) {
+			if (['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(current.tagName)) {
+				return true;
+			}
+			if (current.hasAttribute('onclick') || current.hasAttribute('data-interactive')) {
+				return true;
+			}
+			current = current.parentElement;
+		}
+		
+		return false;
+	}
+
 	private readonly handleTouchStart = (e: TouchEvent): void => {
 		const touch = e.touches[0];
 		if (!touch) return;
+
+		// Skip gesture processing if touch is on an interactive element
+		if (this.isInteractiveElement(e.target)) {
+			return;
+		}
 
 		this.state = {
 			startX: touch.clientX,
