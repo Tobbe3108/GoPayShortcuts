@@ -24,10 +24,9 @@
 
 	type DayViewProps = {
 		date: Date;
-		onDateChange?: (newDate: Date) => void;
 	};
 
-	let { date, onDateChange }: DayViewProps = $props();
+	let { date }: DayViewProps = $props();
 
 	let selectedDate = $derived(date);
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
@@ -37,21 +36,19 @@
 	let orders: Record<string, TemplateOrder[]> = $state({});
 	let hasDefaultOrder = $state(false);
 	let expandMenusOnFlick = $state(false);
-	let gestureOverlay: HTMLElement | undefined = $state();
+	let gridElement: HTMLElement | undefined = $state();
 
-	// Swipe navigation handlers - dispatch events to parent component
+	// Swipe navigation handlers
 	const handleSwipeLeft = () => {
-		const newDate = addDays(selectedDate, 1);
-		onDateChange?.(newDate);
+		date = addDays(date, 1);
 	};
 
 	const handleSwipeRight = () => {
-		const newDate = addDays(selectedDate, -1);
-		onDateChange?.(newDate);
+		date = addDays(date, -1);
 	};
 
 	// Flick gesture handler - toggles menu expansion when flicking on whitespace
-	// The flick gesture will be applied to the transparent overlay, which covers whitespace areas
+	// The flick gesture will be applied to the grid, which covers whitespace areas
 	const handleFlickDown = () => {
 		expandMenusOnFlick = !expandMenusOnFlick;
 	};
@@ -109,88 +106,78 @@
 	});
 </script>
 
-<div class="relative w-full min-h-screen">
-	<!-- Transparent gesture overlay: captures swipe and flick on whitespace -->
-	<!-- Positioned absolutely to cover the entire viewport -->
-	<!-- pointer-events: auto allows it to capture touch events -->
-	<!-- z-index is carefully positioned to be above the background but below interactive content -->
-	<div
-		bind:this={gestureOverlay}
-		class="fixed inset-0 pointer-events-auto z-10"
-		style="background-color: transparent;"
-		use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
-		use:useFlickGesture={{ onFlickDown: handleFlickDown }}
-	/>
+<div
+	class="grid grid-cols-1 gap-4"
+	bind:this={gridElement}
+	use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
+	use:useFlickGesture={{ onFlickDown: handleFlickDown }}
+>
+	<TodaysMenu date={selectedDate} expandOnFlick={expandMenusOnFlick} />
+	{#if !loading}
+		{#key format(selectedDate, 'yyyy-MM-dd')}
+			<div in:fade class="flex flex-col space-y-4 w-full">
+				{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
+					<Card>
+						<div class="text-xs text-gray-400 text-center">
+							{$_('orders.cannotPlaceOrdersPast')}
+						</div>
+					</Card>
+				{/if}
 
-	<!-- Main content grid - below overlay in terms of pointer events but visible -->
-	<div class="grid grid-cols-1 gap-4 relative z-20">
-		<TodaysMenu date={selectedDate} expandOnFlick={expandMenusOnFlick} />
-		{#if !loading}
-			{#key format(selectedDate, 'yyyy-MM-dd')}
-				<div in:fade class="flex flex-col space-y-4 w-full">
-					{#if isPast(selectedDate) && !isToday(selectedDate) && [...ordersByDay(orders, selectedDate)].length === 0}
-						<Card>
-							<div class="text-xs text-gray-400 text-center">
-								{$_('orders.cannotPlaceOrdersPast')}
+				{#if (isToday(selectedDate) || isFuture(selectedDate)) && [...ordersByDay(orders, selectedDate)].length === 0}
+					<Card>
+						{#if hasDefaultOrder}
+							<div class="flex justify-center">
+								<Button
+									variant="transparent"
+									size="sm"
+									ariaLabel={$_('orders.useDefaultOrder')}
+									onclick={async () => {
+										const def = await defaultStore.getDefault();
+										if (!def) {
+											notifications.info($_('orders.noSavedDefaultOrder'));
+											return;
+										}
+										const cloned = {
+											...def,
+											date: format(selectedDate, 'yyyy-MM-dd'),
+											tempOrder: true
+										};
+										updateOrderForKitchen(orders, cloned);
+									}}
+								>
+									<div class="text-xs text-gray-400 text-center">
+										{$_('orders.useDefaultOrder')}
+									</div>
+								</Button>
 							</div>
-						</Card>
-					{/if}
+						{:else}
+							<div class="text-xs text-gray-400 text-center">
+								{$_('orders.saveAsDefaultHint')}
+							</div>
+						{/if}
+					</Card>
+				{/if}
 
-					{#if (isToday(selectedDate) || isFuture(selectedDate)) && [...ordersByDay(orders, selectedDate)].length === 0}
-						<Card>
-							{#if hasDefaultOrder}
-								<div class="flex justify-center">
-									<Button
-										variant="transparent"
-										size="sm"
-										ariaLabel={$_('orders.useDefaultOrder')}
-										onclick={async () => {
-											const def = await defaultStore.getDefault();
-											if (!def) {
-												notifications.info($_('orders.noSavedDefaultOrder'));
-												return;
-											}
-											const cloned = {
-												...def,
-												date: format(selectedDate, 'yyyy-MM-dd'),
-												tempOrder: true
-											};
-											updateOrderForKitchen(orders, cloned);
-										}}
-									>
-										<div class="text-xs text-gray-400 text-center">
-											{$_('orders.useDefaultOrder')}
-										</div>
-									</Button>
-								</div>
-							{:else}
-								<div class="text-xs text-gray-400 text-center">
-									{$_('orders.saveAsDefaultHint')}
-								</div>
-							{/if}
-						</Card>
-					{/if}
+				{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
+					<OrderCard
+						{order}
+						isEditing={order.tempOrder}
+						onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
+						onOrderCancel={(selectedDate, kitchenId) =>
+							handleCancel(orders, selectedDate, kitchenId)}
+					/>
+				{/each}
 
-					{#each ordersByDay(orders, selectedDate) as order (order.kitchenId)}
-						<OrderCard
-							{order}
-							isEditing={order.tempOrder}
-							onOrderChange={(newOrderState) => handleOrderChange(orders, newOrderState)}
-							onOrderCancel={(selectedDate, kitchenId) =>
-								handleCancel(orders, selectedDate, kitchenId)}
-						/>
-					{/each}
-
-					{#if isToday(date) || isFuture(date)}
-						<AddLocationCard
-							date={selectedDate}
-							newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
-							locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
-							expandOnFlick={expandMenusOnFlick}
-						/>
-					{/if}
-				</div>
-			{/key}
-		{/if}
-	</div>
+				{#if isToday(date) || isFuture(date)}
+					<AddLocationCard
+						date={selectedDate}
+						newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
+						locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
+						expandOnFlick={expandMenusOnFlick}
+					/>
+				{/if}
+			</div>
+		{/key}
+	{/if}
 </div>
