@@ -39,6 +39,19 @@
 	let expandMenusOnFlick = $state(false);
 	let gestureOverlay: HTMLElement | undefined = $state();
 
+	// Toggle pointer-events during touch to allow button clicks
+	const handleGestureOverlayTouchStart = () => {
+		if (gestureOverlay) {
+			gestureOverlay.style.pointerEvents = 'auto';
+		}
+	};
+
+	const handleGestureOverlayTouchEnd = () => {
+		if (gestureOverlay) {
+			gestureOverlay.style.pointerEvents = 'none';
+		}
+	};
+
 	// Swipe navigation handlers - dispatch events to parent component
 	const handleSwipeLeft = () => {
 		const newDate = addDays(selectedDate, 1);
@@ -112,12 +125,15 @@
 <div class="relative w-full min-h-screen">
 	<!-- Transparent gesture overlay: captures swipe and flick on whitespace -->
 	<!-- Positioned absolutely to cover the entire viewport -->
-	<!-- pointer-events: auto allows it to capture touch events -->
+	<!-- pointer-events: none by default allows clicks to pass through to buttons -->
+	<!-- Enabled only during touch events to capture gestures without blocking clicks -->
 	<!-- z-index is carefully positioned to be above the background but below interactive content -->
 	<div
 		bind:this={gestureOverlay}
-		class="fixed inset-0 pointer-events-auto z-10"
-		style="background-color: transparent;"
+		class="fixed inset-0 z-10"
+		style="background-color: transparent; pointer-events: none;"
+		ontouchstart={handleGestureOverlayTouchStart}
+		ontouchend={handleGestureOverlayTouchEnd}
 		use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
 		use:useFlickGesture={{ onFlickDown: handleFlickDown }}
 	/>
