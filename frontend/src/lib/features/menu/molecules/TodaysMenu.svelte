@@ -9,6 +9,7 @@
 	import { slide, fade } from 'svelte/transition';
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
+	import { useFlickGesture } from '$lib/core/gestures/gestureDetector';
 
 	let { date }: { date: Date } = $props();
 
@@ -39,12 +40,17 @@
 		}
 		return grouped;
 	}
+
+	// Handle flick-down gesture to expand the menu
+	function handleFlickDown() {
+		collapsed = false;
+	}
 </script>
 
-<div class="flex flex-col items-center w-full">
+<div class="flex flex-col items-center w-full" use:useFlickGesture={{ onFlickDown: handleFlickDown }}>
 	<div class="flex flex-col items-center">
 		<button
-			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
+			class="flex flex-col items-center cursor-pointer select-none focus:outline-none pointer-events-auto"
 			type="button"
 			aria-expanded={!collapsed}
 			aria-controls="todays-menu-content"
