@@ -39,18 +39,13 @@
 	let expandMenusOnFlick = $state(false);
 	let gestureOverlay: HTMLElement | undefined = $state();
 
-	// Toggle pointer-events during touch to allow button clicks
-	const handleGestureOverlayTouchStart = () => {
-		if (gestureOverlay) {
-			gestureOverlay.style.pointerEvents = 'auto';
-		}
-	};
-
-	const handleGestureOverlayTouchEnd = () => {
-		if (gestureOverlay) {
-			gestureOverlay.style.pointerEvents = 'none';
-		}
-	};
+	// GESTURE OVERLAY ARCHITECTURE:
+	// The overlay uses z-index layering to handle both gestures and button clicks:
+	// - Overlay (z-10): pointer-events: auto, always captures touch events for gesture detection
+	// - Content (z-20): positioned above overlay, buttons intercept clicks due to stacking order
+	// - Touch events bubble through transparent overlay to gesture handlers
+	// - Click events reach buttons because they're rendered on top (z-20 > z-10)
+	// This eliminates the need for runtime pointer-events toggling, making interactions seamless
 
 	// Swipe navigation handlers - dispatch events to parent component
 	const handleSwipeLeft = () => {
@@ -123,22 +118,21 @@
 </script>
 
 <div class="relative w-full min-h-screen">
-	<!-- Transparent gesture overlay: captures swipe and flick on whitespace -->
-	<!-- Positioned absolutely to cover the entire viewport -->
-	<!-- pointer-events: none by default allows clicks to pass through to buttons -->
-	<!-- Enabled only during touch events to capture gestures without blocking clicks -->
-	<!-- z-index is carefully positioned to be above the background but below interactive content -->
+	<!-- Transparent gesture overlay: captures swipe and flick gestures on whitespace -->
+	<!-- ALWAYS has pointer-events: auto to capture touch events and detect gestures -->
+	<!-- Positioned at z-10 below content (z-20) so buttons/cards intercept clicks -->
+	<!-- Interactive elements at z-20 will receive click events due to stacking order -->
+	<!-- Touch events are detected here for gestures, but clicks on buttons above work -->
 	<div
 		bind:this={gestureOverlay}
 		class="fixed inset-0 z-10"
-		style="background-color: transparent; pointer-events: none;"
-		ontouchstart={handleGestureOverlayTouchStart}
-		ontouchend={handleGestureOverlayTouchEnd}
+		style="background-color: transparent; pointer-events: auto;"
 		use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
 		use:useFlickGesture={{ onFlickDown: handleFlickDown }}
 	/>
 
-	<!-- Main content grid - below overlay in terms of pointer events but visible -->
+	<!-- Main content grid - above overlay in stacking order (z-20) so clicks work -->
+	<!-- Buttons and cards are positioned above the overlay and will intercept click events -->
 	<div class="grid grid-cols-1 gap-4 relative z-20">
 		<TodaysMenu date={selectedDate} expandOnFlick={expandMenusOnFlick} />
 		{#if !loading}
