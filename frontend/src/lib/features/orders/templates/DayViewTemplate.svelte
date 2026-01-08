@@ -20,7 +20,6 @@
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { ordersService } from '$lib/features/orders/ordersService';
-	import { useSwipeGesture } from '$lib/core/gestures/gestureDetector';
 
 	type DayViewProps = {
 		date: Date;
@@ -35,15 +34,6 @@
 	let loading = $state(true);
 	let orders: Record<string, TemplateOrder[]> = $state({});
 	let hasDefaultOrder = $state(false);
-
-	// Swipe navigation handlers
-	const handleSwipeLeft = () => {
-		date = addDays(date, 1);
-	};
-
-	const handleSwipeRight = () => {
-		date = addDays(date, -1);
-	};
 
 	$effect(() => {
 		defaultStore.getDefault().then((def) => {
@@ -98,10 +88,7 @@
 	});
 </script>
 
-<div
-	class="grid grid-cols-1 gap-4"
-	use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
->
+<div class="grid grid-cols-1 gap-4">
 	<TodaysMenu date={selectedDate} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
