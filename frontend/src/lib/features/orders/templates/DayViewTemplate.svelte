@@ -20,7 +20,7 @@
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { ordersService } from '$lib/features/orders/ordersService';
-	import { useSwipeGesture, useFlickGesture } from '$lib/core/gestures/gestureDetector';
+	import { useSwipeGesture } from '$lib/core/gestures/gestureDetector';
 
 	type DayViewProps = {
 		date: Date;
@@ -35,8 +35,6 @@
 	let loading = $state(true);
 	let orders: Record<string, TemplateOrder[]> = $state({});
 	let hasDefaultOrder = $state(false);
-	let expandMenusOnFlick = $state(false);
-	let gridElement: HTMLElement | undefined = $state();
 
 	// Swipe navigation handlers
 	const handleSwipeLeft = () => {
@@ -45,12 +43,6 @@
 
 	const handleSwipeRight = () => {
 		date = addDays(date, -1);
-	};
-
-	// Flick gesture handler - toggles menu expansion when flicking on whitespace
-	// The flick gesture will be applied to the grid, which covers whitespace areas
-	const handleFlickDown = () => {
-		expandMenusOnFlick = !expandMenusOnFlick;
 	};
 
 	$effect(() => {
@@ -108,11 +100,9 @@
 
 <div
 	class="grid grid-cols-1 gap-4"
-	bind:this={gridElement}
 	use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
-	use:useFlickGesture={{ onFlickDown: handleFlickDown }}
 >
-	<TodaysMenu date={selectedDate} expandOnFlick={expandMenusOnFlick} />
+	<TodaysMenu date={selectedDate} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
 			<div in:fade class="flex flex-col space-y-4 w-full">
@@ -174,7 +164,6 @@
 						date={selectedDate}
 						newOrder={(newOrder) => updateOrderForKitchen(orders, { ...newOrder, tempOrder: true })}
 						locationsWithOrders={[...ordersByDay(orders, selectedDate)].map((o) => o.kitchenId)}
-						expandOnFlick={expandMenusOnFlick}
 					/>
 				{/if}
 			</div>

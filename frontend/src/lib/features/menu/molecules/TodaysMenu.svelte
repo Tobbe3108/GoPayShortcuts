@@ -11,13 +11,7 @@
 	import { _ } from 'svelte-i18n';
 	import { useFlickGesture } from '$lib/core/gestures/gestureDetector';
 
-	type TodaysMenuProps = {
-		date: Date;
-		// When true, expand the menu. When false/undefined, let component manage its own state
-		expandOnFlick?: boolean;
-	};
-
-	let { date, expandOnFlick }: TodaysMenuProps = $props();
+	let { date }: { date: Date } = $props();
 
 	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
@@ -37,13 +31,6 @@
 		menuItems = todayMenu?.items;
 	});
 
-	// When parent signals a flick, expand the menu
-	$effect(() => {
-		if (expandOnFlick === true) {
-			collapsed = false;
-		}
-	});
-
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};
 		for (const item of items) {
@@ -54,7 +41,7 @@
 		return grouped;
 	}
 
-	// Handle flick-down gesture when directly flicking on the menu button
+	// Handle flick-down gesture to expand the menu
 	function handleFlickDown() {
 		collapsed = false;
 	}
