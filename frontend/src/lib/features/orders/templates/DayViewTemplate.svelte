@@ -37,15 +37,14 @@
 	let orders: Record<string, TemplateOrder[]> = $state({});
 	let hasDefaultOrder = $state(false);
 	let expandMenusOnFlick = $state(false);
-	let gestureOverlay: HTMLElement | undefined = $state();
+	let contentGrid: HTMLElement | undefined = $state();
 
-	// GESTURE OVERLAY ARCHITECTURE:
-	// The overlay captures touch events, but gestures are smart about which touches to process:
-	// - Overlay (z-10): pointer-events: auto, captures all touch events for gesture detection
+	// GESTURE HANDLER ARCHITECTURE:
+	// Gesture handlers are attached directly to the main content grid.
+	// The handlers are smart about which touches to process:
 	// - Gesture handlers check event.target to determine if touch is on an interactive element
-	// - If touch is on button/link/input: handlers return early, no gesture processing
-	// - If touch is on whitespace: handlers process swipes and flicks normally
-	// - Content (z-20): positioned above overlay for proper visual stacking
+	// - If touch is on button/link/input: handlers return early, no preventDefault() is called
+	// - If touch is on whitespace: handlers process swipes and flicks with preventDefault()
 	// This approach ensures buttons remain fully clickable while whitespace gestures work seamlessly
 
 	// Swipe navigation handlers - dispatch events to parent component
@@ -60,7 +59,7 @@
 	};
 
 	// Flick gesture handler - toggles menu expansion when flicking on whitespace
-	// The flick gesture will be applied to the transparent overlay, which covers whitespace areas
+	// The gesture detector automatically skips interactive elements, allowing only whitespace flicks
 	const handleFlickDown = () => {
 		expandMenusOnFlick = !expandMenusOnFlick;
 	};
@@ -119,22 +118,15 @@
 </script>
 
 <div class="relative w-full min-h-screen">
-	<!-- Transparent gesture overlay: captures swipe and flick gestures on whitespace -->
-	<!-- ALWAYS has pointer-events: auto to capture touch events and detect gestures -->
-	<!-- Positioned at z-10 below content (z-20) so buttons/cards intercept clicks -->
-	<!-- Interactive elements at z-20 will receive click events due to stacking order -->
-	<!-- Touch events are detected here for gestures, but clicks on buttons above work -->
-	<div
-		bind:this={gestureOverlay}
-		class="fixed inset-0 z-10"
-		style="background-color: transparent; pointer-events: auto;"
+	<!-- Main content grid with gesture handlers -->
+	<!-- Gesture handlers are attached directly to this element -->
+	<!-- The handlers intelligently skip interactive elements, allowing clicks to work normally -->
+	<div 
+		bind:this={contentGrid}
+		class="grid grid-cols-1 gap-4 relative"
 		use:useSwipeGesture={{ onSwipeLeft: handleSwipeLeft, onSwipeRight: handleSwipeRight }}
 		use:useFlickGesture={{ onFlickDown: handleFlickDown }}
-	/>
-
-	<!-- Main content grid - above overlay in stacking order (z-20) so clicks work -->
-	<!-- Buttons and cards are positioned above the overlay and will intercept click events -->
-	<div class="grid grid-cols-1 gap-4 relative z-20">
+	>
 		<TodaysMenu date={selectedDate} expandOnFlick={expandMenusOnFlick} />
 		{#if !loading}
 			{#key format(selectedDate, 'yyyy-MM-dd')}

@@ -80,9 +80,11 @@ export class SwipeGestureHandler {
 
 		// Skip gesture processing if touch is on an interactive element
 		if (this.isInteractiveElement(e.target)) {
+			console.debug('[SwipeGesture] Skipping gesture processing for interactive element:', e.target);
 			return;
 		}
 
+		console.debug('[SwipeGesture] Processing gesture on whitespace');
 		this.state = {
 			startX: touch.clientX,
 			startY: touch.clientY,
@@ -122,8 +124,10 @@ export class SwipeGestureHandler {
 
 		// Fire appropriate callback
 		if (horizontalDistance > 0) {
+			console.debug('[SwipeGesture] Swipe right detected');
 			this.onSwipeRightCallback?.();
 		} else {
+			console.debug('[SwipeGesture] Swipe left detected');
 			this.onSwipeLeftCallback?.();
 		}
 	};
@@ -235,9 +239,11 @@ export class FlickGestureHandler {
 
 		// Skip gesture processing if touch is on an interactive element
 		if (this.isInteractiveElement(e.target)) {
+			console.debug('[FlickGesture] Skipping gesture processing for interactive element:', e.target);
 			return;
 		}
 
+		console.debug('[FlickGesture] Processing gesture on whitespace');
 		this.state = {
 			startX: touch.clientX,
 			startY: touch.clientY,
@@ -282,6 +288,7 @@ export class FlickGestureHandler {
 		e.preventDefault();
 
 		// Fire callback
+		console.debug('[FlickGesture] Flick down detected');
 		this.onFlickDownCallback?.();
 	};
 
