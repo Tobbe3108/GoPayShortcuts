@@ -16,9 +16,12 @@
 		locationsWithOrders: number[];
 		newOrder?: (order: SimplifiedOrder) => void;
 		date: Date;
+		// When true, expand the card. When false/undefined, let component manage its own state
+		expandOnFlick?: boolean;
 	};
 
-	let { date, newOrder = undefined, locationsWithOrders = [] }: AddLocationCardProps = $props();
+	let { date, newOrder = undefined, locationsWithOrders = [], expandOnFlick }: AddLocationCardProps =
+		$props();
 
 	let allLocations = $state<Array<Location>>([]);
 	let collapsed = $state(true);
@@ -35,6 +38,13 @@
 		allLocations.filter((loc) => !locationsWithOrders.includes(loc.kitchenId))
 	);
 
+	// When parent signals a flick, expand the card
+	$effect(() => {
+		if (expandOnFlick === true) {
+			collapsed = false;
+		}
+	});
+
 	function handleLocationClick(loc: Location) {
 		const order = scaffoldOrderForLocation(loc);
 		newOrder?.(order);
@@ -50,7 +60,7 @@
 		};
 	}
 
-	// Handle flick-down gesture to expand the locations list
+	// Handle flick-down gesture when directly flicking on the card button
 	function handleFlickDown() {
 		collapsed = false;
 	}
