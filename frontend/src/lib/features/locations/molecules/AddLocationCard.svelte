@@ -10,6 +10,7 @@
 	import { format } from 'date-fns';
 	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
 	import { _ } from 'svelte-i18n';
+	import { useFlickGesture } from '$lib/core/gestures/gestureDetector';
 
 	type AddLocationCardProps = {
 		locationsWithOrders: number[];
@@ -48,12 +49,17 @@
 			cancelEnabled: true
 		};
 	}
+
+	// Handle flick-down gesture to expand the locations list
+	function handleFlickDown() {
+		collapsed = false;
+	}
 </script>
 
-<div class="flex flex-col items-center w-full">
+<div class="flex flex-col items-center w-full" use:useFlickGesture={{ onFlickDown: handleFlickDown }}>
 	<div class="flex flex-col items-center">
 		<button
-			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
+			class="flex flex-col items-center cursor-pointer select-none focus:outline-none pointer-events-auto"
 			type="button"
 			aria-expanded={!collapsed}
 			aria-controls="todays-menu-content"
