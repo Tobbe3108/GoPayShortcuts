@@ -31,7 +31,6 @@
 
 	let selectedDate = $derived(date);
 
-
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
 	let weekEnd = $derived(endOfWeek(selectedDate, { weekStartsOn: 1 }));
 
@@ -92,9 +91,7 @@
 	});
 </script>
 
-<div
-	class="grid grid-cols-1 gap-4"
->
+<div class="grid grid-cols-1 gap-4">
 	<TodaysMenu date={selectedDate} {collapsed} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
