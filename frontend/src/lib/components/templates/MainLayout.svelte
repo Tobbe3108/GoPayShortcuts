@@ -39,9 +39,7 @@
 	}
 </script>
 
-<div
-	class="container max-w-[90vw] p-4 mx-auto flex flex-col min-h-screen"
->
+<div class="container max-w-[90vw] p-4 mx-auto flex flex-col min-h-screen">
 	<div class="flex flex-row items-center pointer-events-none">
 		<div class="flex flex-1/3 justify-start">
 			<button
@@ -74,7 +72,13 @@
 			{/if}
 		</div>
 	</div>
-	<div class="mt-6 flex-1" {...useSwipe((e) => onSwipe?.(e), () => ({ minSwipeDistance: 30, touchAction: 'none' }))}>
+	<div
+		class="mt-6 flex-1"
+		{...useSwipe(
+			(e) => onSwipe?.(e),
+			() => ({ minSwipeDistance: 30, touchAction: 'none' })
+		)}
+	>
 		{@render children?.()}
 	</div>
 </div>
