@@ -41,7 +41,6 @@
 
 <div
 	class="container max-w-[90vw] p-4 mx-auto flex flex-col min-h-screen"
-	{...onSwipe ? useSwipe(onSwipe, () => ({ minSwipeDistance: 30 })) : {}}
 >
 	<div class="flex flex-row items-center pointer-events-none">
 		<div class="flex flex-1/3 justify-start">
@@ -75,7 +74,7 @@
 			{/if}
 		</div>
 	</div>
-	<div class="mt-6 flex-1">
+	<div class="mt-6 flex-1" {...onSwipe ? useSwipe(onSwipe, () => ({ minSwipeDistance: 30 })) : {}}>
 		{@render children?.()}
 	</div>
 </div>
