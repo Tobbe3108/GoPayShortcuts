@@ -6,6 +6,8 @@
 	import WeekGridTemplate from '$lib/features/orders/templates/WeekGridTemplate.svelte';
 	import DayViewTemplate from '$lib/features/orders/templates/DayViewTemplate.svelte';
 	import { onMount } from 'svelte';
+	import { addDays } from 'date-fns';
+	import type { SwipeCustomEvent } from 'svelte-gestures';
 
 	let isMobile = $state(false);
 	let currentDate = $state(new Date());
@@ -32,6 +34,26 @@
 		// For week navigation, set currentDate to the start of the week
 		currentDate = newWeekStart;
 	}
+
+	function handleSwipe(event: SwipeCustomEvent) {
+		if (!isMobile) return;
+
+		const { direction } = event.detail;
+
+		if (direction === 'left') {
+			// Swipe left: next day
+			currentDate = addDays(currentDate, 1);
+		} else if (direction === 'right') {
+			// Swipe right: previous day
+			currentDate = addDays(currentDate, -1);
+		} else if (direction === 'top') {
+			// Swipe up: collapse TodaysMenu
+			collapsed = true;
+		} else if (direction === 'bottom') {
+			// Swipe down: expand TodaysMenu
+			collapsed = false;
+		}
+	}
 </script>
 
 <MainLayout
@@ -41,6 +63,7 @@
 	date={currentDate}
 	onDayChange={handleDayChange}
 	onWeekChange={handleWeekChange}
+	onSwipe={handleSwipe}
 >
 	{#if isMobile}
 		<DayViewTemplate date={currentDate} {collapsed} onDayChange={handleDayChange} />
