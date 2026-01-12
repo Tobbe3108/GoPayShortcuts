@@ -18,16 +18,15 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import defaultStore from '$lib/features/orders/defaultStore';
 	import { notifications } from '$lib/core/notifications/notificationStore';
-	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+
 	import { ordersService } from '$lib/features/orders/ordersService';
 
 	type DayViewProps = {
 		date: Date;
 		collapsed: boolean;
-		onDayChange?: (date: Date) => void;
 	};
 
-	let { date, collapsed, onDayChange }: DayViewProps = $props();
+	let { date, collapsed }: DayViewProps = $props();
 
 	let selectedDate = $derived(date);
 

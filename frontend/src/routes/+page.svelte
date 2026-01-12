@@ -66,7 +66,7 @@
 	onSwipe={handleSwipe}
 >
 	{#if isMobile}
-		<DayViewTemplate date={currentDate} {collapsed} onDayChange={handleDayChange} />
+		<DayViewTemplate date={currentDate} {collapsed} />
 	{:else}
 		<WeekGridTemplate date={currentDate} />
 	{/if}

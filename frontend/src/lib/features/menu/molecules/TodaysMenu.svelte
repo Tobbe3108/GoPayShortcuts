@@ -6,7 +6,7 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
-	import { slide, fade } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 
