@@ -74,7 +74,7 @@
 			{/if}
 		</div>
 	</div>
-	<div class="mt-6 flex-1" {...onSwipe ? useSwipe(onSwipe, () => ({ minSwipeDistance: 30 })) : {}}>
+	<div class="mt-6 flex-1" {...useSwipe((e) => onSwipe?.(e), () => ({ minSwipeDistance: 30, touchAction: 'none' }))}>
 		{@render children?.()}
 	</div>
 </div>
