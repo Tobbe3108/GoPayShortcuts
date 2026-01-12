@@ -106,7 +106,10 @@
 	});
 </script>
 
-<div class="grid grid-cols-1 gap-4" {...useSwipe(handleSwipe, () => ({ minSwipeDistance: 30, touchAction: 'none' }))}>
+<div
+	class="grid grid-cols-1 gap-4"
+	{...useSwipe(handleSwipe, () => ({ minSwipeDistance: 30, touchAction: 'none' }))}
+>
 	<TodaysMenu date={selectedDate} {collapsed} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
