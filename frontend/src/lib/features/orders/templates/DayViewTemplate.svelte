@@ -20,32 +20,18 @@
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { ordersService } from '$lib/features/orders/ordersService';
-	import { useSwipe, type SwipeCustomEvent } from 'svelte-gestures';
 
 	type DayViewProps = {
 		date: Date;
+		collapsed: boolean;
 		onDayChange?: (date: Date) => void;
 	};
 
-	let { date, onDayChange }: DayViewProps = $props();
+	let { date, collapsed, onDayChange }: DayViewProps = $props();
 
 	let selectedDate = $derived(date);
-	let collapsed = $state(true);
 
-	function handleSwipe(event: SwipeCustomEvent) {
-		const { direction } = event.detail;
 
-		if (direction === 'left' || direction === 'right') {
-			// Horizontal swipe - change day
-			if (onDayChange) {
-				const newDate = direction === 'left' ? addDays(date, 1) : addDays(date, -1);
-				onDayChange(newDate);
-			}
-		} else if (direction === 'top' || direction === 'bottom') {
-			// Vertical swipe - toggle collapsed state
-			collapsed = !collapsed;
-		}
-	}
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
 	let weekEnd = $derived(endOfWeek(selectedDate, { weekStartsOn: 1 }));
 
@@ -108,7 +94,6 @@
 
 <div
 	class="grid grid-cols-1 gap-4"
-	{...useSwipe(handleSwipe, () => ({ minSwipeDistance: 30, touchAction: 'none' }))}
 >
 	<TodaysMenu date={selectedDate} {collapsed} />
 	{#if !loading}

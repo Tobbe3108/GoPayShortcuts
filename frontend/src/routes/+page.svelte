@@ -9,6 +9,7 @@
 
 	let isMobile = $state(false);
 	let currentDate = $state(new Date());
+	let collapsed = $state(true);
 
 	onMount(() => {
 		const mq = window.matchMedia('(max-width: 1023px)');
@@ -42,7 +43,7 @@
 	onWeekChange={handleWeekChange}
 >
 	{#if isMobile}
-		<DayViewTemplate date={currentDate} onDayChange={handleDayChange} />
+		<DayViewTemplate date={currentDate} {collapsed} onDayChange={handleDayChange} />
 	{:else}
 		<WeekGridTemplate date={currentDate} />
 	{/if}
