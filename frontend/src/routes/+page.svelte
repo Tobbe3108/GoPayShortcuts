@@ -42,10 +42,18 @@
 
 		if (direction === 'left') {
 			// Swipe left: next day
-			currentDate = addDays(currentDate, 1);
+			let newDate = addDays(currentDate, 1);
+			while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+				newDate = addDays(newDate, 1);
+			}
+			currentDate = newDate;
 		} else if (direction === 'right') {
 			// Swipe right: previous day
-			currentDate = addDays(currentDate, -1);
+			let newDate = addDays(currentDate, -1);
+			while (newDate.getDay() === 0 || newDate.getDay() === 6) {
+				newDate = addDays(newDate, -1);
+			}
+			currentDate = newDate;
 		} else if (direction === 'top') {
 			// Swipe up: collapse TodaysMenu
 			collapsed = true;
