@@ -10,12 +10,11 @@
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 
-	let { date }: { date: Date } = $props();
+	let { date, collapsed = $bindable(true) }: { date: Date; collapsed?: boolean } = $props();
 
 	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
-	let collapsed = $state(true);
 
 	onMount(async () => {
 		await menuService

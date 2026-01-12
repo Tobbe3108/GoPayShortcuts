@@ -42,7 +42,7 @@
 	onWeekChange={handleWeekChange}
 >
 	{#if isMobile}
-		<DayViewTemplate date={currentDate} />
+		<DayViewTemplate date={currentDate} onDayChange={handleDayChange} />
 	{:else}
 		<WeekGridTemplate date={currentDate} />
 	{/if}
