@@ -29,7 +29,7 @@
 	class="min-h-screen bg-muted"
 	{...useSwipe(
 		(e) => swipeStore.handleSwipe(e),
-		() => ({ minSwipeDistance: 30, touchAction: 'pan-y' })
+		() => ({ minSwipeDistance: 30, touchAction: 'none' })
 	)}
 >
 	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}

@@ -31,8 +31,6 @@
 		// For week navigation, set currentDate to the start of the week
 		navigationStore.setDate(newWeekStart);
 	}
-
-
 </script>
 
 <MainLayout
