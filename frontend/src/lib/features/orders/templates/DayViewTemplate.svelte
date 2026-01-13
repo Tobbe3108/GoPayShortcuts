@@ -18,16 +18,18 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import defaultStore from '$lib/features/orders/defaultStore';
 	import { notifications } from '$lib/core/notifications/notificationStore';
-	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
+
 	import { ordersService } from '$lib/features/orders/ordersService';
 
 	type DayViewProps = {
 		date: Date;
+		collapsed: boolean;
 	};
 
-	let { date }: DayViewProps = $props();
+	let { date, collapsed }: DayViewProps = $props();
 
 	let selectedDate = $derived(date);
+
 	let weekStart = $derived(startOfWeek(selectedDate, { weekStartsOn: 1 }));
 	let weekEnd = $derived(endOfWeek(selectedDate, { weekStartsOn: 1 }));
 
@@ -89,7 +91,7 @@
 </script>
 
 <div class="grid grid-cols-1 gap-4">
-	<TodaysMenu date={selectedDate} />
+	<TodaysMenu date={selectedDate} {collapsed} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
 			<div in:fade class="flex flex-col space-y-4 w-full">

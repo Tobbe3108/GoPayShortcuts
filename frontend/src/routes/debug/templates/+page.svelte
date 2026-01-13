@@ -2,6 +2,8 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import WeekGridTemplate from '$lib/features/orders/templates/WeekGridTemplate.svelte';
 	import DayViewTemplate from '$lib/features/orders/templates/DayViewTemplate.svelte';
+
+	let collapsed = $state(true);
 </script>
 
 <div class="p-6 space-y-6">
@@ -20,6 +22,6 @@
 
 	<Label size="xl">DayViewTemplate Demo</Label>
 	<section>
-		<DayViewTemplate date={new Date()} />
+		<DayViewTemplate date={new Date()} {collapsed} />
 	</section>
 </div>

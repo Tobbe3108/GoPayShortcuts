@@ -6,16 +6,15 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
-	import { slide, fade } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 
-	let { date }: { date: Date } = $props();
+	let { date, collapsed = $bindable(true) }: { date: Date; collapsed?: boolean } = $props();
 
 	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
-	let collapsed = $state(true);
 
 	onMount(async () => {
 		await menuService

@@ -2,6 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { _ } from 'svelte-i18n';
+
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
@@ -36,7 +37,7 @@
 	}
 </script>
 
-<div class="container max-w-[90vw] p-4 mx-auto">
+<div class="container max-w-[90vw] p-4 mx-auto flex flex-col min-h-screen">
 	<div class="flex flex-row items-center">
 		<div class="flex flex-1/3 justify-start">
 			<button
@@ -69,5 +70,7 @@
 			{/if}
 		</div>
 	</div>
-	<div class="mt-6">{@render children?.()}</div>
+	<div class="mt-6 flex-1">
+		{@render children?.()}
+	</div>
 </div>
