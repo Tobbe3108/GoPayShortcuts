@@ -23,10 +23,9 @@
 
 	type DayViewProps = {
 		date: Date;
-		collapsed: boolean;
 	};
 
-	let { date, collapsed }: DayViewProps = $props();
+	let { date }: DayViewProps = $props();
 
 	let selectedDate = $derived(date);
 
@@ -91,7 +90,7 @@
 </script>
 
 <div class="grid grid-cols-1 gap-4">
-	<TodaysMenu date={selectedDate} {collapsed} />
+	<TodaysMenu date={selectedDate} />
 	{#if !loading}
 		{#key format(selectedDate, 'yyyy-MM-dd')}
 			<div in:fade class="flex flex-col space-y-4 w-full">

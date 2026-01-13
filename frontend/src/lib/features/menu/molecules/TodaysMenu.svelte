@@ -9,8 +9,9 @@
 	import { slide } from 'svelte/transition';
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
+	import { navigationStore } from '$lib/features/navigation/store';
 
-	let { date, collapsed = $bindable(true) }: { date: Date; collapsed?: boolean } = $props();
+	let { date }: { date: Date } = $props();
 
 	let menuDays = $state<MenuDay[]>([]);
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
@@ -45,16 +46,16 @@
 		<button
 			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
 			type="button"
-			aria-expanded={!collapsed}
+			aria-expanded={!$navigationStore.collapsed}
 			aria-controls="todays-menu-content"
-			onclick={() => (collapsed = !collapsed)}
+			onclick={navigationStore.toggleMenu}
 		>
 			<Label size="md" className="tracking-wide cursor-pointer">{$_('menu.today')}</Label>
-			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
+			<Icon name={$navigationStore.collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
 
-	{#if !collapsed}
+	{#if !$navigationStore.collapsed}
 		<div transition:slide|local id="todays-menu-content" class="w-full mt-2">
 			{#if !loading}
 				<Card className="p-3">
