@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { _ } from 'svelte-i18n';
-	import { useSwipe, type SwipeCustomEvent } from 'svelte-gestures';
+
 	import Button from '../atoms/Button.svelte';
 	import DayNavigator from '../organisms/DayNavigator.svelte';
 	import WeekNavigator from '../organisms/WeekNavigator.svelte';
@@ -15,7 +15,6 @@
 		date: Date;
 		onDayChange?: (newDate: Date) => void;
 		onWeekChange?: (newWeekStart: Date) => void;
-		onSwipe?: (event: SwipeCustomEvent) => void;
 	};
 
 	let {
@@ -25,8 +24,7 @@
 		isMobile = false,
 		date,
 		onDayChange = undefined,
-		onWeekChange = undefined,
-		onSwipe = undefined
+		onWeekChange = undefined
 	}: MainLayoutProps = $props();
 
 	function goToToday() {
@@ -72,13 +70,7 @@
 			{/if}
 		</div>
 	</div>
-	<div
-		class="mt-6 flex-1"
-		{...useSwipe(
-			(e) => onSwipe?.(e),
-			() => ({ minSwipeDistance: 30, touchAction: 'pan-y' })
-		)}
-	>
+	<div class="mt-6 flex-1">
 		{@render children?.()}
 	</div>
 </div>

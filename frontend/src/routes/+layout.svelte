@@ -6,6 +6,10 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { locale } from 'svelte-i18n';
+	import { onMount } from 'svelte';
+	import { useSwipe } from 'svelte-gestures';
+	import { swipeStore } from '$lib/core/gestures/swipeStore';
+	import { SwipeService } from '$lib/core/gestures/SwipeService';
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
@@ -15,9 +19,19 @@
 	$effect(() => {
 		document.documentElement.lang = $locale || 'en';
 	});
+
+	onMount(() => {
+		SwipeService.getInstance().enableSwipeNavigation();
+	});
 </script>
 
-<div class="min-h-screen bg-muted">
+<div
+	class="min-h-screen bg-muted"
+	{...useSwipe(
+		(e) => swipeStore.handleSwipe(e),
+		() => ({ minSwipeDistance: 30, touchAction: 'pan-y' })
+	)}
+>
 	{#if $authStore.isLoading && page.url.pathname !== base + '/login'}
 		<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
 			<div class="text-center">
