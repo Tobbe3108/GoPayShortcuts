@@ -40,11 +40,11 @@
 </script>
 
 <div class="container max-w-[90vw] p-4 mx-auto flex flex-col min-h-screen">
-	<div class="flex flex-row items-center pointer-events-none">
+	<div class="flex flex-row items-center">
 		<div class="flex flex-1/3 justify-start">
 			<button
 				onclick={goToToday}
-				class="cursor-pointer hover:opacity-75 transition-opacity pointer-events-auto"
+				class="cursor-pointer hover:opacity-75 transition-opacity"
 				aria-label={$_('layout.goToToday')}
 				type="button"
 			>
@@ -76,7 +76,7 @@
 		class="mt-6 flex-1"
 		{...useSwipe(
 			(e) => onSwipe?.(e),
-			() => ({ minSwipeDistance: 30, touchAction: 'none' })
+			() => ({ minSwipeDistance: 30, touchAction: 'pan-y' })
 		)}
 	>
 		{@render children?.()}

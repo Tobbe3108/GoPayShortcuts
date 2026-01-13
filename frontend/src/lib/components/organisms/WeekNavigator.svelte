@@ -39,7 +39,7 @@
 	}
 </script>
 
-<div class="flex justify-center pointer-events-auto" aria-label={$_('navigation.week.label')}>
+<div class="flex justify-center" aria-label={$_('navigation.week.label')}>
 	<Button variant="transparent" ariaLabel={$_('navigation.week.previous')} onclick={prevWeek}>
 		<Icon name="left"></Icon>
 	</Button>
