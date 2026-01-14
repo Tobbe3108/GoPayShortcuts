@@ -44,12 +44,6 @@ export class SwipeService {
 			case 'right':
 				navigationStore.prevDay();
 				break;
-			case 'top':
-				navigationStore.collapseMenu();
-				break;
-			case 'bottom':
-				navigationStore.expandMenu();
-				break;
 		}
 	}
 }

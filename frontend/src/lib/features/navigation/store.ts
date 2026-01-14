@@ -87,19 +87,7 @@ const createNavigationStore = () => {
 			}));
 		},
 
-		collapseMenu: () => {
-			store.update((state) => ({
-				...state,
-				collapsed: true
-			}));
-		},
 
-		expandMenu: () => {
-			store.update((state) => ({
-				...state,
-				collapsed: false
-			}));
-		},
 
 		setDate: (date: Date) => {
 			store.update((state) => ({
