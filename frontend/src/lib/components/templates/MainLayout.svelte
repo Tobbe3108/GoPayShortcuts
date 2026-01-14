@@ -70,7 +70,7 @@
 			{/if}
 		</div>
 	</div>
-	<div class="mt-6 flex-1">
+	<div class="mt-6 flex-1 overflow-y-auto">
 		{@render children?.()}
 	</div>
 </div>
