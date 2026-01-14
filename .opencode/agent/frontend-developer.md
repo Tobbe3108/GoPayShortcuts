@@ -1,8 +1,6 @@
 ---
 description: "Agent for frontend development using SvelteKit, Vite, and Bun"
-mode: primary
-temperature: 0.7
-tools: {}
+mode: subagent
 ---
 
 # Purpose
