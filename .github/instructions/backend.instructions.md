@@ -48,9 +48,9 @@ This backend is a TypeScript Cloudflare Worker using Hono and Chanfana OpenAPI r
 ## Developer Workflow
 
 - **Always install packages in the correct folder:**
-  - Run `npm install` **only in the `backend/` folder**. Never run it in the project root.
-- Dev Server: `npx wrangler dev`
-- Build/Deploy: `npx wrangler publish`
+  - Run `bun install` **only in the `backend/` folder**. Never run it in the project root.
+- Dev Server: `bunx wrangler dev`
+- Build/Deploy: `bunx wrangler publish`
 - Config: See `wrangler.jsonc` for environment variables and bindings.
 
 ## Adding an Endpoint (Recipe)
