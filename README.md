@@ -28,8 +28,8 @@ bun run dev
 
 ```sh
 cd backend
-bun install
-bunx wrangler dev
+npm install
+npx wrangler dev
 ```
 
 ## License

@@ -13,14 +13,14 @@ TypeScript Cloudflare Worker providing API endpoints for GoPay Shortcuts. Integr
 ## Development
 
 ```sh
-bun install
-bunx wrangler dev
+npm install
+npx wrangler dev
 ```
 
 ## Deployment
 
 ```sh
-bunx wrangler publish
+npx wrangler publish
 ```
 
 ## Configuration

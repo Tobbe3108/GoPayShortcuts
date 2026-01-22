@@ -50,11 +50,11 @@ Backend:
 
 ```
 cd backend
-bun install
-bunx wrangler dev
+npm install
+npx wrangler dev
 ```
 
-Build: `bun run build` (frontend) / `bunx wrangler publish` (backend).
+Build: `bun run build` (frontend) / `npx wrangler publish` (backend).
 
 ### Conventions
 
