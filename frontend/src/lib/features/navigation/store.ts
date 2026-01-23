@@ -1,9 +1,9 @@
-import { writable, type Writable } from 'svelte/store';
+import { writable, get, derived, type Writable } from 'svelte/store';
 
 // Navigation store interface
 export interface NavigationState {
 	currentDate: Date;
-	collapsed: boolean;
+	collapsedByDay: Map<string, boolean>;
 }
 
 // Initial state - today's date
@@ -23,12 +23,18 @@ const getInitialDate = () => {
 
 const initialState: NavigationState = {
 	currentDate: getInitialDate(),
-	collapsed: true
+	collapsedByDay: new Map()
 };
 
 // Create the store
 const createNavigationStore = () => {
 	const store: Writable<NavigationState> = writable(initialState);
+
+	// Derived store for backward compatibility - collapsed state for current date
+	const collapsed = derived(store, ($store) => {
+		const dateKey = formatDateKey($store.currentDate);
+		return $store.collapsedByDay.get(dateKey) ?? true;
+	});
 
 	// Helper function to get next weekday (Monday-Friday)
 	const getNextWeekday = (date: Date): Date => {
@@ -60,40 +66,94 @@ const createNavigationStore = () => {
 		return prev;
 	};
 
+	// Helper function to format date as YYYY-MM-DD
+	const formatDateKey = (date: Date): string => {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		return `${year}-${month}-${day}`;
+	};
+
 	return {
 		subscribe: store.subscribe,
 		set: store.set,
 		update: store.update,
+		collapsed,
 
 		// Navigation methods
 		nextDay: () => {
-			store.update((state) => ({
-				...state,
-				currentDate: getNextWeekday(state.currentDate)
-			}));
+			store.update((state) => {
+				const newDate = getNextWeekday(state.currentDate);
+				return {
+					...state,
+					currentDate: newDate
+				};
+			});
 		},
 
 		prevDay: () => {
-			store.update((state) => ({
-				...state,
-				currentDate: getPrevWeekday(state.currentDate)
-			}));
+			store.update((state) => {
+				const newDate = getPrevWeekday(state.currentDate);
+				return {
+					...state,
+					currentDate: newDate
+				};
+			});
 		},
 
-		toggleMenu: () => {
-			store.update((state) => ({
-				...state,
-				collapsed: !state.collapsed
-			}));
+		toggleMenu: (date?: Date) => {
+			store.update((state) => {
+				const targetDate = date ?? state.currentDate;
+				const dateKey = formatDateKey(targetDate);
+				const newCollapsedByDay = new Map(state.collapsedByDay);
+				const currentCollapsed = newCollapsedByDay.get(dateKey) ?? true;
+				const newCollapsed = !currentCollapsed;
+				newCollapsedByDay.set(dateKey, newCollapsed);
+				return {
+					...state,
+					collapsedByDay: newCollapsedByDay
+				};
+			});
 		},
 
+		collapseMenu: () => {
+			store.update((state) => {
+				const dateKey = formatDateKey(state.currentDate);
+				const newCollapsedByDay = new Map(state.collapsedByDay);
+				newCollapsedByDay.set(dateKey, true);
+				return {
+					...state,
+					collapsedByDay: newCollapsedByDay
+				};
+			});
+		},
 
+		expandMenu: () => {
+			store.update((state) => {
+				const dateKey = formatDateKey(state.currentDate);
+				const newCollapsedByDay = new Map(state.collapsedByDay);
+				newCollapsedByDay.set(dateKey, false);
+				return {
+					...state,
+					collapsedByDay: newCollapsedByDay
+				};
+			});
+		},
+
+		isCollapsed: (date?: Date): boolean => {
+			const state = get(store);
+			const targetDate = date ?? state.currentDate;
+			const dateKey = formatDateKey(targetDate);
+			return state.collapsedByDay.get(dateKey) ?? true;
+		},
 
 		setDate: (date: Date) => {
-			store.update((state) => ({
-				...state,
-				currentDate: date
-			}));
+			store.update((state) => {
+				return {
+					...state,
+					currentDate: date
+				};
+			});
 		}
 	};
 };
