@@ -23,7 +23,7 @@ const getInitialDate = () => {
 
 const initialState: NavigationState = {
 	currentDate: getInitialDate(),
-	collapsed: false
+	collapsed: true
 };
 
 // Create the store
