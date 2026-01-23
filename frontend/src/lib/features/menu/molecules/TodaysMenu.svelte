@@ -30,6 +30,8 @@
 		menuItems = todayMenu?.items;
 	});
 
+	let collapsed = $derived(navigationStore.isCollapsed(date));
+
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};
 		for (const item of items) {
@@ -46,16 +48,16 @@
 		<button
 			class="flex flex-col items-center cursor-pointer select-none focus:outline-none"
 			type="button"
-			aria-expanded={!$navigationStore.collapsed}
+			aria-expanded={!collapsed}
 			aria-controls="todays-menu-content"
-			onclick={navigationStore.toggleMenu}
+			on:click={() => navigationStore.toggleMenu(date)}
 		>
 			<Label size="md" className="tracking-wide cursor-pointer">{$_('menu.today')}</Label>
-			<Icon name={$navigationStore.collapsed ? 'open' : 'collapse'} size={16} />
+			<Icon name={collapsed ? 'open' : 'collapse'} size={16} />
 		</button>
 	</div>
 
-	{#if !$navigationStore.collapsed}
+	{#if !collapsed}
 		<div transition:slide|local id="todays-menu-content" class="w-full mt-2">
 			{#if !loading}
 				<Card className="p-3">
