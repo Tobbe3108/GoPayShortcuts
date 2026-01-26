@@ -7,7 +7,6 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
-	import type { OrderLine } from '../models/orderLine';
 	import { slide } from 'svelte/transition';
 
 	interface Props {
@@ -40,17 +39,16 @@
 			.finally(() => (loading = false));
 	});
 
-	let editableOrderlines = $state<OrderLine[]>([]);
-	$effect(() => {
-		editableOrderlines = products.map((product) => {
+	let editableOrderlines = $derived(
+		products.map((product) => {
 			const existing = order?.orderlines?.find((l) => l.productId === product.id);
 			return {
 				productId: product.id,
 				quantity: existing ? existing.quantity : 0,
 				price: product.price
 			};
-		});
-	});
+		})
+	);
 
 	// Helper to detect guest products (supports both 'gæst' and 'gaest')
 	function isGuestProduct(name: string) {
@@ -152,7 +150,7 @@
 					>{$_('orders.noProductsFound')}</Label
 				>
 			{/if}
-			{#each items as item, idx}
+			{#each items as item, idx (item.id)}
 				<div class="flex items-center justify-center py-1 gap-1">
 					<Label className="text-left grow truncate">{item.name}</Label>
 					<div class="flex min-w-11 justify-center">
@@ -180,7 +178,7 @@
 					<Label variant="muted" size="xs" className="block mb-1"
 						>{$_('orders.unknownProducts')}</Label
 					>
-					{#each unmatchedOrderlines as l}
+					{#each unmatchedOrderlines as l (l.productId)}
 						<div class="flex items-center justify-center py-1 gap-1 opacity-75">
 							<Label className="text-left grow truncate"
 								>{$_('orders.product')} #{l.productId}</Label
@@ -213,23 +211,29 @@
 					{#if !guestCollapsed}
 						<div id="guest-items-content" class="w-full">
 							<div transition:slide|local>
-								{#each guestItems as g}
-									<div class="flex items-center justify-center py-1 gap-1">
-										<Label className="text-left grow truncate">{g.name}</Label>
-										<div class="flex min-w-11 justify-center">
-											<Quantity
-												value={g.quantity}
-												min={appendOnly ? (originalQuantities.get(g.id) ?? 0) : 0}
-												max={99}
-												showLockWhenAtMin={appendOnly}
-												onChange={(v) => handleGuestQuantityChange(g.id, v)}
-											/>
+							<div
+								class="sm:max-h-none sm:overflow-auto overflow-y-auto"
+								style="max-height: calc(60vh - 16px)"
+								data-swipe-ignore
+							>
+									{#each guestItems as g (g.id)}
+										<div class="flex items-center justify-center py-1 gap-1">
+											<Label className="text-left grow truncate">{g.name}</Label>
+											<div class="flex min-w-11 justify-center">
+												<Quantity
+													value={g.quantity}
+													min={appendOnly ? (originalQuantities.get(g.id) ?? 0) : 0}
+													max={99}
+													showLockWhenAtMin={appendOnly}
+													onChange={(v) => handleGuestQuantityChange(g.id, v)}
+												/>
+											</div>
+											<Label className="text-right flex-none w-auto min-w-9"
+												>{formatPrice(g.price * g.quantity)}</Label
+											>
 										</div>
-										<Label className="text-right flex-none w-auto min-w-9"
-											>{formatPrice(g.price * g.quantity)}</Label
-										>
-									</div>
-								{/each}
+									{/each}
+								</div>
 							</div>
 						</div>
 					{/if}

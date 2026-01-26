@@ -67,19 +67,25 @@
 		<div transition:slide|local class="w-full">
 			{#if !loading}
 				<Card>
-					{#if !locations || locations.length === 0}
-						<Label variant="muted">{$_('locations.noneFound')}</Label>
-					{:else}
-						<div class="flex flex-col space-y-2">
-							{#each locations as loc}
-								<Button variant="transparent" size="sm" onclick={() => handleLocationClick(loc)}>
-									<Label size="xs" className="cursor-pointer capitalize tracking-wide"
-										>{loc.name}</Label
-									>
-								</Button>
-							{/each}
-						</div>
-					{/if}
+					<div
+						class="sm:max-h-none sm:overflow-auto overflow-y-auto"
+						style="max-height: calc(60vh - 48px)"
+						data-swipe-ignore
+					>
+						{#if !locations || locations.length === 0}
+							<Label variant="muted">{$_('locations.noneFound')}</Label>
+						{:else}
+							<div class="flex flex-col space-y-2">
+								{#each locations as loc (loc.kitchenId)}
+									<Button variant="transparent" size="sm" onclick={() => handleLocationClick(loc)}>
+										<Label size="xs" className="cursor-pointer capitalize tracking-wide"
+											>{loc.name}</Label
+										>
+									</Button>
+								{/each}
+							</div>
+						{/if}
+					</div>
 				</Card>
 			{/if}
 		</div>
