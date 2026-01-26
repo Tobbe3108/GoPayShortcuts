@@ -68,7 +68,8 @@
 			{#if !loading}
 				<Card>
 					<div
-						class="max-h-[60vh] sm:max-h-none overflow-y-auto sm:overflow-auto"
+						class="sm:max-h-none sm:overflow-auto overflow-y-auto"
+						style="max-height: calc(60vh - 48px)"
 						data-swipe-ignore
 					>
 						{#if !locations || locations.length === 0}

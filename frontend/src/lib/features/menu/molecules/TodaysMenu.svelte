@@ -60,11 +60,12 @@
 	{#if !collapsed}
 		<div transition:slide|local id="todays-menu-content" class="w-full mt-2">
 			{#if !loading}
-				<Card className="p-3">
-					<div
-						class="max-h-[60vh] sm:max-h-none overflow-y-auto sm:overflow-auto"
-						data-swipe-ignore
-					>
+			<Card className="p-3">
+				<div
+					class="sm:max-h-none sm:overflow-auto overflow-y-auto"
+					style="max-height: calc(60vh - 24px)"
+					data-swipe-ignore
+				>
 						{#if !menuItems}
 							<Label variant="muted" size="sm">{$_('menu.noneAvailable')}</Label>
 						{:else}
