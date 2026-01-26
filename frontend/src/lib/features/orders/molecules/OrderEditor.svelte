@@ -7,7 +7,6 @@
 	import Label from '$lib/components/atoms/Label.svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
-	import type { OrderLine } from '../models/orderLine';
 	import { slide } from 'svelte/transition';
 
 	interface Props {
@@ -40,17 +39,16 @@
 			.finally(() => (loading = false));
 	});
 
-	let editableOrderlines = $state<OrderLine[]>([]);
-	$effect(() => {
-		editableOrderlines = products.map((product) => {
+	let editableOrderlines = $derived(
+		products.map((product) => {
 			const existing = order?.orderlines?.find((l) => l.productId === product.id);
 			return {
 				productId: product.id,
 				quantity: existing ? existing.quantity : 0,
 				price: product.price
 			};
-		});
-	});
+		})
+	);
 
 	// Helper to detect guest products (supports both 'gæst' and 'gaest')
 	function isGuestProduct(name: string) {

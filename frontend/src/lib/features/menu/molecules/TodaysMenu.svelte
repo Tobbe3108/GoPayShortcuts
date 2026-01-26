@@ -69,11 +69,11 @@
 							<Label variant="muted" size="sm">{$_('menu.noneAvailable')}</Label>
 						{:else}
 							<div class="flex flex-col gap-2">
-								{#each Object.entries(groupByCategory(menuItems)) as [category, items]}
+								{#each Object.entries(groupByCategory(menuItems)) as [category, items] (category)}
 									<div>
 										<Label size="sm" className="tracking-wide font-semibold">{category}</Label>
 										<ul class="mt-1">
-											{#each items as item}
+											{#each items as item (item.item)}
 												<li class="flex items-start gap-2 text-sm">
 													<div class="flex-1">
 														<div class="flex items-baseline gap-2">
