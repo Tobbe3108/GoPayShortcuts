@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { authStore } from '$lib/features/auth/store';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import LoginLayout from '$lib/features/auth/templates/LoginLayout.svelte';
@@ -66,3 +66,4 @@
 		/>
 	{/snippet}
 </LoginLayout>
+
