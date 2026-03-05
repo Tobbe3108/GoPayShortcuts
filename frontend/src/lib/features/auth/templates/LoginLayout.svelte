@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { base } from '$app/paths';
 
 	type LoginLayoutProps = {
@@ -16,3 +16,4 @@
 		{@render children?.()}
 	</div>
 </div>
+
