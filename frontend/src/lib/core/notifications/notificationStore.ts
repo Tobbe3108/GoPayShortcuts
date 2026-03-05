@@ -25,7 +25,7 @@ function createNotificationStore() {
 
 		update((notifications) => [
 			...notifications,
-			{ id, message, type: type ?? 'info', timeout: timeout ?? 5000, actionLabel, action }
+			{ id, message, type: type ?? 'info', timeout: timeout ??= 2500, actionLabel, action }
 		]);
 
 		if (timeout && timeout > 0) {
@@ -57,7 +57,7 @@ function createNotificationStore() {
 			actionLabel?: string,
 			action?: (id: string) => void
 		) => {
-			addNotification(msg, 'warning', timeout ?? 10000, actionLabel, action);
+			addNotification(msg, 'warning', timeout, actionLabel, action);
 		},
 		error: (
 			msg?: string,
@@ -65,7 +65,7 @@ function createNotificationStore() {
 			actionLabel?: string,
 			action?: (id: string) => void
 		) => {
-			addNotification(msg, 'error', timeout ?? 15000, actionLabel, action);
+			addNotification(msg, 'error', timeout, actionLabel, action);
 		},
 		remove: removeNotification
 	};

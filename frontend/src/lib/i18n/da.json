@@ -30,7 +30,10 @@
   "logoAlt": "GoPay BAD Edition Logo"
  },
  "orders": {
-  "saveAsDefault": "Gem som standard?",
+  "default": {
+    "success": "Standardordre gemt",
+    "error": "Kunne ikke gemme standardordre"
+  },
   "save": {
    "success": "Ordre gemt",
    "error": "Kunne ikke gemme ordre",
