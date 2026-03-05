@@ -33,28 +33,12 @@ export async function fetchValidOrderDetails(
 ): Promise<DetailedOrder[]> {
   const details: DetailedOrder[] = [];
 
-  // Limit concurrency to avoid exceeding Cloudflare Workers' subrequest limits.
-  // Process orders in small batches instead of firing all fetches at once.
-  const BATCH_SIZE = 8;
-  for (let i = 0; i < orders.length; i += BATCH_SIZE) {
-    const batch = orders.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(
-      batch.map(async (order) => {
-        try {
-          const detail = await client.getOrderDetails(order.id);
-          return detail instanceof Response ? null : detail;
-        } catch (err) {
-          // Swallow individual order failures and continue with others
-          console.error(`Failed to fetch details for order ${order.id}:`, err);
-          return null;
-        }
-      })
-    );
-
-    for (const d of batchResults) {
-      if (d) details.push(d);
-    }
-  }
+  await Promise.all(
+    orders.map(async (order) => {
+      const detail = await client.getOrderDetails(order.id);
+      if (!(detail instanceof Response)) details.push(detail);
+    })
+  );
 
   const refundedOrders = new Set<number>();
   for (const order of details) {
@@ -198,24 +182,13 @@ export async function cancelOrdersBatch(
   client: GoPayClient,
   orders: { id: number }[]
 ): Promise<Response | null> {
-  // Batch delete requests to avoid too many parallel subrequests.
-  const responses: (Response | null)[] = [];
-  const BATCH_SIZE = 8;
-  for (let i = 0; i < orders.length; i += BATCH_SIZE) {
-    const batch = orders.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(
-      batch.map(async (order) => {
-        try {
-          const response = await client.deleteOrder(order.id);
-          return response instanceof Response ? response : null;
-        } catch (err) {
-          console.error(`Failed to delete order ${order.id}:`, err);
-          return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500 });
-        }
-      })
-    );
-    responses.push(...batchResults);
-  }
+  const responses = await Promise.all(
+    orders.map(async (order) => {
+      const response = await client.deleteOrder(order.id);
+      if (response instanceof Response) return response;
+      return null; // Indicate success
+    })
+  );
   const failed = responses.filter((r) => r instanceof Response);
   if (failed.length > 0) {
     return new Response(
