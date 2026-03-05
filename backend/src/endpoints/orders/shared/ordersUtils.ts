@@ -48,7 +48,7 @@ export async function fetchValidOrderDetails(
   }
 
   return details.filter(
-    (order) => order.orderType !== "REFUND" && !refundedOrders.has(order.id)
+    (order) => order.orderType !== "REFUND" && order.orderType !== "POS" && !refundedOrders.has(order.id)
   );
 }
 
