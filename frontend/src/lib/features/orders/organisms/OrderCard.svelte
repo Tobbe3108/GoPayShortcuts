@@ -6,8 +6,9 @@ import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
 	import OrderEditor from '../molecules/OrderEditor.svelte';
-	import { ordersService } from '../ordersService';
-	import { notifications } from '$lib/core/notifications/notificationStore';
+    import { ordersService } from '../ordersService';
+    import { notifications } from '$lib/core/notifications/notificationStore';
+    import { calculateDeltaAmounts, formatDKK } from '../utils/orderAmountCalculator';
 	import defaultStore from '$lib/features/orders/defaultStore';
 	import { locationsService } from '../../locations/locationsService';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
@@ -55,14 +56,19 @@ import Label from '$lib/components/atoms/Label.svelte';
 		}
 	});
 
-	function handleEdit() {
-		editMode = true;
-		originalOrder = order;
-		// reset the "save as default" flag when entering edit mode
-		saveAsDefault = false;
-		// Snapshot current quantities for append-only validation
-		originalQuantities = new Map(order.orderlines.map((line) => [line.productId, line.quantity]));
-	}
+    function handleEdit() {
+        editMode = true;
+        // reset the "save as default" flag when entering edit mode
+        saveAsDefault = false;
+        // Snapshot current quantities for append-only validation
+        originalQuantities = new Map(order.orderlines.map((line) => [line.productId, line.quantity]));
+        // Snapshot the entire order so we can compute deltas after save/cancel
+        try {
+            originalOrder = JSON.parse(JSON.stringify(order));
+        } catch (e) {
+            originalOrder = order;
+        }
+    }
 
 	function handleCancel() {
 		const maybeTemplate = order as TemplateOrder;
@@ -106,20 +112,38 @@ import Label from '$lib/components/atoms/Label.svelte';
 		isBackendLoading = true;
 		let orderSaveSucceeded = false;
 		isBackendLoading = true;
-		try {
-			const response = await ordersService.updateDay({
-				kitchenId: order.kitchenId,
-				date: order.date,
-				desiredOrders: order.orderlines
-			});
-			if (response) onOrderChange?.(response);
-			orderSaveSucceeded = Boolean(response);
+        try {
+            const response = await ordersService.updateDay({
+                kitchenId: order.kitchenId,
+                date: order.date,
+                desiredOrders: order.orderlines
+            });
+            if (response) onOrderChange?.(response);
+            orderSaveSucceeded = Boolean(response);
             if (orderSaveSucceeded) editMode = false;
-		} catch (err) {
-			notifications.error($_('orders.failedToSave'));
-		} finally {
-			isBackendLoading = false;
-		}
+
+            // Compute deltas and show notifications for the user
+            try {
+                const prev = originalOrder as SimplifiedOrder | undefined;
+                let next: SimplifiedOrder | undefined;
+                if (response && Array.isArray(response)) {
+                    next = response.find((r) => r.kitchenId === order.kitchenId && r.date === order.date);
+                }
+                if (!next) next = { date: order.date, kitchenId: order.kitchenId, orderlines: [], cancelEnabled: false } as SimplifiedOrder;
+                const { spent, refunded } = calculateDeltaAmounts(prev, next);
+                if (spent > 0) {
+                    const msg = spent > 0 && refunded === 0 ? `Spent ${formatDKK(spent)} on lunch order${next.orderlines.length > 1 ? 's' : ''}` : `Spent ${formatDKK(spent)}`;
+                    notifications.success(msg);
+                }
+                if (refunded > 0) notifications.success(`Refunded ${formatDKK(refunded)}`);
+            } catch (e) {
+                console.error('Failed to compute/emit delta notifications', e);
+            }
+        } catch (err) {
+            notifications.error($_('orders.failedToSave'));
+        } finally {
+            isBackendLoading = false;
+        }
 
         // If this order was created from the default (a temp order), do not
         // update the default when saving — the user is placing a new order
@@ -169,21 +193,57 @@ import Label from '$lib/components/atoms/Label.svelte';
 		}
 	}
 
-	async function handleDelete() {
-		isBackendLoading = true;
-		try {
-			await ordersService.updateDay({
-				kitchenId: order.kitchenId,
-				date: order.date,
-				desiredOrders: []
-			});
-			onOrderCancel?.(order.date, order.kitchenId);
-		} catch (err) {
-			notifications.error($_('orders.failedToCancel'));
-		} finally {
-			isBackendLoading = false;
-		}
-	}
+    async function handleDelete() {
+        isBackendLoading = true;
+        try {
+            // Before issuing delete, capture a reliable "prev" snapshot. If the
+            // client-side originalOrder appears empty (all zeros), try to fetch
+            // the current server state for this date to compute an accurate
+            // refund amount.
+            let prev = originalOrder as SimplifiedOrder | undefined;
+            const prevTotal = (prev?.orderlines || []).reduce((s, l) => s + l.price * l.quantity, 0);
+            if (!prev || prevTotal === 0) {
+                try {
+                    const day = new Date(order.date);
+                    const serverOrders = await ordersService.listOrders(day, day);
+                    const serverPrev = serverOrders.find((r) => r.kitchenId === order.kitchenId && r.date === order.date);
+                    if (serverPrev) prev = serverPrev;
+                } catch (e) {
+                    // ignore — we'll fall back to originalOrder
+                    console.debug('Could not fetch server previous order for delete delta', e);
+                }
+            }
+
+            const response = await ordersService.updateDay({
+                kitchenId: order.kitchenId,
+                date: order.date,
+                desiredOrders: []
+            });
+
+            // Compute and show deltas (refunds/spent) between the previous
+            // snapshot and the newly returned state (likely empty).
+            try {
+                // Use the prev captured above (originalOrder or server snapshot)
+                let next: SimplifiedOrder | undefined;
+                if (response && Array.isArray(response)) {
+                    next = response.find((r) => r.kitchenId === order.kitchenId && r.date === order.date);
+                }
+                if (!next) next = { date: order.date, kitchenId: order.kitchenId, orderlines: [], cancelEnabled: false } as SimplifiedOrder;
+                const { spent, refunded } = calculateDeltaAmounts(prev, next);
+                console.debug('Delete delta', { prev, next, spent, refunded });
+                if (spent > 0) notifications.success(`Spent ${formatDKK(spent)}`);
+                if (refunded > 0) notifications.success(`Refunded ${formatDKK(refunded)}`);
+            } catch (e) {
+                console.error('Failed to compute/emit delta notifications for delete', e);
+            }
+
+            onOrderCancel?.(order.date, order.kitchenId);
+        } catch (err) {
+            notifications.error($_('orders.failedToCancel'));
+        } finally {
+            isBackendLoading = false;
+        }
+    }
 
 	const kitchenName = $derived(() => {
 		const location = locations.find((l) => l.kitchenId === order.kitchenId);
