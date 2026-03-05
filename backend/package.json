@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "22.13.0",
     "@types/service-worker-mock": "^2.0.4",
+    "typescript": "^5.9.3",
     "wrangler": "^4.53.0"
   }
 }
