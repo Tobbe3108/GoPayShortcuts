@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	
 	import { _ } from 'svelte-i18n';
-	import Label from '$lib/components/atoms/Label.svelte';
+import Label from '$lib/components/atoms/Label.svelte';
 	import Card from '../../../components/atoms/Card.svelte';
 	import EditModeControls from '../molecules/EditModeControls.svelte';
 	import OrderEditor from '../molecules/OrderEditor.svelte';
@@ -30,6 +30,7 @@
 
 	let editMode = $state(isEditing);
 	let originalOrder = $state(order);
+	let saveAsDefault = $state(false);
 	let locations = $state<Location[]>([]);
 	let loading = $state(true);
 	let isBackendLoading = $state(false);
@@ -49,6 +50,8 @@
 	function handleEdit() {
 		editMode = true;
 		originalOrder = order;
+		// reset the "save as default" flag when entering edit mode
+		saveAsDefault = false;
 		// Snapshot current quantities for append-only validation
 		originalQuantities = new Map(order.orderlines.map((line) => [line.productId, line.quantity]));
 	}
@@ -70,6 +73,8 @@
 		}
 
 		editMode = false;
+		// clear the flag when cancelling edits
+		saveAsDefault = false;
 		return;
 	}
 
@@ -99,9 +104,18 @@
 			});
 			if (response) onOrderChange?.(response);
 			editMode = false;
-			notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () =>
-				handleSaveAsDefault()
-			);
+			// If the user checked "save as default" while editing, persist it
+			if (saveAsDefault) {
+				// call the existing helper which handles loading state and errors
+				await handleSaveAsDefault();
+				// reset flag after attempting to save as default
+				saveAsDefault = false;
+			} else {
+				// Keep the previous transient hint for users who didn't check the box
+				notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () =>
+					handleSaveAsDefault()
+				);
+			}
 		} catch (err) {
 			notifications.error($_('orders.failedToSave'));
 		} finally {
@@ -144,22 +158,33 @@
 
 {#if !loading}
 	<Card>
-		<div class="flex flex-row items-center justify-between mb-2">
-			<Label size="xl" className="capitalize tracking-wide">{kitchenName()}</Label>
-			<div class="flex items-center gap-2">
-				<EditModeControls
-					{isEditing}
-					direction="row"
-					locked={false}
-					{appendOnly}
-					disabled={isBackendLoading}
-					onEdit={handleEdit}
-					onSave={handleSave}
-					onCancel={handleCancel}
-					onDelete={handleDelete}
-				/>
-			</div>
-		</div>
+        <!-- Header: name and actions on the same row; "Save as Default" always shown below the name when editing -->
+        <div class="mb-2">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <Label size="xl" className="capitalize tracking-wide truncate">{kitchenName()}</Label>
+
+                    <!-- star control moved into EditModeControls; pass toggle props below -->
+                </div>
+
+                <div class="flex-shrink-0">
+                    <EditModeControls
+                        {isEditing}
+                        direction="row"
+                        locked={false}
+                        {appendOnly}
+                        disabled={isBackendLoading}
+                        onEdit={handleEdit}
+                        onSave={handleSave}
+                        onCancel={handleCancel}
+                        onDelete={handleDelete}
+                        showDefaultToggle={editMode}
+                        isDefault={saveAsDefault}
+                        onToggleDefault={() => (saveAsDefault = !saveAsDefault)}
+                    />
+                </div>
+            </div>
+        </div>
 		<OrderEditor
 			{order}
 			{editMode}

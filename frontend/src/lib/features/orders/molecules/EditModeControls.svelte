@@ -15,6 +15,10 @@
 		onSave?: () => void;
 		onCancel?: () => void;
 		onDelete?: () => void;
+		// optional default toggle action (used by OrderCard to toggle "save as default")
+		onToggleDefault?: () => void;
+		isDefault?: boolean;
+		showDefaultToggle?: boolean;
 	}
 
 	let {
@@ -27,7 +31,10 @@
 		onEdit = undefined,
 		onSave = undefined,
 		onCancel = undefined,
-		onDelete = undefined
+		onDelete = undefined,
+		onToggleDefault = undefined,
+		isDefault = false,
+		showDefaultToggle = false
 	}: Props = $props();
 
 	let editMode = $state(isEditing);
@@ -40,6 +47,11 @@
 	function handleAction(action?: () => void) {
 		action?.();
 		editMode = false;
+	}
+
+	function handleToggleDefault() {
+		onToggleDefault?.();
+		// do not change editMode when toggling default
 	}
 
 	const iconSize = 17;
@@ -57,6 +69,32 @@
 			{/snippet}
 		</Button>
 	{:else}
+		{#if showDefaultToggle}
+        <Button
+                variant="transparent"
+                ariaLabel="Toggle default"
+                {disabled}
+                onclick={handleToggleDefault}
+                size=""
+            >
+                {#snippet children()}
+                    {#if isDefault}
+                        <span class={`inline-block align-middle text-yellow-500`} style={`width:${iconSize}px;height:${iconSize}px;`}>
+                            <svg class="w-full h-full" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                        </span>
+                    {:else}
+                        <span class={`inline-block align-middle text-gray-400 hover:text-yellow-500`} style={`width:${iconSize}px;height:${iconSize}px;`}>
+                            <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                        </span>
+                    {/if}
+                {/snippet}
+            </Button>
+		{/if}
+
 		{#if showDelete && !appendOnly}
 			<Button
 				variant="transparent"
