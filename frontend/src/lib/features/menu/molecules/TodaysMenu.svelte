@@ -74,7 +74,7 @@
 									<div>
 										<Label size="sm" className="tracking-wide font-semibold">{category}</Label>
 										<ul class="mt-1">
-											{#each items as item (item.item)}
+                                            {#each items as item, i (item.item + '-' + i)}
 												<li class="flex items-start gap-2 text-sm">
 													<div class="flex-1">
 														<div class="flex items-baseline gap-2">
