@@ -43,8 +43,16 @@ import Label from '$lib/components/atoms/Label.svelte';
 	onMount(async () => {
 		await locationsService
 			.getLocations()
-			.then((res) => (locations = res))
-			.finally(() => (loading = false));
+				.then((res) => (locations = res))
+				.finally(() => (loading = false));
+
+		// initialize star state from persisted default for this kitchen
+		try {
+			const def = await defaultStore.getDefault();
+			saveAsDefault = def?.id === `global:${order.kitchenId}`;
+		} catch (e) {
+			// ignore
+		}
 	});
 
 	function handleEdit() {
@@ -96,6 +104,8 @@ import Label from '$lib/components/atoms/Label.svelte';
 		}
 
 		isBackendLoading = true;
+		let orderSaveSucceeded = false;
+		isBackendLoading = true;
 		try {
 			const response = await ordersService.updateDay({
 				kitchenId: order.kitchenId,
@@ -103,32 +113,57 @@ import Label from '$lib/components/atoms/Label.svelte';
 				desiredOrders: order.orderlines
 			});
 			if (response) onOrderChange?.(response);
-			editMode = false;
-			// If the user checked "save as default" while editing, persist it
-			if (saveAsDefault) {
-				// call the existing helper which handles loading state and errors
-				await handleSaveAsDefault();
-				// reset flag after attempting to save as default
-				saveAsDefault = false;
-			} else {
-				// Keep the previous transient hint for users who didn't check the box
-				notifications.info(undefined, 2500, $_('orders.saveAsDefault'), async () =>
-					handleSaveAsDefault()
-				);
-			}
+			orderSaveSucceeded = Boolean(response);
+            if (orderSaveSucceeded) editMode = false;
 		} catch (err) {
 			notifications.error($_('orders.failedToSave'));
 		} finally {
 			isBackendLoading = false;
 		}
-	}
+
+        // If this order was created from the default (a temp order), do not
+        // update the default when saving — the user is placing a new order
+        // from the template and we should avoid overwriting the template.
+        const maybeTemplate = order as TemplateOrder;
+        if (maybeTemplate.tempOrder) {
+            // clear the flag and skip default save/notifications
+            saveAsDefault = false;
+            return;
+        }
+
+        // Always attempt to save the default after the order save attempt
+        // (regardless of whether the API call succeeded). Update the star state
+        // to reflect whether the default actually persisted.
+        if (saveAsDefault) {
+            const saved = await handleSaveAsDefault();
+            // reflect saved state in the UI (keep star filled only if save succeeded)
+            saveAsDefault = Boolean(saved);
+            // show a success notification when default save actually succeeded
+            if (saved) {
+                // use a short success toast; reuse existing i18n key for the action label
+                notifications.success($_('orders.default.success'));
+            }
+			else
+			{
+				notifications.error($_('orders.default.error'));
+			}
+        }
+    }
 
 	async function handleSaveAsDefault() {
+		// Attempt to persist the order as the user's default.
+		// This operation is intentionally silent (no user-facing notifications)
+		// — callers decide whether to inform the user. We still catch errors
+		// to avoid throwing from UI flows.
 		isBackendLoading = true;
 		try {
 			await defaultStore.saveDefault(order);
+			return true;
 		} catch (err) {
-			notifications.error($_('orders.failedToSaveDefault'));
+			// swallow errors silently to avoid spamming notifications when
+			// saving default is a best-effort action (localStorage may be blocked)
+			console.error('default save failed', err);
+			return false;
 		} finally {
 			isBackendLoading = false;
 		}

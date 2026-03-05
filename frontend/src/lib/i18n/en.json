@@ -30,7 +30,10 @@
   "logoAlt": "GoPay BAD Edition Logo"
  },
  "orders": {
-  "saveAsDefault": "Save as default?",
+  "default": {
+    "success": "Default order saved",
+    "error": "Failed to save default order"
+  },
   "save": {
    "success": "Order saved",
    "error": "Failed to save order",
