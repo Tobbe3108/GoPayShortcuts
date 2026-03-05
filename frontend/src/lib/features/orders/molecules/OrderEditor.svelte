@@ -211,11 +211,7 @@
 					{#if !guestCollapsed}
 						<div id="guest-items-content" class="w-full">
 							<div transition:slide|local>
-							<div
-								class="sm:max-h-none sm:overflow-auto overflow-y-auto"
-								style="max-height: calc(60vh - 16px)"
-								data-swipe-ignore
-							>
+                            <div class="max-h-none" data-swipe-ignore>
 									{#each guestItems as g (g.id)}
 										<div class="flex items-center justify-center py-1 gap-1">
 											<Label className="text-left grow truncate">{g.name}</Label>
