@@ -41,6 +41,12 @@ export async function fetchValidOrderDetails(
   );
 
   const refundedOrders = new Set<number>();
+  // NOTE FOR FRONTEND: refund-detection logic lives here and is intentionally
+  // preserved for frontend developers to reuse. The backend endpoints
+  // no longer filter refunds — GET /orders/period and POST /orders/list
+  // return raw orders and detailed orders respectively. Apply the same
+  // refund-filtering logic on the frontend (creditNoteDetails + orderType
+  // checks) when merging chunked results.
   for (const order of details) {
     if (order.creditNoteDetails?.creditNoteOrderIds?.length > 0) {
       refundedOrders.add(order.id);

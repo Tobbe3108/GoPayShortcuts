@@ -2,6 +2,8 @@ import { apiClient } from '$lib/core/api/apiClient';
 import { notifications } from '$lib/core/notifications/notificationStore';
 import type { SimplifiedOrder } from './models/SimplifiedOrder';
 import type { UpdateDayRequest } from './models/updateDayRequest';
+import { fetchOrderDetailsChunk, fetchOrderIdsForPeriod } from '$lib/core/api/ordersClient';
+import type { DetailedOrder } from '../../../backend/src/goPay/types';
 
 /**
  * Orders service for accessing order data from the backend
@@ -11,16 +13,88 @@ export class OrdersService {
 	 * Get orders for a specified date range
 	 */
 	static async listOrders(startDate: Date, endDate: Date): Promise<SimplifiedOrder[]> {
-		const response = await apiClient.listOrders(startDate, endDate);
+		// Step 1: fetch IDs for period
+		const listResp = await fetchOrderIdsForPeriod(startDate, endDate);
 
-		if (response instanceof Error) {
-			console.error('Failed to fetch orders:', response);
-			notifications.error('Failed to fetch orders: ' + response.message);
-			throw response;
+		if (listResp instanceof Error) {
+			console.error('Failed to fetch order ids:', listResp);
+			notifications.error('Failed to fetch orders: ' + listResp.message);
+			throw listResp;
 		}
 
-		console.log('Fetched orders:', response.orders);
-		return response.orders;
+		const ids = listResp.orders.map((o: any) => o.id);
+		// Chunk ids into <=50 slices
+		const chunks: number[][] = [];
+		for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+
+		// Fetch details for each chunk in parallel
+		const detailsResponses = await Promise.all(
+			chunks.map((chunk) => fetchOrderDetailsChunk(chunk))
+		);
+
+		// Collect successful results
+		const details: DetailedOrder[] = [];
+		for (const r of detailsResponses) {
+			if (r instanceof Error) continue;
+			details.push(...r.orders);
+		}
+
+		// Frontend is responsible for refund-filtering after collecting all details.
+		// Apply same filtering logic as backend.fetchValidOrderDetails
+		const refunded = new Set<number>();
+		for (const o of details) {
+			if (o.creditNoteDetails?.creditNoteOrderIds?.length > 0) refunded.add(o.id);
+		}
+
+		const validDetails = details.filter(
+			(o) => o.orderType !== 'REFUND' && o.orderType !== 'POS' && !refunded.has(o.id)
+		);
+
+		// Now we need to aggregate into SimplifiedOrder shape as backend used to do.
+		// Reuse the same logic as buildSimplifiedOrderFromDetailed/buildSimplifiedOrderFromProducts
+		// For simplicity in this request, call the backend "updateDay" endpoint which returns simplified orders
+		// However to keep things pure frontend-side, we will map details into simplified orders minimally.
+
+		// Minimal client-side mapping: group by date+kitchen and sum quantities, but keep price 0 (backend resolves prices).
+		const combined: Record<string, SimplifiedOrder & { cancelEnabledArr: boolean[] }> = {} as any;
+		for (const order of validDetails) {
+			const delivery = order.deliveries?.[0];
+			const date = delivery?.deliveryTime?.slice(0, 10) || 'unknown';
+			const kitchenId = order.kitchen?.id || NaN;
+			const cancelEnabled = order.deliveries.every(
+				(d: any) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
+			);
+			const key = `${date}-${kitchenId}`;
+			if (!combined[key]) {
+				combined[key] = { date, kitchenId, orderlines: [], cancelEnabled: false, cancelEnabledArr: [] } as any;
+			}
+			combined[key].cancelEnabledArr.push(cancelEnabled);
+			for (const d of order.deliveries || []) {
+				for (const line of d.orderLines || []) {
+					const exist = combined[key].orderlines.find((ol) => ol.productId === line.productId);
+					if (exist) exist.quantity += line.items;
+					else
+						combined[key].orderlines.push({ productId: line.productId, quantity: line.items, price: 0, name: line.name });
+				}
+			}
+		}
+
+		const simplified: SimplifiedOrder[] = Object.values(combined).map((c) => ({
+			date: c.date,
+			kitchenId: c.kitchenId,
+			orderlines: c.orderlines,
+			cancelEnabled: c.cancelEnabledArr.some((v) => v === true),
+		}));
+
+		if (simplified instanceof Error) {
+			console.error('Failed to fetch orders:', simplified);
+			notifications.error('Failed to fetch orders: ' + (simplified as any).message);
+			throw simplified as any;
+		}
+
+		console.log('Fetched orders:', simplified);
+		return simplified;
+
 	}
 
 	/**

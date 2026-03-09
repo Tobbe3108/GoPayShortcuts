@@ -6,6 +6,7 @@ import { Login } from "./endpoints/auth/login";
 import { RequestOTP } from "./endpoints/auth/requestOTP";
 import { GetLocations } from "./endpoints/locations/getLocations";
 import { ListOrders } from "./endpoints/orders/listOrders";
+import { GetOrdersForPeriod } from "./endpoints/orders/getOrdersForPeriod";
 import { PatchOrdersState } from "./endpoints/orders/updateDay";
 // import { CancelOrders } from "./endpoints/orders/cancelOrders";
 // import { AddOrder } from "./endpoints/orders/addOrder";
@@ -93,8 +94,10 @@ openapi.get("/api/locations", GetLocations);
 openapi.get("/api/products", GetProducts);
 openapi.get("/api/menu", GetMenu);
 
-openapi.get("/api/orders", ListOrders);
-// openapi.post("/api/orders", AddOrder);
+// ListOrders: accept a POST body { orderIds: number[] } (zod validation 1..50)
+openapi.post("/api/orders", ListOrders);
+// Return raw orders for a date range: GET /api/orders/period?start=YYYY-MM-DD&end=YYYY-MM-DD
+openapi.get("/api/orders/period", GetOrdersForPeriod);
 openapi.patch("/api/orders", PatchOrdersState);
 // openapi.delete("/api/orders", CancelOrders);
 
