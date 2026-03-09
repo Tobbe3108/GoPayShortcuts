@@ -80,12 +80,24 @@ export class ApiClient {
 		return await this.request<MenuDay[]>('/menu', 'GET');
 	}
 
-	async listOrders(startDate: Date, endDate: Date): Promise<OrdersResponse | Error> {
-		return await this.request<OrdersResponse>(
-			`/orders?start=${format(startDate, 'yyyy-MM-dd')}&end=${format(endDate, 'yyyy-MM-dd')}`,
-			'GET'
-		);
-	}
+// Returns raw orders for a period (not aggregated). Renamed to avoid confusion with simplified/aggregated OrdersResponse
+async listRawOrdersForPeriod(startDate: Date, endDate: Date): Promise<{ orders: any[] } | Error> {
+    // New flow: client fetches raw orders for the period and then chunk-fetches details
+    return await this.request<{ orders: any[] }>(
+        `/orders/period?start=${format(startDate, 'yyyy-MM-dd')}&end=${format(endDate, 'yyyy-MM-dd')}`,
+        'GET'
+    );
+}
+
+// New: fetch details for a chunk of order ids (POST /orders)
+async fetchOrderDetailsChunk(orderIds: number[]): Promise<{ orders: any[] } | Error> {
+    return await this.request<{ orders: any[] }>('/orders', 'POST', { orderIds });
+}
+
+// Convenience wrapper matching new name
+async fetchOrderIdsForPeriod(startDate: Date, endDate: Date) {
+    return this.listRawOrdersForPeriod(startDate, endDate);
+}
 
 	async updateDay(req: UpdateDayRequest): Promise<OrdersResponse | Error> {
 		return await this.request<OrdersResponse>('/orders', 'PATCH', req);
