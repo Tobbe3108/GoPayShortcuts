@@ -45,19 +45,21 @@ export class ListOrders extends OpenAPIRoute {
     const { orderIds } = data.body;
 
     // Fetch details for each id, return only successful responses
-    const details: DetailedOrder[] = [];
-    await Promise.all(
+    const results = await Promise.all(
       orderIds.map(async (id) => {
         const d = await client.getOrderDetails(id);
-        if (!(d instanceof Response)) details.push(d);
+        return d instanceof Response ? null : d;
       })
     );
+    const details = (results.filter((r) => r !== null) as DetailedOrder[]);
 
     c.res.headers.set(
       "Cache-Control",
       `private, max-age=${seconds(10)}, stale-while-revalidate=${seconds(20)}`
     );
 
+    // sort deterministically by date if available
+    details.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
     return { orders: details };
   }
 }

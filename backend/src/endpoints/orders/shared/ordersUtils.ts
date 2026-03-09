@@ -31,19 +31,18 @@ export async function fetchValidOrderDetails(
   orders: Order[],
   client: GoPayClient
 ): Promise<DetailedOrder[]> {
-  const details: DetailedOrder[] = [];
-
-  await Promise.all(
+  const results = await Promise.all(
     orders.map(async (order) => {
       const detail = await client.getOrderDetails(order.id);
-      if (!(detail instanceof Response)) details.push(detail);
+      return detail instanceof Response ? null : detail;
     })
   );
+  const details = (results.filter((r) => r !== null) as DetailedOrder[]);
 
   const refundedOrders = new Set<number>();
   // NOTE FOR FRONTEND: refund-detection logic lives here and is intentionally
   // preserved for frontend developers to reuse. The backend endpoints
-  // no longer filter refunds — GET /orders/period and POST /orders/list
+  // no longer filter refunds — GET /api/orders/period and POST /api/orders
   // return raw orders and detailed orders respectively. Apply the same
   // refund-filtering logic on the frontend (creditNoteDetails + orderType
   // checks) when merging chunked results.

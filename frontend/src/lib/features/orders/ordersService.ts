@@ -3,7 +3,19 @@ import { notifications } from '$lib/core/notifications/notificationStore';
 import type { SimplifiedOrder } from './models/SimplifiedOrder';
 import type { UpdateDayRequest } from './models/updateDayRequest';
 import { fetchOrderDetailsChunk, fetchOrderIdsForPeriod } from '$lib/core/api/ordersClient';
-import type { DetailedOrder } from '../../../backend/src/goPay/types';
+// NOTE: avoid importing backend source types directly. Define minimal local type shape instead.
+type DetailedOrder = {
+  id: number;
+  date?: string;
+  orderType?: string;
+  creditNoteDetails?: { creditNoteOrderIds?: number[] };
+  deliveries?: Array<{
+    deliveryTime?: string;
+    orderLines?: Array<{ productId: number; items: number; price?: { amount: number; scale: number }; name?: string }>;
+    cancelOrder?: { cancelEnable: boolean } | null;
+  }>;
+  kitchen?: { id: number } | null;
+};
 
 /**
  * Orders service for accessing order data from the backend
@@ -28,16 +40,21 @@ export class OrdersService {
 		for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
 
 		// Fetch details for each chunk in parallel
-		const detailsResponses = await Promise.all(
-			chunks.map((chunk) => fetchOrderDetailsChunk(chunk))
-		);
+        const detailsResponses = await Promise.all(chunks.map((chunk) => fetchOrderDetailsChunk(chunk)));
 
-		// Collect successful results
-		const details: DetailedOrder[] = [];
-		for (const r of detailsResponses) {
-			if (r instanceof Error) continue;
-			details.push(...r.orders);
-		}
+        // Fail loud if any chunk failed — partial data is dangerous for aggregation
+        const failed = detailsResponses.find((r) => r instanceof Error);
+        if (failed) {
+            console.error('Failed to fetch one or more order detail chunks', failed);
+            notifications.error('Failed to fetch all order details');
+            throw failed;
+        }
+
+        // Collect successful results
+        const details: DetailedOrder[] = [];
+        for (const r of detailsResponses as { orders: any[] }[]) {
+            details.push(...r.orders);
+        }
 
 		// Frontend is responsible for refund-filtering after collecting all details.
 		// Apply same filtering logic as backend.fetchValidOrderDetails
@@ -55,29 +72,30 @@ export class OrdersService {
 		// For simplicity in this request, call the backend "updateDay" endpoint which returns simplified orders
 		// However to keep things pure frontend-side, we will map details into simplified orders minimally.
 
-		// Minimal client-side mapping: group by date+kitchen and sum quantities, but keep price 0 (backend resolves prices).
-		const combined: Record<string, SimplifiedOrder & { cancelEnabledArr: boolean[] }> = {} as any;
-		for (const order of validDetails) {
-			const delivery = order.deliveries?.[0];
-			const date = delivery?.deliveryTime?.slice(0, 10) || 'unknown';
-			const kitchenId = order.kitchen?.id || NaN;
-			const cancelEnabled = order.deliveries.every(
-				(d: any) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
-			);
-			const key = `${date}-${kitchenId}`;
-			if (!combined[key]) {
-				combined[key] = { date, kitchenId, orderlines: [], cancelEnabled: false, cancelEnabledArr: [] } as any;
-			}
-			combined[key].cancelEnabledArr.push(cancelEnabled);
-			for (const d of order.deliveries || []) {
-				for (const line of d.orderLines || []) {
-					const exist = combined[key].orderlines.find((ol) => ol.productId === line.productId);
-					if (exist) exist.quantity += line.items;
-					else
-						combined[key].orderlines.push({ productId: line.productId, quantity: line.items, price: 0, name: line.name });
-				}
-			}
-		}
+        // Minimal client-side mapping: group by date+kitchen and sum quantities.
+        // Use price from detailed order lines when available using same format logic as backend.
+        const combined: Record<string, SimplifiedOrder & { cancelEnabledArr: boolean[] }> = {} as any;
+        for (const order of validDetails) {
+            const delivery = order.deliveries?.[0];
+            const date = delivery?.deliveryTime?.slice(0, 10) || 'unknown';
+            const kitchenId = order.kitchen?.id || NaN;
+            const cancelEnabled = order.deliveries.every(
+                (d: any) => !d.cancelOrder || d.cancelOrder.cancelEnable !== false
+            );
+            const key = `${date}-${kitchenId}`;
+            if (!combined[key]) {
+                combined[key] = { date, kitchenId, orderlines: [], cancelEnabled: false, cancelEnabledArr: [] } as any;
+            }
+            combined[key].cancelEnabledArr.push(cancelEnabled);
+            for (const d of order.deliveries || []) {
+                for (const line of d.orderLines || []) {
+                    const exist = combined[key].orderlines.find((ol) => ol.productId === line.productId);
+                    if (exist) exist.quantity += line.items;
+                    else
+                        combined[key].orderlines.push({ productId: line.productId, quantity: line.items, price: line.price ? (line.price.amount / Math.pow(10, line.price.scale)) : 0, name: line.name });
+                }
+            }
+        }
 
 		const simplified: SimplifiedOrder[] = Object.values(combined).map((c) => ({
 			date: c.date,
@@ -86,11 +104,7 @@ export class OrdersService {
 			cancelEnabled: c.cancelEnabledArr.some((v) => v === true),
 		}));
 
-		if (simplified instanceof Error) {
-			console.error('Failed to fetch orders:', simplified);
-			notifications.error('Failed to fetch orders: ' + (simplified as any).message);
-			throw simplified as any;
-		}
+        // simplified is constructed locally — no runtime Error value expected here
 
 		console.log('Fetched orders:', simplified);
 		return simplified;
