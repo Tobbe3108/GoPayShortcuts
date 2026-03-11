@@ -18,7 +18,8 @@
 	import Button from '$lib/components/atoms/Button.svelte';
 	import LoadingSpinner from '$lib/core/loading/organisms/LoadingSpinner.svelte';
 	import { fade } from 'svelte/transition';
-	import defaultStore from '$lib/features/orders/defaultStore';
+    import defaultStore from '$lib/features/orders/defaultStore';
+    import DefaultPlaceholder from '$lib/features/orders/atoms/DefaultPlaceholder.svelte';
 	import { notifications } from '$lib/core/notifications/notificationStore';
 	import { ordersService } from '$lib/features/orders/ordersService';
 
@@ -34,13 +35,7 @@
 
 	let loading = $state(true);
 	let orders: Record<string, TemplateOrder[]> = $state({});
-	let hasDefaultOrder = $state(false);
-
-	$effect(() => {
-		defaultStore.getDefault().then((def) => {
-			hasDefaultOrder = def !== null;
-		});
-	});
+    // hasDefaultOrder removed; decisions are per-weekday+kitchen via defaultStore
 
 	// In-memory prefetch cache keyed by week range (non-reactive to avoid re-run loops)
 	let prefetchCache: Record<string, Record<string, TemplateOrder[]>> = {};
@@ -104,40 +99,24 @@
 							</Card>
 						{/if}
 
-						{#if (isToday(date) || isFuture(date)) && ordersByDay(orders, date).length === 0}
-							<Card>
-								{#if hasDefaultOrder}
-									<div class="flex justify-center">
-										<Button
-											variant="transparent"
-											size="sm"
-											ariaLabel={$_('orders.useDefaultOrder')}
-											onclick={async () => {
-												const def = await defaultStore.getDefault();
-												if (!def) {
-													notifications.info($_('orders.noSavedDefaultOrder'));
-													return;
-												}
-												const cloned = {
-													...def,
-													date: format(date, 'yyyy-MM-dd'),
-													tempOrder: true
-												};
-												updateOrderForKitchen(orders, cloned);
-											}}
-										>
-											<div class="text-xs text-gray-400 text-center">
-												{$_('orders.useDefaultOrder')}
-											</div>
-										</Button>
-									</div>
-								{:else}
-									<div class="text-xs text-gray-400 text-center">
-										{$_('orders.saveAsDefaultHint')}
-									</div>
-								{/if}
-							</Card>
-						{/if}
+                        {#if (isToday(date) || isFuture(date)) && ordersByDay(orders, date).length === 0}
+                            <Card>
+                                <!-- default placeholder: shows "Use default" when a persisted
+                                     preferred template exists for the weekday and contains
+                                     orders for a kitchen. The placeholder dispatches an
+                                     "apply" event with the converted order(s). -->
+                                <DefaultPlaceholder date={format(date, 'yyyy-MM-dd')} on:apply={(e: CustomEvent) => {
+                                    // parent expects an array for updateOrderForKitchen
+                                    const payload = e.detail;
+                                    if (Array.isArray(payload)) {
+                                        // insert each returned temp order
+                                        payload.forEach((o) => updateOrderForKitchen(orders, { ...o, tempOrder: true }));
+                                    } else {
+                                        updateOrderForKitchen(orders, { ...payload, tempOrder: true });
+                                    }
+                                }} />
+                            </Card>
+                        {/if}
 
 						{#each ordersByDay(orders, date) as order (order.kitchenId)}
 							<OrderCard

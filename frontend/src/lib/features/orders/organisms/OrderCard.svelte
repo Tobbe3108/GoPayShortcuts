@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
+import { isToday, isFuture } from 'date-fns';
+import Button from '$lib/components/atoms/Button.svelte';
+import { templateOrderToSimplifiedOrder } from '$lib/features/orders/orderUtils';
 	
 	import { _ } from 'svelte-i18n';
 import Label from '$lib/components/atoms/Label.svelte';
@@ -9,7 +12,7 @@ import Label from '$lib/components/atoms/Label.svelte';
     import { ordersService } from '../ordersService';
     import { notifications } from '$lib/core/notifications/notificationStore';
     import { calculateDeltaAmounts, formatDKK } from '../utils/orderAmountCalculator';
-	import defaultStore from '$lib/features/orders/defaultStore';
+    import defaultStore, { templatesSignal } from '$lib/features/orders/defaultStore';
 	import { locationsService } from '../../locations/locationsService';
 	import type { SimplifiedOrder } from '../models/SimplifiedOrder';
 	import type { TemplateOrder } from '$lib/features/orders/orderUtils';
@@ -34,6 +37,7 @@ import Label from '$lib/components/atoms/Label.svelte';
 	let saveAsDefault = $state(false);
 	let locations = $state<Location[]>([]);
 	let loading = $state(true);
+	let showUseDefault = $state(false);
 	let isBackendLoading = $state(false);
 	let originalQuantities = $state<Map<number, number>>(new Map());
 
@@ -41,20 +45,125 @@ import Label from '$lib/components/atoms/Label.svelte';
 	const isLocked = $derived(order.cancelEnabled === false);
 	const appendOnly = $derived(isLocked && editMode);
 
-	onMount(async () => {
-		await locationsService
-			.getLocations()
-				.then((res) => (locations = res))
-				.finally(() => (loading = false));
+    onMount(async () => {
+			await locationsService
+				.getLocations()
+					.then((res) => (locations = res))
+					.finally(() => (loading = false));
 
-		// initialize star state from persisted default for this kitchen
+			// initialize star state and showUseDefault from persisted preferred template only
+			try {
+			const exists = await checkPersistedDefault();
+			saveAsDefault = exists; // star reflects persisted preferred
+			showUseDefault = exists;
+        } catch (e) {
+            console.error('failed to read preferred template for order', e);
+        }
+        });
+
+
+    // react to any template/preference changes elsewhere in the UI by
+    // re-evaluating whether a persisted default exists for this card. The
+    // defaultStore updates `templatesSignal` whenever templates/prefs change.
+    let __tplUnsub: (() => void) | null = null;
+    onMount(() => {
+        __tplUnsub = templatesSignal.subscribe((_) => {
+            // run check in background — don't block rendering
+            (async () => {
+                try {
+                    const exists = await checkPersistedDefault();
+                    // only update when changed to avoid unnecessary re-renders
+                    if (saveAsDefault !== exists) saveAsDefault = exists;
+                    if (showUseDefault !== exists) showUseDefault = exists;
+                } catch (e) {
+                    console.error('templatesSignal reaction failed', e);
+                }
+            })();
+        });
+    });
+    onDestroy(() => {
+        if (typeof __tplUnsub === 'function') __tplUnsub();
+    });
+
+
+	async function checkPersistedDefault(): Promise<boolean> {
 		try {
-			const def = await defaultStore.getDefault();
-			saveAsDefault = def?.id === `global:${order.kitchenId}`;
+			// Direct localStorage check: ensure there's an explicit preferred id for
+			// the weekday and that the referenced template contains an order for
+			// this kitchen with at least one orderline. This avoids any legacy
+			// fallback and is deterministic.
+			const prefRaw = localStorage.getItem('app.preferredByWeekday');
+			if (!prefRaw) return false;
+			let pref: Record<string, string | null>;
+			try {
+				pref = JSON.parse(prefRaw) as Record<string, string | null>;
+			} catch (e) {
+				return false;
+			}
+			const date = new Date(order.date);
+			const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+			const d = date.getDay();
+			const weekday = d >= 1 && d <= 5 ? (weekdayNames[d - 1] as 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri') : null;
+			if (!weekday) return false;
+			const tplId = pref[weekday];
+			if (!tplId) return false;
+			const tplRaw = localStorage.getItem('app.defaultTemplates');
+			if (!tplRaw) return false;
+			let tplList: any[];
+			try {
+				tplList = JSON.parse(tplRaw) as any[];
+			} catch (e) {
+				return false;
+			}
+			const tpl = tplList.find((t) => t.id === tplId);
+			if (!tpl || !Array.isArray(tpl.orders)) return false;
+            const found = tpl.orders.find((o) => {
+                if (o.locationId !== order.kitchenId) return false;
+                if (!Array.isArray(o.orderlines) || o.orderlines.length === 0) return false;
+                // ensure at least one orderline looks valid (has productId)
+                return o.orderlines.some((l: any) => typeof l.productId === 'number');
+            });
+			// reject legacy runtime templates (ids created from legacy fallback)
+			if (tpl.id && String(tpl.id).toLowerCase().includes('legacy')) return false;
+			return Boolean(found);
 		} catch (e) {
-			// ignore
+			console.error('checkPersistedDefault failed', e);
+			return false;
 		}
-	});
+	}
+
+	// Synchronous check used by template rendering to avoid any async timing
+	// issues — reads the explicit client storage keys and verifies that the
+	// referenced template contains an order for this kitchen.
+	function hasPersistedDefaultSync(): boolean {
+		try {
+			const prefRaw = localStorage.getItem('app.preferredByWeekday');
+			if (!prefRaw) return false;
+			const pref = JSON.parse(prefRaw) as Record<string, string | null>;
+			const date = new Date(order.date);
+			const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+			const d = date.getDay();
+			const weekday = d >= 1 && d <= 5 ? (weekdayNames[d - 1] as 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri') : null;
+			if (!weekday) return false;
+			const id = pref[weekday];
+			if (!id) return false;
+			const tplRaw = localStorage.getItem('app.defaultTemplates');
+			if (!tplRaw) return false;
+			const tplList = JSON.parse(tplRaw) as any[];
+            const tpl = tplList.find((t) => t.id === id);
+            if (!tpl || !Array.isArray(tpl.orders)) return false;
+            // Do not treat legacy runtime templates as persisted defaults
+            if (typeof tpl.id === 'string' && tpl.id.toLowerCase().includes('legacy')) return false;
+            const found = tpl.orders.some((o: any) => {
+                if (!o) return false;
+                // match on kitchen/location id only — be permissive about orderlines
+                return Number(o.locationId) === Number(order.kitchenId);
+            });
+            return Boolean(found);
+		} catch (e) {
+			return false;
+		}
+	}
 
     function handleEdit() {
         editMode = true;
@@ -67,6 +176,50 @@ import Label from '$lib/components/atoms/Label.svelte';
             originalOrder = JSON.parse(JSON.stringify(order));
         } catch (e) {
             originalOrder = order;
+        }
+    }
+
+    async function handleToggleDefault() {
+        // Determine weekday for preference operations
+        const date = new Date(order.date);
+        const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const d = date.getDay();
+        const weekday = d >= 1 && d <= 5 ? (weekdayNames[d - 1] as 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri') : null;
+
+        if (!weekday) {
+            notifications.error($_('orders.failedToSaveDefault'));
+            return;
+        }
+
+        const wantOn = !saveAsDefault;
+
+        if (wantOn) {
+            // attempt to persist; only reflect success in UI after it completes
+            const saved = await handleSaveAsDefault();
+            if (saved) {
+                saveAsDefault = true;
+                notifications.success($_('orders.default.success'));
+                try {
+                    const exists = await checkPersistedDefault();
+                    showUseDefault = exists;
+                } catch (e) {
+                    showUseDefault = true;
+                }
+            } else {
+                saveAsDefault = false;
+                notifications.error($_('orders.default.error'));
+            }
+        } else {
+            // User turned the star off -> clear preferred for that weekday
+            try {
+                await defaultStore.setPreferredForWeekday(weekday, null);
+                saveAsDefault = false;
+                notifications.success($_('orders.default.cleared') ?? 'Default cleared');
+                showUseDefault = false;
+            } catch (e) {
+                console.error('failed to clear preferred template', e);
+                notifications.error($_('orders.default.error'));
+            }
         }
     }
 
@@ -92,7 +245,7 @@ import Label from '$lib/components/atoms/Label.svelte';
 		return;
 	}
 
-	async function handleSave() {
+    async function handleSave() {
 		// Validate append-only constraint: no quantity decreases allowed
 		if (isLocked) {
 			for (const line of order.orderlines) {
@@ -174,24 +327,131 @@ import Label from '$lib/components/atoms/Label.svelte';
         }
     }
 
-	async function handleSaveAsDefault() {
-		// Attempt to persist the order as the user's default.
-		// This operation is intentionally silent (no user-facing notifications)
-		// — callers decide whether to inform the user. We still catch errors
-		// to avoid throwing from UI flows.
-		isBackendLoading = true;
-		try {
-			await defaultStore.saveDefault(order);
-			return true;
-		} catch (err) {
-			// swallow errors silently to avoid spamming notifications when
-			// saving default is a best-effort action (localStorage may be blocked)
-			console.error('default save failed', err);
-			return false;
-		} finally {
-			isBackendLoading = false;
-		}
-	}
+    async function applyDefaultToThisOrder() {
+        try {
+            const res = await defaultStore.getTemplateForDateAndKitchen(new Date(order.date), order.kitchenId);
+            if (!res) {
+                notifications.info($_('orders.noSavedDefaultOrder'));
+                return;
+            }
+            const converted = templateOrderToSimplifiedOrder(res.order, new Date(order.date));
+            // inform parent to insert/replace the in-memory order
+            onOrderChange?.([converted]);
+            // update local view
+            order = converted;
+        } catch (e) {
+            console.error('apply default failed', e);
+        }
+    }
+
+    async function handleSaveAsDefault() {
+        // Save this order as a per-weekday preferred template (client-only).
+        // Preserve behavior: if order was created from a template (tempOrder), do not overwrite templates.
+        const maybeTemplate = order as TemplateOrder;
+        if (maybeTemplate.tempOrder) {
+            // The order was created from a template (tempOrder). The user may
+            // have edited it and intends to save this variant as the preferred
+            // template for the weekday. Allow creating a new template in this
+            // case rather than blocking the action.
+            console.debug('handleSaveAsDefault: saving a tempOrder as a new template');
+            // fallthrough: we'll create a new template below if no existing
+            // preferred template is present for the weekday.
+        }
+
+        isBackendLoading = true;
+        try {
+            const date = new Date(order.date);
+            const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+            const d = date.getDay();
+            const weekday = d >= 1 && d <= 5 ? (weekdayNames[d - 1] as 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri') : null;
+
+            // prepare template-order
+            const templateOrder = {
+                id: `tord:${order.kitchenId}:${Date.now()}`,
+                locationId: order.kitchenId,
+                orderlines: order.orderlines
+            };
+
+            if (!weekday) return false;
+
+            // Check if there's an existing preferred template for this weekday
+            const existing = await defaultStore.getPreferredForWeekday(weekday);
+            if (!existing) {
+                // quick localStorage probe to surface permission issues early
+                try {
+                    localStorage.setItem('__gops_write_probe', '1');
+                    localStorage.removeItem('__gops_write_probe');
+                } catch (e) {
+                    console.error('localStorage write probe failed', e);
+                    notifications.error($_('orders.default.error') + ' — localStorage write failed.');
+                    return false;
+                }
+
+                // create a new template and set as preferred
+                console.debug('handleSaveAsDefault -> creating template for', weekday, 'kitchen', order.kitchenId);
+                let tpl;
+                try {
+                    tpl = await defaultStore.createTemplate({ orders: [templateOrder], name: `Default - ${weekday}` });
+                    console.debug('handleSaveAsDefault created template', tpl.id);
+                } catch (e) {
+                    console.error('createTemplate failed', e);
+                    notifications.error($_('orders.default.error') + ' — createTemplate failed.');
+                    return false;
+                }
+
+                try {
+                    console.debug('handleSaveAsDefault -> setting preferred for', weekday, '->', tpl.id);
+                    await defaultStore.setPreferredForWeekday(weekday, tpl.id);
+                } catch (e) {
+                    console.error('setPreferredForWeekday failed', e);
+                    notifications.error($_('orders.default.error') + ' — setting preference failed.');
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Update (upsert) the template's order for this kitchen
+            const updatedOrders = existing.orders ? [...existing.orders] : [];
+            const idx = updatedOrders.findIndex((o) => o.locationId === order.kitchenId);
+            if (idx >= 0) {
+                updatedOrders[idx] = { ...updatedOrders[idx], orderlines: order.orderlines } as any;
+            } else {
+                updatedOrders.push(templateOrder as any);
+            }
+
+            console.debug('handleSaveAsDefault -> updating template', existing.id, 'orders', updatedOrders.length);
+            try {
+                await defaultStore.updateTemplate(existing.id, { orders: updatedOrders });
+            } catch (e) {
+                console.error('updateTemplate failed', e);
+                notifications.error($_('orders.default.error') + ' — updateTemplate failed.');
+                return false;
+            }
+            // ensure it's preferred for the weekday
+            try {
+                console.debug('handleSaveAsDefault -> ensuring preferred for', weekday, existing.id);
+                await defaultStore.setPreferredForWeekday(weekday, existing.id);
+            } catch (e) {
+                console.error('setPreferredForWeekday failed', e);
+                notifications.error($_('orders.default.error') + ' — setting preference failed.');
+                return false;
+            }
+            return true;
+        } catch (e) {
+            console.error('handleSaveAsDefault failed', e);
+            try {
+                const msg = e instanceof Error ? e.message : String(e);
+                notifications.error(`${$_('orders.default.error')}: ${msg}`);
+            } catch (nerr) {
+                // fall back
+                notifications.error($_('orders.default.error'));
+            }
+            return false;
+        } finally {
+            isBackendLoading = false;
+        }
+    }
 
     async function handleDelete() {
         isBackendLoading = true;
@@ -275,11 +535,16 @@ import Label from '$lib/components/atoms/Label.svelte';
                         onDelete={handleDelete}
                         showDefaultToggle={editMode}
                         isDefault={saveAsDefault}
-                        onToggleDefault={() => (saveAsDefault = !saveAsDefault)}
+                        onToggleDefault={handleToggleDefault}
                     />
                 </div>
             </div>
-        </div>
+		</div>
+
+		<!-- Defaults/application UI is handled by DefaultPlaceholder in the templates.
+		     Do not render the save-as-default hint inside individual OrderCard
+		     instances (prevents hint appearing after content loads). -->
+
 		<OrderEditor
 			{order}
 			{editMode}

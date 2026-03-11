@@ -8,8 +8,8 @@
 	import Card from '$lib/components/atoms/Card.svelte';
 	import Button from '$lib/components/atoms/Button.svelte';
 	import { format } from 'date-fns';
-	import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
-	import { _ } from 'svelte-i18n';
+import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrder';
+import { _ } from 'svelte-i18n';
 
 	type AddLocationCardProps = {
 		locationsWithOrders: number[];
@@ -40,6 +40,8 @@
 		collapsed = true;
 	}
 
+
+
 	function scaffoldOrderForLocation(loc: Location): SimplifiedOrder {
 		return {
 			date: format(date, 'yyyy-MM-dd'),
@@ -48,6 +50,7 @@
 			cancelEnabled: true
 		};
 	}
+
 </script>
 
 <div class="flex flex-col items-center w-full">
@@ -75,15 +78,13 @@
 						{#if !locations || locations.length === 0}
 							<Label variant="muted">{$_('locations.noneFound')}</Label>
 						{:else}
-							<div class="flex flex-col space-y-2">
-								{#each locations as loc (loc.kitchenId)}
-									<Button variant="transparent" size="sm" onclick={() => handleLocationClick(loc)}>
-										<Label size="xs" className="cursor-pointer capitalize tracking-wide"
-											>{loc.name}</Label
-										>
-									</Button>
-								{/each}
-							</div>
+                            <div class="flex flex-col space-y-2">
+                                {#each locations as loc (loc.kitchenId)}
+                                    <Button variant="transparent" size="sm" onclick={() => handleLocationClick(loc)}>
+                                        <Label size="xs" className="cursor-pointer capitalize tracking-wide">{loc.name}</Label>
+                                    </Button>
+                                {/each}
+                            </div>
 						{/if}
 					</div>
 				</Card>

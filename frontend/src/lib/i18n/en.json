@@ -32,7 +32,8 @@
  "orders": {
   "default": {
     "success": "Default order saved",
-    "error": "Failed to save default order"
+    "error": "Failed to save default order",
+    "cleared": "Default cleared"
   },
   "save": {
    "success": "Order saved",
