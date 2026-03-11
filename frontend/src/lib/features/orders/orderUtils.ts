@@ -3,7 +3,7 @@ import type { SimplifiedOrder } from '$lib/features/orders/models/SimplifiedOrde
 import { ordersService } from '$lib/features/orders/ordersService';
 
 export interface TemplateOrder extends SimplifiedOrder {
-	tempOrder: boolean;
+    tempOrder: boolean;
 }
 
 export async function listOrders(weekStart: Date, weekEnd: Date) {
@@ -34,11 +34,25 @@ export function handleCancel(
 }
 
 export function updateOrderForKitchen(
-	record: Record<string, TemplateOrder[]>,
-	order: TemplateOrder
+    record: Record<string, TemplateOrder[]>,
+    order: TemplateOrder
 ) {
-	record[order.date] = record[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
-	record[order.date].push(order);
+    record[order.date] = record[order.date]?.filter((o) => o.kitchenId !== order.kitchenId) || [];
+    record[order.date].push(order);
+}
+
+// Convert a template-order (from DefaultTemplate) into the in-memory SimplifiedOrder
+export function templateOrderToSimplifiedOrder(
+    templateOrder: { locationId: number; orderlines: SimplifiedOrder['orderlines'] },
+    date: Date
+): TemplateOrder {
+    return {
+        date: format(date, 'yyyy-MM-dd'),
+        kitchenId: templateOrder.locationId,
+        orderlines: templateOrder.orderlines,
+        cancelEnabled: false,
+        tempOrder: true
+    };
 }
 
 // Helper: convert a flat order array into the TemplateOrder record keyed by date
