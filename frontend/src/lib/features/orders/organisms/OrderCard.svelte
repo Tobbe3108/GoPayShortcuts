@@ -283,7 +283,12 @@ import Label from '$lib/components/atoms/Label.svelte';
                     next = response.find((r) => r.kitchenId === order.kitchenId && r.date === order.date);
                 }
                 if (!next) next = { date: order.date, kitchenId: order.kitchenId, orderlines: [], cancelEnabled: false } as SimplifiedOrder;
-                const { spent, refunded } = calculateDeltaAmounts(prev, next);
+                // If the previous snapshot was a client-only template (tempOrder),
+                // treat it as non-existent for delta calculations to avoid
+                // showing refund notifications for unpersisted orders.
+                const prevForDelta = prev && (prev as any).tempOrder ? undefined : prev;
+                if (prev && (prev as any).tempOrder) console.debug('Skipping prev-delta for tempOrder in save, using empty prev for delta calc');
+                const { spent, refunded } = calculateDeltaAmounts(prevForDelta, next);
                 if (spent > 0) {
                     const msg = spent > 0 && refunded === 0 ? `Spent ${formatDKK(spent)} on lunch order${next.orderlines.length > 1 ? 's' : ''}` : `Spent ${formatDKK(spent)}`;
                     notifications.success(msg);
@@ -489,8 +494,11 @@ import Label from '$lib/components/atoms/Label.svelte';
                     next = response.find((r) => r.kitchenId === order.kitchenId && r.date === order.date);
                 }
                 if (!next) next = { date: order.date, kitchenId: order.kitchenId, orderlines: [], cancelEnabled: false } as SimplifiedOrder;
-                const { spent, refunded } = calculateDeltaAmounts(prev, next);
-                console.debug('Delete delta', { prev, next, spent, refunded });
+                // Prevent showing refunds when deleting a client-only (temp) order.
+                const prevForDelta = prev && (prev as any).tempOrder ? undefined : prev;
+                if (prev && (prev as any).tempOrder) console.debug('Skipping prev-delta for tempOrder in delete, using empty prev for delta calc');
+                const { spent, refunded } = calculateDeltaAmounts(prevForDelta, next);
+                console.debug('Delete delta', { prev: prevForDelta, next, spent, refunded });
                 if (spent > 0) notifications.success(`Spent ${formatDKK(spent)}`);
                 if (refunded > 0) notifications.success(`Refunded ${formatDKK(refunded)}`);
             } catch (e) {
