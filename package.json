@@ -1,0 +1,13 @@
+{
+	"name": "gopay-shortcuts-monorepo",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun run --cwd backend test && bun run --cwd frontend test",
+		"test:backend": "bun run --cwd backend test",
+		"test:frontend": "bun run --cwd frontend test",
+		"test:watch:backend": "bun run --cwd backend test:watch",
+		"test:watch:frontend": "bun run --cwd frontend test:watch",
+		"test:coverage": "bun run --cwd backend test:coverage && bun run --cwd frontend test:coverage"
+	}
+}

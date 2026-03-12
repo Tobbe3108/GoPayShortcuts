@@ -1,78 +1,61 @@
 <script lang="ts">
-	type Variant = 'primary' | 'secondary' | 'danger' | 'transparent';
-	type Size = 'sm' | 'md' | 'lg' | 'icon' | '';
-	type BtnType = 'button' | 'submit' | 'reset';
-	type ButtonProps = {
-		variant?: Variant;
-		size?: Size;
-		disabled?: boolean;
-		type?: BtnType;
-		fullWidth?: boolean;
-		className?: string;
-		ariaLabel?: string;
-		children?: any;
-		onclick?: (e: MouseEvent) => void;
-		onfocus?: (e: FocusEvent) => void;
-		onblur?: (e: FocusEvent) => void;
-	};
+  // Standard, idiomatic Svelte Button component with slot support.
+  // Use plain JS types for compatibility with the Svelte compiler in tests
+  /** @typedef {'primary'|'secondary'|'danger'|'transparent'} Variant */
+  /** @typedef {'sm'|'md'|'lg'|'icon'|''} Size */
+  /** @typedef {'button'|'submit'|'reset'} BtnType */
 
-	let {
-		variant = 'primary',
-		size = 'md',
-		disabled = false,
-		type = 'button',
-		fullWidth = false,
-		className = '',
-		ariaLabel = '',
-		children = $bindable(undefined),
-		onclick = undefined,
-		onfocus = undefined,
-		onblur = undefined
-	}: ButtonProps = $props();
+  export let variant = 'primary';
+  export let size = 'md';
+  export let disabled = false;
+  export let type = 'button';
+  export let fullWidth = false;
+  export let className = '';
+  export let ariaLabel = '';
+  export let onclick = undefined;
+  export let onfocus = undefined;
+  export let onblur = undefined;
 
-	const variantClasses: Record<Variant, string> = {
-		primary:
-			'bg-primary text-white hover:bg-primary-hover focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2',
-		secondary:
-			'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary focus:outline-none focus:ring-2 focus:ring-offset-2',
-		danger:
-			'bg-danger text-white hover:bg-danger-hover focus:ring-danger focus:outline-none focus:ring-2 focus:ring-offset-2',
-		transparent: 'bg-transparent text-primary disabled:bg-transparent'
-	};
+  const variantClasses: Record<Variant, string> = {
+    primary:
+      'bg-primary text-white hover:bg-primary-hover focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2',
+    secondary:
+      'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary focus:outline-none focus:ring-2 focus:ring-offset-2',
+    danger:
+      'bg-danger text-white hover:bg-danger-hover focus:ring-danger focus:outline-none focus:ring-2 focus:ring-offset-2',
+    transparent: 'bg-transparent text-primary disabled:bg-transparent'
+  };
 
-	/* visual sizing classes */
-	const sizeClasses: Record<Size, string> = {
-		sm: 'py-1 px-2 text-xs',
-		md: 'py-2 px-3 text-sm',
-		lg: 'py-2 px-4 text-lg',
-		icon: 'p-0 text-base', /* visually small; touch-target handled separately */
-		'': 'p-0' /* legacy: still allowed */
-	};
+  const sizeClasses: Record<Size, string> = {
+    sm: 'py-1 px-2 text-xs',
+    md: 'py-2 px-3 text-sm',
+    lg: 'py-2 px-4 text-lg',
+    icon: 'p-0 text-base',
+    '': 'p-0'
+  };
 
-	let buttonClasses = $derived(
-		[
-			variantClasses[variant as Variant],
-			sizeClasses[size as Size],
-			'rounded transition-opacity duration-150 ease-in-out disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
-			disabled ? '' : 'cursor-pointer',
-			fullWidth ? 'w-full' : '',
-			className
-		].join(' ')
-	);
+  $: buttonClasses = [
+    variantClasses[variant],
+    sizeClasses[size],
+    'rounded transition-opacity duration-150 ease-in-out disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
+    disabled ? '' : 'cursor-pointer',
+    fullWidth ? 'w-full' : '',
+    className
+  ].filter(Boolean).join(' ');
 </script>
 
 <button
-    {type}
-    {disabled}
-    class={`${buttonClasses} ${size === 'icon' || size === '' ? 'btn-touch-target' : ''}`}
-    aria-label={ariaLabel}
-    aria-disabled={disabled}
-    tabindex={disabled ? -1 : 0}
-    {onclick}
-    {onfocus}
-    {onblur}
+  type={type}
+  disabled={disabled}
+  class={`${buttonClasses} ${size === 'icon' || size === '' ? 'btn-touch-target' : ''}`}
+  aria-label={ariaLabel}
+  aria-disabled={disabled}
+  tabindex={disabled ? -1 : 0}
+  on:click={onclick}
+  on:focus={onfocus}
+  on:blur={onblur}
 >
-    {@render children?.()}
+  <slot />
 </button>
 
 <style>

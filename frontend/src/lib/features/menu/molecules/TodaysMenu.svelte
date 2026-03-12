@@ -10,6 +10,7 @@
 	import { format } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 	import { navigationStore } from '$lib/features/navigation/store';
+	import { type Readable } from 'svelte/store';
 
 	let { date }: { date: Date } = $props();
 
@@ -17,11 +18,31 @@
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
 
+	let collapsed = false;
+	let _unsubscribe: () => void = () => {};
+
+	$effect(() => {
+		// navigationStore.isCollapsed may return either a boolean or a store (tests/legacy mismatch).
+		const maybeStore = navigationStore.isCollapsed(date);
+		if (maybeStore && typeof (maybeStore as Readable<boolean>).subscribe === 'function') {
+			_unsubscribe();
+			_unsubscribe = (maybeStore as Readable<boolean>).subscribe((v) => (collapsed = v));
+		} else {
+			_unsubscribe();
+			collapsed = !!maybeStore;
+			_unsubscribe = () => {};
+		}
+		return () => _unsubscribe();
+	});
+
 	onMount(async () => {
+		// load menu days
 		await menuService
 			.getMenu()
 			.then((res) => (menuDays = res))
 			.finally(() => (loading = false));
+
+		// nothing here; collapsed is derived above
 	});
 
 	$effect(() => {
@@ -29,8 +50,6 @@
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
 		menuItems = todayMenu?.items;
 	});
-
-	let collapsed = $derived(navigationStore.isCollapsed(date));
 
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};

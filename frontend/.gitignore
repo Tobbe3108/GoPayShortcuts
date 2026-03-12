@@ -1,5 +1,8 @@
 node_modules
 
+coverage
+\*.lcov
+
 # Output
 .output
 .vercel

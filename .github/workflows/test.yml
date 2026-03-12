@@ -1,0 +1,88 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Ensure only one workflow runs at a time per branch
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: backend
+        run: bun install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: backend
+        run: bun run test
+        env:
+          # Explicitly clear any API credentials to prevent accidental leaks
+          GOPAY_API_KEY: ""
+          GOPAY_API_SECRET: ""
+          MEYERS_API_KEY: ""
+          NODE_ENV: test
+
+      - name: Upload coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v4
+        with:
+          files: backend/coverage/lcov.info
+          flags: backend
+          fail_ci_if_error: false
+
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: frontend
+        run: bun run test
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v4
+        with:
+          files: frontend/coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: false
+
+  # Gate check - ensures all tests pass before merging
+  test-gate:
+    name: All Tests Pass
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    steps:
+      - name: All tests passed
+        run: echo "All tests passed successfully!"
