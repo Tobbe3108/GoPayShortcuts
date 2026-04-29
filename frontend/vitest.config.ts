@@ -32,8 +32,7 @@ export default defineConfig({
         'src/**/*.d.ts',
         '.svelte-kit/**',
         'build/**'
-      ]
-      ,
+      ],
       // Minimal thresholds to start with — will fail CI if below these values
       thresholds: {
         global: { statements: 60, branches: 50, functions: 60, lines: 60 }

@@ -56,7 +56,7 @@ describe('OrderCard component', () => {
   beforeEach(() => {
     // ensure any accidental network calls are blocked in setup, so stub fetch
     // here to a safe no-op response for this spec
-    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) }));
     // Clear call history but keep module mocks defined by top-level vi.mock
     vi.clearAllMocks();
 

@@ -213,7 +213,7 @@ beforeAll(async () => {
 
 afterEach(() => {
   if (server) server.resetHandlers();
-  vi.restoreAllMocks();
+  vi.clearAllMocks();
 });
 
 afterAll(() => {

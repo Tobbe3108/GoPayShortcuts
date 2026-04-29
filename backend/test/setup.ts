@@ -19,9 +19,9 @@ beforeAll(() => {
 	vi.stubGlobal('fetch', blockedFetch);
 });
 
-// Reset mocks after each test
+// Reset mocks after each test (use clearAllMocks to preserve stubGlobal from beforeAll)
 afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
 });
 
 // Provide default stubs used by many backend tests

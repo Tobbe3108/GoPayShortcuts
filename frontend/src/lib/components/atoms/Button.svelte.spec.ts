@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-// Use the real Svelte component to exercise Svelte transforms in tests
-import Button from './Button.svelte';
+// Use a wrapper component to pass slot content in tests
 import Wrapper from '../../../../test/fixtures/ButtonWrapper.svelte';
 
 describe('Button component', () => {
