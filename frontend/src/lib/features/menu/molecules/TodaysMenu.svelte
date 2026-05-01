@@ -7,10 +7,9 @@
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide } from 'svelte/transition';
-	import { format } from 'date-fns';
+	import { format as formatDate } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 	import { navigationStore } from '$lib/features/navigation/store';
-	import { type Readable } from 'svelte/store';
 
 	let { date }: { date: Date } = $props();
 
@@ -18,21 +17,14 @@
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
 
-	let collapsed = false;
-	let _unsubscribe: () => void = () => {};
+	let collapsed = $state(true);
 
 	$effect(() => {
-		// navigationStore.isCollapsed may return either a boolean or a store (tests/legacy mismatch).
-		const maybeStore = navigationStore.isCollapsed(date);
-		if (maybeStore && typeof (maybeStore as Readable<boolean>).subscribe === 'function') {
-			_unsubscribe();
-			_unsubscribe = (maybeStore as Readable<boolean>).subscribe((v) => (collapsed = v));
-		} else {
-			_unsubscribe();
-			collapsed = !!maybeStore;
-			_unsubscribe = () => {};
-		}
-		return () => _unsubscribe();
+		const dateKey = formatDate(date, 'yyyy-MM-dd');
+		const unsubscribe = navigationStore.subscribe((state) => {
+			collapsed = state.collapsedByDay.get(dateKey) ?? true;
+		});
+		return unsubscribe;
 	});
 
 	onMount(async () => {
@@ -46,7 +38,7 @@
 	});
 
 	$effect(() => {
-		const todayISO = format(date, 'yyyy-MM-dd');
+		const todayISO = formatDate(date, 'yyyy-MM-dd');
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
 		menuItems = todayMenu?.items;
 	});
