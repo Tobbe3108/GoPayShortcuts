@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 
+// Polyfill element.animate for jsdom (used by Svelte slide transition)
+if (typeof Element.prototype.animate !== 'function') {
+  Element.prototype.animate = function () {
+    return { onfinish: null, cancel: () => {}, finished: Promise.resolve() } as any;
+  };
+}
+
 // Mock menuService and navigationStore
 vi.mock('$lib/features/menu/menuService', () => ({
   menuService: { getMenu: vi.fn() }
@@ -13,13 +20,14 @@ vi.mock('$lib/features/products/productsService', () => ({
   productsService: { getProducts: vi.fn().mockResolvedValue([]) }
 }));
 
-vi.mock('$lib/features/navigation/store', async (importOriginal) => {
-  // partially use svelte/store readable to return the expected shape
-  const { readable } = await import('svelte/store');
+vi.mock('$lib/features/navigation/store', async () => {
+  const { writable } = await import('svelte/store');
+  const store = writable({ collapsedByDay: new Map([['2026-03-12', false]]) });
   const toggleMenu = vi.fn();
   return {
     navigationStore: {
-      isCollapsed: (date: Date) => readable(false),
+      subscribe: store.subscribe,
+      isCollapsed: () => false,
       toggleMenu
     },
     __spies: { toggleMenu }
