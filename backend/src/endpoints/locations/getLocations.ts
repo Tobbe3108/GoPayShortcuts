@@ -23,10 +23,15 @@ export class GetLocations extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
+    console.log('[GetLocations] handle called');
     const client = createGoPayClient(c);
     const response = await client.getLocations();
-    if (response instanceof Response) return response; // Error responses
+    if (response instanceof Response) {
+      console.log('[GetLocations] error response status=%d', response.status);
+      return response;
+    }
 
+    console.log('[GetLocations] got %d locations', response.length);
     const locations = response.map((location) => {
       const kitchen = location.kitchens && location.kitchens[0];
       return {

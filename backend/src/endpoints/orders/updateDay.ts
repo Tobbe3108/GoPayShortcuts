@@ -73,12 +73,14 @@ export class PatchOrdersState extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
+    console.log('[PatchOrdersState] handle called');
     const client = createGoPayClient(c);
 
     c.res.headers.set("Cache-Control", "no-store");
 
     const data = await this.getValidatedData<typeof this.schema>();
     const { kitchenId, date, desiredOrders } = data.body;
+    console.log('[PatchOrdersState] kitchenId=%d date=%s desiredOrders=%d', kitchenId, date, desiredOrders.length);
 
     const today = isToday(parseISO(date));
     const furture = isAfter(parseISO(date), new Date());

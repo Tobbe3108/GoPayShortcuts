@@ -25,10 +25,15 @@ export class GetMenu extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
+    console.log('[GetMenu] handle called');
     const client = createMeyersClient(c);
     const response = await client.getMenu();
-    if (response instanceof Response) return response;
+    if (response instanceof Response) {
+      console.log('[GetMenu] error response status=%d', response.status);
+      return response;
+    }
 
+    console.log('[GetMenu] got menu data');
     const result: SimplifiedMenuDay[] = [];
     for (const [date, day] of Object.entries(response)) {
       result.push({

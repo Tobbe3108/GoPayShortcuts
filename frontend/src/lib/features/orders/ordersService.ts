@@ -25,8 +25,10 @@ export class OrdersService {
 	 * Get orders for a specified date range
 	 */
 	static async listOrders(startDate: Date, endDate: Date): Promise<SimplifiedOrder[]> {
+		console.log('[OrdersService] listOrders called', startDate, endDate);
 		// Step 1: fetch IDs for period
 		const listResp = await fetchOrderIdsForPeriod(startDate, endDate);
+		console.log('[OrdersService] fetchOrderIdsForPeriod returned', listResp);
 
 		if (listResp instanceof Error) {
 			console.error('Failed to fetch order ids:', listResp);

@@ -43,6 +43,7 @@
 		`${format(start, 'yyyy-MM-dd')}__${format(end, 'yyyy-MM-dd')}`;
 
 	$effect(() => {
+		console.log('[WeekGrid] $effect fired, weekStart=', weekStart, 'weekEnd=', weekEnd);
 		// If we have prefetched data, use it immediately
 		const currentKey = keyForRange(weekStart, weekEnd);
 		if (prefetchCache[currentKey]) {
@@ -51,8 +52,10 @@
 		}
 
 		// Primary fetch for the visible week (refresh to ensure freshness)
+		console.log('[WeekGrid] calling listOrders...');
 		listOrders(weekStart, weekEnd)
-			.then((listed) => (orders = listed))
+			.then((listed) => { console.log('[WeekGrid] listOrders resolved:', listed); orders = listed; })
+			.catch((err) => { console.error('[WeekGrid] listOrders REJECTED:', err); })
 			.finally(() => {
 				loading = false;
 				// After navigation and refresh, wipe prefetch cache to avoid staleness

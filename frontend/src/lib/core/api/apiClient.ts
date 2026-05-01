@@ -43,6 +43,7 @@ export class ApiClient {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
+		console.log('[ApiClient] fetch ->', `${this.baseUrl}${endpoint}`, method, 'token?', !!token);
 		const response = await fetch(`${this.baseUrl}${endpoint}`, {
 			method,
 			headers,
