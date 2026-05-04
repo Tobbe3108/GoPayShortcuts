@@ -43,20 +43,15 @@ export class GetOrdersForPeriod extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
-    console.log('[GetOrdersForPeriod] handle called');
     const client = createGoPayClient(c);
 
     const data = await this.getValidatedData<typeof this.schema>();
     const { start, end } = data.query;
-    console.log('[GetOrdersForPeriod] start=%s end=%s', start, end);
 
     const ordersResp = await client.listOrders(start, end);
     if (ordersResp instanceof Response) {
-      console.log('[GetOrdersForPeriod] client returned error Response status=%d', ordersResp.status);
       return ordersResp;
     }
-
-    console.log('[GetOrdersForPeriod] got %d orders', ordersResp.orders.length);
 
     c.res.headers.set(
       "Cache-Control",

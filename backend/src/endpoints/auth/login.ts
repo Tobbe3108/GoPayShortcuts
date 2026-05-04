@@ -45,7 +45,6 @@ export class Login extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
-    console.log('[Login] handle called');
     const data = await this.getValidatedData<typeof this.schema>();
     const client = createGoPayClient(c);
 
@@ -53,11 +52,9 @@ export class Login extends OpenAPIRoute {
 
     const response = await client.login(data.body.otp);
     if (response instanceof Response) {
-      console.log('[Login] error response status=%d', response.status);
       return response;
     }
 
-    console.log('[Login] success, token received');
     return {
       token: response.authentication.token,
     } as LoginResponse;

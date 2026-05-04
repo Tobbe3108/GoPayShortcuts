@@ -39,12 +39,10 @@ export class ListOrders extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
-    console.log('[ListOrders] handle called');
     const client = createGoPayClient(c);
 
     const data = await this.getValidatedData<typeof this.schema>();
     const { orderIds } = data.body;
-    console.log('[ListOrders] fetching details for %d order ids', orderIds.length);
 
     // Fetch details for each id, return only successful responses
     const results = await Promise.all(
@@ -54,8 +52,6 @@ export class ListOrders extends OpenAPIRoute {
       })
     );
     const details = (results.filter((r) => r !== null) as DetailedOrder[]);
-
-    console.log('[ListOrders] got %d detail results', details.length);
 
     c.res.headers.set(
       "Cache-Control",

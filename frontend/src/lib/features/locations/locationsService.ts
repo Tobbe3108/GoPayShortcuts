@@ -19,7 +19,6 @@ export class LocationsService {
 			throw locations;
 		}
 
-		console.log('Fetched locations:', locations);
 		return locations;
 	}
 }
