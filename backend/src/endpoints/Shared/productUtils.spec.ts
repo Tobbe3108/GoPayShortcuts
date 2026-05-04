@@ -53,7 +53,7 @@ describe('extractProducts', () => {
     expect(result[0].name).toBe('Guest');
   });
 
-  it('produces NaN for products without price information', () => {
+  it('defaults to 0 for products without price information', () => {
     const response: any = {
       menues: [
         {
@@ -66,8 +66,7 @@ describe('extractProducts', () => {
 
     const result = extractProducts(response);
     expect(result).toHaveLength(1);
-    // price should be NaN when amount/scale are undefined
-    expect(Number.isNaN(result[0].price)).toBe(true);
+    expect(result[0].price).toBe(0);
   });
 
   it('combines products from multiple matching groups', () => {

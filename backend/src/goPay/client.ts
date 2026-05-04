@@ -79,9 +79,7 @@ export class GoPayClient {
     }
 
     try {
-      console.log('[GoPayClient] fetch %s %s', options?.method || 'GET', url);
       const response = await fetch(url, options);
-      console.log('[GoPayClient] response status=%d for %s', response.status, endpoint);
       if (!response.ok) return response;
 
       const result = await this.gatherResponse<T>(response);

@@ -43,15 +43,12 @@ export class ApiClient {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
-		console.log('[ApiClient] fetch ->', `${this.baseUrl}${endpoint}`, method, 'token?', !!token);
 		const response = await fetch(`${this.baseUrl}${endpoint}`, {
 			method,
 			headers,
 			body: body ? JSON.stringify(body) : undefined,
 			signal: options.signal
 		});
-		console.log('API Response:', response);
-
 		if (response.status === 204) return {} as T;
 
 		if (!response.ok) return new Error(response.statusText || 'An unknown error occurred');

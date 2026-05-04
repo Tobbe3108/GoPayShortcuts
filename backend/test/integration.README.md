@@ -2,7 +2,7 @@ Integration tests added to the backend validate the GoPayClient mock behavior an
 
 Run backend unit tests with:
 
-  npm --prefix backend test
+  bun run --cwd backend test
 
 Files added/updated:
   - backend/src/endpoints/Shared/*.edge.spec.ts  (edge-case tests)

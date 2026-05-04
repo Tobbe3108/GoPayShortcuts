@@ -7,9 +7,9 @@
     import { base } from '$app/paths';
 
     // simple local component state
-    let email = '';
-    let otp = '';
-    let isEmailStep = true;
+    let email = $state('');
+    let otp = $state('');
+    let isEmailStep = $state(true);
 
     async function handleEmailSubmit(emailValue: string): Promise<void> {
         if (!emailValue) {

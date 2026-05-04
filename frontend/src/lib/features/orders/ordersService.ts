@@ -25,10 +25,8 @@ export class OrdersService {
 	 * Get orders for a specified date range
 	 */
 	static async listOrders(startDate: Date, endDate: Date): Promise<SimplifiedOrder[]> {
-		console.log('[OrdersService] listOrders called', startDate, endDate);
 		// Step 1: fetch IDs for period
 		const listResp = await fetchOrderIdsForPeriod(startDate, endDate);
-		console.log('[OrdersService] fetchOrderIdsForPeriod returned', listResp);
 
 		if (listResp instanceof Error) {
 			console.error('Failed to fetch order ids:', listResp);
@@ -108,7 +106,6 @@ export class OrdersService {
 
         // simplified is constructed locally — no runtime Error value expected here
 
-		console.log('Fetched orders:', simplified);
 		return simplified;
 
 	}
@@ -125,7 +122,6 @@ export class OrdersService {
 			throw response;
 		}
 
-		console.log('Updated orders:', response.orders);
 		return response.orders;
 	}
 }

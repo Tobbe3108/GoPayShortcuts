@@ -16,11 +16,7 @@ export default defineConfig({
     exclude: [
       'node_modules',
       '.svelte-kit',
-      'build',
-      // These tests hang in jsdom due to lucide-svelte/Svelte 5 runtime incompatibility
-      // (Svelte 5 tries to fetch attachments.js which is blocked by test setup's fetch stub)
-      'src/**/Icon.svelte.spec.ts',
-      'src/**/OrderCard.svelte.spec.ts'
+      'build'
     ],
     setupFiles: ['./test/setup.ts'],
     coverage: {

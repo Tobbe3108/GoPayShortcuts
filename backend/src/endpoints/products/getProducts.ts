@@ -49,14 +49,10 @@ export class GetProducts extends OpenAPIRoute {
   };
 
   async handle(c: AppContext) {
-    console.log('[GetProducts] handle called');
     const client = createGoPayClient(c);
 
     const locations = await client.getLocations();
-    if (locations instanceof Response) {
-      console.log('[GetProducts] getLocations error status=%d', locations.status);
-      return locations;
-    }
+    if (locations instanceof Response) return locations;
 
     // Allow callers to request products for a specific kitchen
     const kitchenIdParam = c.req.query("kitchenId");
@@ -66,15 +62,8 @@ export class GetProducts extends OpenAPIRoute {
       if (Number.isNaN(parsed)) return c.text("Invalid kitchenId", 400);
       kitchenId = parsed;
     }
-    console.log('[GetProducts] kitchenId=%s', kitchenId);
-
     const response = await client.getProducts(kitchenId);
-    if (response instanceof Response) {
-      console.log('[GetProducts] getProducts error status=%d', response.status);
-      return response;
-    }
-
-    console.log('[GetProducts] success');
+    if (response instanceof Response) return response;
     const productsResponse = extractProducts(response);
     c.res.headers.set(
       "Cache-Control",
