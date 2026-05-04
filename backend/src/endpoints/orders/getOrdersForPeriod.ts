@@ -49,7 +49,9 @@ export class GetOrdersForPeriod extends OpenAPIRoute {
     const { start, end } = data.query;
 
     const ordersResp = await client.listOrders(start, end);
-    if (ordersResp instanceof Response) return ordersResp;
+    if (ordersResp instanceof Response) {
+      return ordersResp;
+    }
 
     c.res.headers.set(
       "Cache-Control",

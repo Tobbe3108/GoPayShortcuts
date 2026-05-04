@@ -19,7 +19,6 @@ export class ProductsService {
 			throw products;
 		}
 
-		console.log('Fetched products:', products);
 		return products;
 	}
 }

@@ -7,7 +7,7 @@ export interface TemplateOrder extends SimplifiedOrder {
 }
 
 export async function listOrders(weekStart: Date, weekEnd: Date) {
-	return await ordersService.listOrders(weekStart, weekEnd).then((res) => toRecord(res));
+	return ordersService.listOrders(weekStart, weekEnd).then((res) => toRecord(res));
 }
 
 export function ordersByDay(record: Record<string, TemplateOrder[]>, date: Date) {

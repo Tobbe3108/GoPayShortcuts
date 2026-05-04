@@ -106,7 +106,6 @@ export class OrdersService {
 
         // simplified is constructed locally — no runtime Error value expected here
 
-		console.log('Fetched orders:', simplified);
 		return simplified;
 
 	}
@@ -123,7 +122,6 @@ export class OrdersService {
 			throw response;
 		}
 
-		console.log('Updated orders:', response.orders);
 		return response.orders;
 	}
 }

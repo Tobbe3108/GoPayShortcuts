@@ -52,7 +52,8 @@
 
 		// Primary fetch for the visible week (refresh to ensure freshness)
 		listOrders(weekStart, weekEnd)
-			.then((listed) => (orders = listed))
+			.then((listed) => { orders = listed; })
+			.catch((err) => { console.error('Failed to fetch orders:', err); })
 			.finally(() => {
 				loading = false;
 				// After navigation and refresh, wipe prefetch cache to avoid staleness

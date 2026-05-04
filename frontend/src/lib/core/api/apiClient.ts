@@ -49,8 +49,6 @@ export class ApiClient {
 			body: body ? JSON.stringify(body) : undefined,
 			signal: options.signal
 		});
-		console.log('API Response:', response);
-
 		if (response.status === 204) return {} as T;
 
 		if (!response.ok) return new Error(response.statusText || 'An unknown error occurred');

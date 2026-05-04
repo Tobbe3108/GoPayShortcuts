@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/atoms/Icon.svelte';
 	import { slide } from 'svelte/transition';
-	import { format } from 'date-fns';
+	import { format as formatDate } from 'date-fns';
 	import { _ } from 'svelte-i18n';
 	import { navigationStore } from '$lib/features/navigation/store';
 
@@ -17,20 +17,31 @@
 	let menuItems = $state<MenuItem[] | undefined>(undefined);
 	let loading = $state(true);
 
+	let collapsed = $state(true);
+
+	$effect(() => {
+		const dateKey = formatDate(date, 'yyyy-MM-dd');
+		const unsubscribe = navigationStore.subscribe((state) => {
+			collapsed = state.collapsedByDay.get(dateKey) ?? true;
+		});
+		return unsubscribe;
+	});
+
 	onMount(async () => {
+		// load menu days
 		await menuService
 			.getMenu()
 			.then((res) => (menuDays = res))
 			.finally(() => (loading = false));
+
+		// nothing here; collapsed is derived above
 	});
 
 	$effect(() => {
-		const todayISO = format(date, 'yyyy-MM-dd');
+		const todayISO = formatDate(date, 'yyyy-MM-dd');
 		const todayMenu = menuDays.find((day) => day.date === todayISO);
 		menuItems = todayMenu?.items;
 	});
-
-	let collapsed = $derived(navigationStore.isCollapsed(date));
 
 	function groupByCategory(items: MenuItem[]): Record<string, MenuItem[]> {
 		const grouped: Record<string, MenuItem[]> = {};

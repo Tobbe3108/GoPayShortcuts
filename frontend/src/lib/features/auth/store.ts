@@ -27,28 +27,33 @@ const initialState: AuthState = {
 const createAuthStore = () => {
 	const store: Writable<AuthState> = writable(initialState);
 
-	// Initialize from local storage if available
-	if (browser) {
-		const loadFromStorage = () => {
-			try {
-				const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  // Initialize from local storage if available. Guard against environments
+  // where localStorage is not present or does not implement getItem (tests).
+  if (browser && typeof (globalThis as any).localStorage?.getItem === 'function') {
+    const loadFromStorage = () => {
+      try {
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
-				if (token) {
-					store.update((state) => ({
-						...state,
-						token,
-						isAuthenticated: true
-					}));
-				}
-			} catch (error) {
-				console.error('Failed to load auth state from storage:', error);
-				// Clear potentially corrupted data
-				localStorage.removeItem(AUTH_TOKEN_KEY);
-			}
-		};
+        if (token) {
+          store.update((state) => ({
+            ...state,
+            token,
+            isAuthenticated: true
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load auth state from storage:', error);
+        // Clear potentially corrupted data
+        try {
+          localStorage.removeItem(AUTH_TOKEN_KEY);
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
 
-		loadFromStorage();
-	}
+    loadFromStorage();
+  }
 
 	// Return the store with custom methods
 	return {

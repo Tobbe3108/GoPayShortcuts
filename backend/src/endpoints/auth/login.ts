@@ -51,7 +51,9 @@ export class Login extends OpenAPIRoute {
     c.res.headers.set("Cache-Control", "no-store");
 
     const response = await client.login(data.body.otp);
-    if (response instanceof Response) return response; // Error responses
+    if (response instanceof Response) {
+      return response;
+    }
 
     return {
       token: response.authentication.token,

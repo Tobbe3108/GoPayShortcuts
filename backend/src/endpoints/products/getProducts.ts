@@ -62,10 +62,8 @@ export class GetProducts extends OpenAPIRoute {
       if (Number.isNaN(parsed)) return c.text("Invalid kitchenId", 400);
       kitchenId = parsed;
     }
-
     const response = await client.getProducts(kitchenId);
     if (response instanceof Response) return response;
-
     const productsResponse = extractProducts(response);
     c.res.headers.set(
       "Cache-Control",
